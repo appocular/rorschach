@@ -1,0 +1,22 @@
+{
+    "name": "xendk/rorschach",
+    "description": "Do visual tests using Selenium and Applitool Eyes.",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Thomas Fini Hansen",
+            "email": "xen@xen.dk"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "5.6"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpspec/phpspec": "^3.4",
+        "bossa/phpspec2-expect": "^2",
+        "leanphp/phpspec-code-coverage": "^3.1"
+    }
+}
