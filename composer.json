@@ -13,10 +13,18 @@
             "php": "5.6"
         }
     },
-    "require": {},
+    "require": {
+        "mnapoli/silly": "1.5.*",
+        "mnapoli/silly-php-di": "^1.2"
+    },
     "require-dev": {
         "phpspec/phpspec": "^3.4",
         "bossa/phpspec2-expect": "^2",
         "leanphp/phpspec-code-coverage": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rorschach\\": "src"
+        }
     }
 }
