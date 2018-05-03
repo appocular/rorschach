@@ -2,14 +2,29 @@
 
 namespace Rorschach;
 
+use Applitools\Selenium\Eyes;
+use Applitools\BatchInfo;
 use Rorschach\Config;
 
 class RunCommand
 {
 
-    public function __construct(Config $config)
+    /**
+     * Configuration.
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * Applitools Eyes.
+     * @var Eyes
+     */
+    protected $eyes;
+
+    public function __construct(Config $config, Eyes $eyes)
     {
         $this->config = $config;
+        $this->eyes = $eyes;
     }
 
     /**
@@ -20,7 +35,10 @@ class RunCommand
      */
     public function __invoke($seleniumAddress)
     {
-        // Eyes automatically uses this env var, so just test that it's set.
-        $this->config->getApplitoolsApiKey();
+        // Eyes automatically uses this env var, but we'll set it explicitly.
+        $this->eyes->setApiKey($this->config->getApplitoolsApiKey());
+        $batch = new BatchInfo(null);
+        $batch->setId($this->config->getApplitoolsBatchId());
+        $this->eyes->setBatch($batch);
     }
 }

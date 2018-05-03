@@ -15,7 +15,8 @@
     },
     "require": {
         "mnapoli/silly": "1.5.*",
-        "mnapoli/silly-php-di": "^1.2"
+        "mnapoli/silly-php-di": "^1.2",
+        "applitools/eyes.sdk.php": "dev-master"
     },
     "require-dev": {
         "phpspec/phpspec": "^3.4",
