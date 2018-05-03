@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+use Rorschach\Config;
+use Rorschach\Helpers\Env;
+use Rorschach\RunCommand;
+
+require __DIR__ . '/vendor/autoload.php';
+
+$app = new Silly\Edition\PhpDi\Application('Rorschach', '@git-version@');
+
+$container = $app->getContainer();
+
+$app->command('run [seleniumAddress]', 'Rorschach\\RunCommand');
+$app->setDefaultCommand('run', true);
+
+$app->run();
