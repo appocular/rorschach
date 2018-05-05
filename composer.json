@@ -16,7 +16,8 @@
     "require": {
         "mnapoli/silly": "1.5.*",
         "mnapoli/silly-php-di": "^1.2",
-        "applitools/eyes.sdk.php": "dev-master"
+        "applitools/eyes.sdk.php": "dev-master",
+        "symfony/yaml": "^3.4"
     },
     "require-dev": {
         "phpspec/phpspec": "^3.4",
