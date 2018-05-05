@@ -28,16 +28,22 @@ class ConfigFile
     protected $testName;
 
     /**
-     * Browser height
+     * Browser height.
      * @var int
      */
     protected $browserHeight;
 
     /**
-     * Browser width
+     * Browser width.
      * @var int
      */
     protected $browserWidth;
+
+    /**
+     * Webdriver url.
+     * @var string|null
+     */
+    protected $webdriverUrl;
 
     /**
      * Pages to verify.
@@ -74,6 +80,10 @@ class ConfigFile
             $this->testName = $config['test_name'];
         } else {
             $errors[] = self::MISSING_TEST_NAME_ERROR;
+        }
+
+        if (!empty($config['webdriver_url'])) {
+            $this->webdriverUrl = $config['webdriver_url'];
         }
 
         if (!empty($config['steps'])) {
@@ -115,5 +125,10 @@ class ConfigFile
     public function getSteps()
     {
         return $this->steps;
+    }
+
+    public function getWebdriverUrl()
+    {
+        return $this->webdriverUrl;
     }
 }

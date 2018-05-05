@@ -10,6 +10,7 @@ use Rorschach\Helpers\WebdriverFactory;
 
 class RunCommand
 {
+    const MISSING_WEBDRIVER_URL = 'Please provide an webdriver url, either in the config file or with the --webdriver option.';
 
     /**
      * Configuration.
@@ -42,7 +43,7 @@ class RunCommand
      * @throws RuntimeException
      *   In case of error.
      */
-    public function __invoke($seleniumAddress)
+    public function __invoke($webdriver = null)
     {
         // Eyes automatically uses this env var, but we'll set it explicitly.
         $this->eyes->setApiKey($this->config->getApplitoolsApiKey());
@@ -50,8 +51,13 @@ class RunCommand
         $batch->setId($this->config->getApplitoolsBatchId());
         $this->eyes->setBatch($batch);
 
+        $webdriver = $webdriver ?: $this->config->getWebdriverUrl();
+
+        if (empty($webdriver)) {
+            throw new \RuntimeException(self::MISSING_WEBDRIVER_URL);
+        }
         // Todo: make browser name configurable.
-        $webDriver = $this->webdriverFactory->get($seleniumAddress, 'chrome');
+        $webdriver_instance = $this->webdriverFactory->get($webdriver, 'chrome');
 
         $size = new RectangleSize(
             $this->config->getBrowserWidth(),
@@ -59,18 +65,18 @@ class RunCommand
         );
         try {
             $this->eyes->open(
-                $webDriver,
+                $webdriver_instance,
                 $this->config->getAppName(),
                 $this->config->getTestName(),
                 $size
             );
 
             foreach ($this->config->getSteps() as $name => $path) {
-                $webDriver->get($path);
+                $webdriver_instance->get($path);
                 $this->eyes->checkWindow($name);
             }
         } finally {
-            $webDriver->quit();
+            $webdriver_instance->quit();
             // Simply close() without throwing, rather than the documented
             // abortIfNotClosed(). We don't want to exit with an error when
             // validations fail, we'll leave that up to the GitHub

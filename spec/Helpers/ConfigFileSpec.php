@@ -114,4 +114,10 @@ class ConfigFileSpec extends ObjectBehavior
         $this->useFixture('full');
         $this->getSteps()->shouldReturn(['front' => '/', 'Page two' => '/two']);
     }
+
+    function it_should_return_webdriver_url()
+    {
+        $this->useFixture('full');
+        $this->getWebdriverUrl()->shouldReturn('http://wd:4444/wd/hub');
+    }
 }

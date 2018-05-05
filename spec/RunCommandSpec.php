@@ -22,9 +22,10 @@ class RunCommandSpec extends ObjectBehavior
         $config->getTestName()->willReturn('test-name');
         $config->getBrowserHeight()->willReturn(600);
         $config->getBrowserWidth()->willReturn(800);
+        $config->getWebdriverUrl()->willReturn('http://webdriver/');
         $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
 
-        $webdriverFactory->get(Argument::any(), Argument::any())->willReturn($webdriver);
+        $webdriverFactory->get('http://webdriver/', Argument::any())->willReturn($webdriver);
 
         $this->beConstructedWith($config, $eyes, $webdriverFactory);
     }
@@ -34,20 +35,32 @@ class RunCommandSpec extends ObjectBehavior
         $this->shouldHaveType(RunCommand::class);
     }
 
-    function it_should_require_an_eyes_api_key(Config $config, Eyes $eyes)
+    function it_should_require_an_eyes_api_key(Config $config)
     {
         // Should throw an error when API key is unavailable.
         $exception = new \RuntimeException(Config::MISSING_API_KEY_ERROR);
         $config->getApplitoolsApiKey()->willThrow($exception);
-        $this->shouldThrow($exception)->during('__invoke', ['']);
+        $this->shouldThrow($exception)->during('__invoke', []);
     }
 
-    function it_should_require_an_eyes_batch_id(Config $config, Eyes $eyes)
+    function it_should_require_an_eyes_batch_id(Config $config)
     {
         // Should throw an error when batch id is unavailable.
         $exception = new \RuntimeException(Config::MISSING_BATCH_ID_ERROR);
         $config->getApplitoolsBatchId()->willThrow($exception);
-        $this->shouldThrow($exception)->during('__invoke', ['']);
+        $this->shouldThrow($exception)->during('__invoke', []);
+    }
+
+    function it_should_require_a_webdriver_url(Config $config, WebdriverFactory $webdriverFactory, WebDriver $webdriver)
+    {
+        $webdriverFactory->get('http://webdriver/', Argument::any())->willThrow(new \RuntimeException('bad webdriver'));
+
+        $exception = new \RuntimeException(RunCommand::MISSING_WEBDRIVER_URL);
+        $config->getWebdriverUrl()->willReturn(null);
+        $this->shouldThrow($exception)->during('__invoke', []);
+
+        $webdriverFactory->get('webdriver', Argument::any())->willReturn($webdriver);
+        $this->callOnWrappedObject('__invoke', ['webdriver']);
     }
 
     function it_should_run_the_validations(Config $config, Eyes $eyes, Webdriver $webdriver)
@@ -66,6 +79,6 @@ class RunCommandSpec extends ObjectBehavior
 
         $eyes->close(false)->shouldBeCalled();
         $webdriver->quit()->shouldBeCalled();
-        $this->callOnWrappedObject('__invoke', ['']);
+        $this->callOnWrappedObject('__invoke', []);
     }
 }

@@ -100,4 +100,12 @@ class Config
     {
         return $this->configFile->getSteps();
     }
+
+    /**
+     * Get Webdriver URL.
+     */
+    public function getWebdriverUrl()
+    {
+        return $this->configFile->getWebdriverUrl();
+    }
 }
