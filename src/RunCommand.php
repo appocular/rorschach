@@ -57,11 +57,24 @@ class RunCommand
             $this->config->getBrowserWidth(),
             $this->config->getBrowserHeight()
         );
-        $this->eyes->open(
-            $webDriver,
-            $this->config->getAppName(),
-            $this->config->getTestName(),
-            $size
-        );
+        try {
+            $this->eyes->open(
+                $webDriver,
+                $this->config->getAppName(),
+                $this->config->getTestName(),
+                $size
+            );
+
+            // $this->webDriver->get($this->url);
+            // $eyes->checkWindow("Hello!");
+        } finally {
+            $webDriver->quit();
+            // Simply close() without throwing, rather than the documented
+            // abortIfNotClosed(). We don't want to exit with an error when
+            // validations fail, we'll leave that up to the GitHub
+            // integration.
+            $this->eyes->close(false);
+
+        }
     }
 }

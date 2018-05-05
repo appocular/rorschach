@@ -58,6 +58,7 @@ class RunCommandSpec extends ObjectBehavior
         }))->shouldBeCalled();
 
         $eyes->open($webdriver, 'app-name', 'test-name', new RectangleSize(800, 600))->shouldBeCalled();
+        $eyes->close(false)->shouldBeCalled();
         $this->callOnWrappedObject('__invoke', ['']);
     }
 }
