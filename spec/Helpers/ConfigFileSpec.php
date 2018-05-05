@@ -42,20 +42,20 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_error_on_no_config_file()
     {
         // Set fixture to make letGo reset it.
-        $this->useFixture('config');
+        $this->useFixture('minimal');
         chdir('/');
         $this->shouldThrow(new \RuntimeException(ConfigFile::MISSING_CONFIG_FILE_ERROR));
     }
 
     function it_should_find_config_file_current_dir()
     {
-        $this->useFixture('config');
+        $this->useFixture('minimal');
         $this->getAppName()->shouldReturn('Testapp');
     }
 
     function it_should_find_config_from_subdir()
     {
-        $this->useFixture('config');
+        $this->useFixture('minimal');
         // Create test sub-directory, so we don't have to commit an file to
         // make it exist.
         if (!file_exists('sub/dir')) {
@@ -74,13 +74,13 @@ class ConfigFileSpec extends ObjectBehavior
 
     function it_should_return_app_name()
     {
-        $this->useFixture('config');
+        $this->useFixture('minimal');
         $this->getAppName()->shouldReturn('Testapp');
     }
 
     function it_should_return_test_name()
     {
-        $this->useFixture('config');
+        $this->useFixture('minimal');
         $this->getTestName()->shouldReturn('Testname');
     }
 
