@@ -98,7 +98,8 @@ class ConfigFile
 
         if (!empty($config['steps'])) {
             foreach ($config['steps'] as $name => $path) {
-                $this->steps[$name] = $path;
+                // Ensure all paths starts with a slash.
+                $this->steps[$name] = '/' . ltrim($path, '/');
             }
         }
 

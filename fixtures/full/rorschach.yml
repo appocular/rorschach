@@ -7,3 +7,4 @@ base_url: http://localhost/
 steps:
   front: /
   "Page two": /two
+  three: slashless

@@ -112,7 +112,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_return_steps()
     {
         $this->useFixture('full');
-        $this->getSteps()->shouldReturn(['front' => '/', 'Page two' => '/two']);
+        $this->getSteps()->shouldReturn(['front' => '/', 'Page two' => '/two', 'three' => '/slashless']);
     }
 
     function it_should_return_webdriver_url()

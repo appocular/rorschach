@@ -54,6 +54,7 @@ class RunCommand
 
         $webdriver = $webdriver ?: $this->config->getWebdriverUrl();
         $baseUrl = $baseUrl ?: $this->config->getBaseUrl();
+        // Strip trailing slash, we ensure all paths starts with one.
         $baseUrl = rtrim($baseUrl, '/');
 
         if (empty($webdriver)) {
