@@ -66,7 +66,7 @@ class RunCommand
         }
 
         // Todo: make browser name configurable.
-        $webdriver_instance = $this->webdriverFactory->get($webdriver, 'chrome');
+        $webdriverInstance = $this->webdriverFactory->get($webdriver, 'chrome');
 
         $size = new RectangleSize(
             $this->config->getBrowserWidth(),
@@ -74,18 +74,18 @@ class RunCommand
         );
         try {
             $this->eyes->open(
-                $webdriver_instance,
+                $webdriverInstance,
                 $this->config->getAppName(),
                 $this->config->getTestName(),
                 $size
             );
 
             foreach ($this->config->getSteps() as $name => $path) {
-                $webdriver_instance->get($baseUrl . $path);
+                $webdriverInstance->get($baseUrl . $path);
                 $this->eyes->checkWindow($name);
             }
         } finally {
-            $webdriver_instance->quit();
+            $webdriverInstance->quit();
             // Simply close() without throwing, rather than the documented
             // abortIfNotClosed(). We don't want to exit with an error when
             // validations fail, we'll leave that up to the GitHub
