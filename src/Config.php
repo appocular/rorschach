@@ -27,7 +27,7 @@ class Config
      */
     private $configFile;
 
-    const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY contains thu Applitools API key.";
+    const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY env variable contains thu Applitools API key.";
     const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the batch ID.";
 
     public function __construct(Env $env, ConfigFile $configFile)
