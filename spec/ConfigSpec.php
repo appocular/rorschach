@@ -2,20 +2,23 @@
 
 namespace spec\Rorschach;
 
-use Rorschach\Config;
-use Rorschach\Helpers\Env;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Rorschach\Config;
+use Rorschach\Helpers\ConfigFile;
+use Rorschach\Helpers\Env;
 
 class ConfigSpec extends ObjectBehavior
 {
 
-    function let(Env $env)
+    function let(Env $env, ConfigFile $configFile)
     {
         // A working configuration.
         $env->get('APPLITOOLS_API_KEY', Config::MISSING_API_KEY_ERROR)->willReturn('api_key_value');
         $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willReturn('batch_id_value');
-        $this->beConstructedWith($env);
+        $configFile->getAppName()->willReturn('app_name');
+        $configFile->getTestName()->willReturn('test_name');
+        $this->beConstructedWith($env, $configFile);
     }
 
     function it_is_initializable()
@@ -34,7 +37,7 @@ class ConfigSpec extends ObjectBehavior
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_provide_an_api_key(Env $env)
+    function it_should_provide_an_api_key()
     {
         $this->getApplitoolsApiKey()->shouldReturn('api_key_value');
     }
@@ -49,8 +52,18 @@ class ConfigSpec extends ObjectBehavior
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_provide_a_batch_id(Env $env)
+    function it_should_provide_a_batch_id()
     {
         $this->getApplitoolsBatchId()->shouldReturn('batch_id_value');
+    }
+
+    function it_should_provide_an_app_name()
+    {
+        $this->getAppName()->shouldReturn('app_name');
+    }
+
+    function it_should_provide_a_test_name()
+    {
+        $this->getTestName()->shouldReturn('test_name');
     }
 }

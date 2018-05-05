@@ -2,6 +2,7 @@
 
 namespace Rorschach;
 
+use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
 
 /**
@@ -21,10 +22,15 @@ class Config
      */
     private $applitoolsBatchId;
 
+    /**
+     * @var ConfigFile
+     */
+    private $configFile;
+
     const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY contains thu Applitools API key.";
     const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the batch ID.";
 
-    public function __construct(Env $env)
+    public function __construct(Env $env, ConfigFile $configFile)
     {
         $this->applitoolsApiKey = $env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
         if (empty($this->applitoolsApiKey)) {
@@ -35,6 +41,8 @@ class Config
         if (empty($this->applitoolsBatchId)) {
             throw new \RuntimeException(self::MISSING_BATCH_ID_ERROR);
         }
+
+        $this->configFile = $configFile;
     }
 
     /**
@@ -51,5 +59,18 @@ class Config
     public function getApplitoolsBatchId()
     {
         return $this->applitoolsBatchId;
+    }
+
+    /**
+     * Get app name.
+     */
+    public function getAppName()
+    {
+        return $this->configFile->getAppName();
+    }
+
+    public function getTestName()
+    {
+        return $this->configFile->getTestName();
     }
 }
