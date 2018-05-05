@@ -69,8 +69,27 @@ class Config
         return $this->configFile->getAppName();
     }
 
+    /**
+     * Get test name.
+     */
     public function getTestName()
     {
         return $this->configFile->getTestName();
+    }
+
+    /**
+     * Get browser height.
+     */
+    public function getBrowserHeight()
+    {
+        return $this->configFile->getBrowserHeight();
+    }
+
+    /**
+     * Get browser width.
+     */
+    public function getBrowserWidth()
+    {
+        return $this->configFile->getBrowserWidth();
     }
 }

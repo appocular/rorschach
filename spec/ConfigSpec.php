@@ -18,6 +18,8 @@ class ConfigSpec extends ObjectBehavior
         $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willReturn('batch_id_value');
         $configFile->getAppName()->willReturn('app_name');
         $configFile->getTestName()->willReturn('test_name');
+        $configFile->getBrowserHeight()->willReturn(600);
+        $configFile->getBrowserWidth()->willReturn(800);
         $this->beConstructedWith($env, $configFile);
     }
 
@@ -65,5 +67,11 @@ class ConfigSpec extends ObjectBehavior
     function it_should_provide_a_test_name()
     {
         $this->getTestName()->shouldReturn('test_name');
+    }
+
+    function it_should_provide_browser_size()
+    {
+        $this->getBrowserHeight()->shouldReturn(600);
+        $this->getBrowserWidth()->shouldReturn(800);
     }
 }

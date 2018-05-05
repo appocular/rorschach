@@ -13,7 +13,8 @@ class ConfigFile
     const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
     const MISSING_APP_NAME_ERROR = 'Please specify app_name in ' . self::FILE_NAME;
     const MISSING_TEST_NAME_ERROR = 'Please specify test_name in ' . self::FILE_NAME;
-
+    const DEFAULT_BROWSER_HEIGHT = 1080;
+    const DEFAULT_BROWSER_WIDTH = 1920;
     /**
      * Configured app name.
      * @var string
@@ -25,6 +26,18 @@ class ConfigFile
      * @var string
      */
     protected $testName;
+
+    /**
+     * Browser height
+     * @var int
+     */
+    protected $browserHeight;
+
+    /**
+     * Browser width
+     * @var int
+     */
+    protected $browserWidth;
 
     public function __construct()
     {
@@ -55,6 +68,11 @@ class ConfigFile
             $errors[] = self::MISSING_TEST_NAME_ERROR;
         }
 
+        $this->browserHeight = !empty($config['browser_height']) ?
+            $config['browser_height'] : self::DEFAULT_BROWSER_HEIGHT;
+        $this->browserWidth = !empty($config['browser_width']) ?
+            $config['browser_width'] : self::DEFAULT_BROWSER_WIDTH;
+
         if (!empty($errors)) {
             throw new \RuntimeException(implode('\n', $errors));
         }
@@ -68,5 +86,15 @@ class ConfigFile
     public function getTestName()
     {
         return $this->testName;
+    }
+
+    public function getBrowserHeight()
+    {
+        return $this->browserHeight;
+    }
+
+    public function getBrowserWidth()
+    {
+        return $this->browserWidth;
     }
 }

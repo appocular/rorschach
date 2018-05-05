@@ -94,4 +94,18 @@ class ConfigFileSpec extends ObjectBehavior
         $exception = new \RuntimeException(implode('\n', $errors));
         $this->shouldThrow($exception)->duringInstantiation();
     }
+
+    function it_should_return_browser_size()
+    {
+        $this->useFixture('full');
+        $this->getBrowserHeight()->shouldReturn(300);
+        $this->getBrowserWidth()->shouldReturn(400);
+    }
+
+    function it_should_default_browser_size()
+    {
+        $this->useFixture('minimal');
+        $this->getBrowserHeight()->shouldReturn(ConfigFile::DEFAULT_BROWSER_HEIGHT);
+        $this->getBrowserWidth()->shouldReturn(ConfigFile::DEFAULT_BROWSER_WIDTH);
+    }
 }

@@ -3,17 +3,29 @@
 namespace spec\Rorschach;
 
 use Applitools\Selenium\Eyes;
+use Applitools\RectangleSize;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Config;
+use Rorschach\Helpers\WebdriverFactory;
 use Rorschach\RunCommand;
+use Facebook\WebDriver\WebDriver;
 
 class RunCommandSpec extends ObjectBehavior
 {
 
-    function let(Config $config, Eyes $eyes)
+    function let(Config $config, Eyes $eyes, WebdriverFactory $webdriverFactory, WebDriver $webdriver)
     {
-        $this->beConstructedWith($config, $eyes);
+        $config->getApplitoolsApiKey()->willReturn('eyes-key');
+        $config->getApplitoolsBatchId()->willReturn('eyes-batch');
+        $config->getAppName()->willReturn('app-name');
+        $config->getTestName()->willReturn('test-name');
+        $config->getBrowserHeight()->willReturn(600);
+        $config->getBrowserWidth()->willReturn(800);
+
+        $webdriverFactory->get(Argument::any(), Argument::any())->willReturn($webdriver);
+
+        $this->beConstructedWith($config, $eyes, $webdriverFactory);
     }
 
     function it_is_initializable()
@@ -31,8 +43,6 @@ class RunCommandSpec extends ObjectBehavior
 
     function it_should_require_an_eyes_batch_id(Config $config, Eyes $eyes)
     {
-        $config->getApplitoolsApiKey()->willReturn('eyes-key');
-
         // Should throw an error when batch id is unavailable.
         $exception = new \RuntimeException(Config::MISSING_BATCH_ID_ERROR);
         $config->getApplitoolsBatchId()->willThrow($exception);
@@ -40,16 +50,14 @@ class RunCommandSpec extends ObjectBehavior
     }
 
     // Work in progress.
-    function it_should_provide_key_and_batch_id_to_eyes(Config $config, Eyes $eyes)
+    function it_should_provide_proper_configuration_to_eyes(Config $config, Eyes $eyes, Webdriver $webdriver)
     {
-        $config->getApplitoolsApiKey()->willReturn('eyes-key');
-        $config->getApplitoolsBatchId()->willReturn('eyes-batch');
-
         $eyes->setApiKey('eyes-key')->shouldBeCalled();
         $eyes->setBatch(Argument::that(function ($batch) {
             return $batch->getId() === 'eyes-batch';
         }))->shouldBeCalled();
 
+        $eyes->open($webdriver, 'app-name', 'test-name', new RectangleSize(800, 600))->shouldBeCalled();
         $this->callOnWrappedObject('__invoke', ['']);
     }
 }

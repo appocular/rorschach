@@ -2,9 +2,11 @@
 
 namespace Rorschach;
 
-use Applitools\Selenium\Eyes;
 use Applitools\BatchInfo;
+use Applitools\RectangleSize;
+use Applitools\Selenium\Eyes;
 use Rorschach\Config;
+use Rorschach\Helpers\WebdriverFactory;
 
 class RunCommand
 {
@@ -21,10 +23,17 @@ class RunCommand
      */
     protected $eyes;
 
-    public function __construct(Config $config, Eyes $eyes)
+    /**
+     * Webdriver factory.
+     * @var WebdriverFactory
+     */
+    protected $webdriverFactory;
+
+    public function __construct(Config $config, Eyes $eyes, WebdriverFactory $webdriverFactory)
     {
         $this->config = $config;
         $this->eyes = $eyes;
+        $this->webdriverFactory = $webdriverFactory;
     }
 
     /**
@@ -40,5 +49,19 @@ class RunCommand
         $batch = new BatchInfo(null);
         $batch->setId($this->config->getApplitoolsBatchId());
         $this->eyes->setBatch($batch);
+
+        // Todo: make browser name configurable.
+        $webDriver = $this->webdriverFactory->get($seleniumAddress, 'chrome');
+
+        $size = new RectangleSize(
+            $this->config->getBrowserWidth(),
+            $this->config->getBrowserHeight()
+        );
+        $this->eyes->open(
+            $webDriver,
+            $this->config->getAppName(),
+            $this->config->getTestName(),
+            $size
+        );
     }
 }
