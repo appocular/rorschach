@@ -27,7 +27,8 @@ class WebdriverFactory
     {
         try {
             $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => $browser);
-            $webDriver = RemoteWebDriver::create($address, $capabilities);
+            $webdriver = RemoteWebDriver::create($address, $capabilities);
+            return $webdriver;
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(self::WEBDRIVER_CONNECTION_ERROR, $address, $e->getMessage()));
         }
