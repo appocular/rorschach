@@ -10,7 +10,8 @@ use Rorschach\Helpers\WebdriverFactory;
 
 class RunCommand
 {
-    const MISSING_WEBDRIVER_URL = 'Please provide an webdriver url, either in the config file or with the --webdriver option.';
+    const MISSING_WEBDRIVER_URL = 'Please provide a webdriver url, either in the config file or with the --webdriver option.';
+    const MISSING_BASE_URL = 'Please provide a base url, either in the config file or with the --base-url option.';
 
     /**
      * Configuration.
@@ -43,7 +44,7 @@ class RunCommand
      * @throws RuntimeException
      *   In case of error.
      */
-    public function __invoke($webdriver = null)
+    public function __invoke($webdriver = null, $baseUrl = null)
     {
         // Eyes automatically uses this env var, but we'll set it explicitly.
         $this->eyes->setApiKey($this->config->getApplitoolsApiKey());
@@ -52,10 +53,17 @@ class RunCommand
         $this->eyes->setBatch($batch);
 
         $webdriver = $webdriver ?: $this->config->getWebdriverUrl();
+        $baseUrl = $baseUrl ?: $this->config->getBaseUrl();
+        $baseUrl = rtrim($baseUrl, '/');
 
         if (empty($webdriver)) {
             throw new \RuntimeException(self::MISSING_WEBDRIVER_URL);
         }
+
+        if (empty($baseUrl)) {
+            throw new \RuntimeException(self::MISSING_BASE_URL);
+        }
+
         // Todo: make browser name configurable.
         $webdriver_instance = $this->webdriverFactory->get($webdriver, 'chrome');
 
@@ -72,7 +80,7 @@ class RunCommand
             );
 
             foreach ($this->config->getSteps() as $name => $path) {
-                $webdriver_instance->get($path);
+                $webdriver_instance->get($baseUrl . $path);
                 $this->eyes->checkWindow($name);
             }
         } finally {

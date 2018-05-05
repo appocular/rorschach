@@ -22,6 +22,7 @@ class ConfigSpec extends ObjectBehavior
         $configFile->getBrowserHeight()->willReturn(600);
         $configFile->getBrowserWidth()->willReturn(800);
         $configFile->getWebdriverUrl()->willReturn('webdriver-url');
+        $configFile->getBaseUrl()->willReturn('base-url');
         $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
 
         $this->beConstructedWith($env, $configFile);
@@ -89,5 +90,12 @@ class ConfigSpec extends ObjectBehavior
         $this->getWebdriverUrl()->shouldReturn('webdriver-url');
         $configFile->getWebdriverUrl()->willReturn(null);
         $this->getWebdriverUrl()->shouldReturn(null);
+    }
+
+    function it_con_provide_a_base_url(ConfigFile $configFile)
+    {
+        $this->getBaseUrl()->shouldReturn('base-url');
+        $configFile->getBaseUrl()->willReturn(null);
+        $this->getBaseUrl()->shouldReturn(null);
     }
 }

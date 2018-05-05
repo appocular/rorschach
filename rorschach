@@ -11,7 +11,7 @@ $app = new Silly\Edition\PhpDi\Application('Rorschach', '@git-version@');
 
 $container = $app->getContainer();
 
-$app->command('run [--webdriver=]', 'Rorschach\\RunCommand');
+$app->command('run [--webdriver=] [--base-url=]', 'Rorschach\\RunCommand');
 $app->setDefaultCommand('run', true);
 
 $app->run();

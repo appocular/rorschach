@@ -23,6 +23,7 @@ class RunCommandSpec extends ObjectBehavior
         $config->getBrowserHeight()->willReturn(600);
         $config->getBrowserWidth()->willReturn(800);
         $config->getWebdriverUrl()->willReturn('http://webdriver/');
+        $config->getBaseUrl()->willReturn('http://baseurl/');
         $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
 
         $webdriverFactory->get('http://webdriver/', Argument::any())->willReturn($webdriver);
@@ -63,6 +64,30 @@ class RunCommandSpec extends ObjectBehavior
         $this->callOnWrappedObject('__invoke', ['webdriver']);
     }
 
+    function it_should_require_a_base_url(Config $config, WebdriverFactory $webdriverFactory, WebDriver $webdriver)
+    {
+        $webdriver->get('http://baseurl/')->shouldBeCalled();
+        $webdriver->get('http://baseurl/one')->shouldBeCalled();
+        $webdriver->quit()->shouldBeCalled();
+
+        $this->callOnWrappedObject('__invoke', []);
+
+        $exception = new \RuntimeException(RunCommand::MISSING_BASE_URL);
+        $config->getBaseUrl()->willReturn(null);
+        $this->shouldThrow($exception)->during('__invoke', []);
+    }
+
+    function it_allow_overriding_base_url(Config $config, WebdriverFactory $webdriverFactory, WebDriver $webdriver)
+    {
+        $webdriver->get('http://baseurl/')->shouldNotBeCalled();
+        $webdriver->get('http://baseurl/one')->shouldNotBeCalled();
+        $webdriver->get('http://base2/')->shouldBeCalled();
+        $webdriver->get('http://base2/one')->shouldBeCalled();
+        $webdriver->quit()->shouldBeCalled();
+
+        $this->callOnWrappedObject('__invoke', [null, 'http://base2/']);
+    }
+
     function it_should_run_the_validations(Config $config, Eyes $eyes, Webdriver $webdriver)
     {
         $eyes->setApiKey('eyes-key')->shouldBeCalled();
@@ -72,9 +97,9 @@ class RunCommandSpec extends ObjectBehavior
 
         $eyes->open($webdriver, 'app-name', 'test-name', new RectangleSize(800, 600))->shouldBeCalled();
 
-        $webdriver->get('/')->shouldBeCalled();
+        $webdriver->get('http://baseurl/')->shouldBeCalled();
         $eyes->checkWindow('front')->shouldBeCalled();
-        $webdriver->get('/one')->shouldBeCalled();
+        $webdriver->get('http://baseurl/one')->shouldBeCalled();
         $eyes->checkWindow('Page one')->shouldBeCalled();
 
         $eyes->close(false)->shouldBeCalled();

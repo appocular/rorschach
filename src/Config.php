@@ -108,4 +108,9 @@ class Config
     {
         return $this->configFile->getWebdriverUrl();
     }
+
+    public function getBaseUrl()
+    {
+        return $this->configFile->getBaseUrl();
+    }
 }

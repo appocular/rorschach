@@ -120,4 +120,10 @@ class ConfigFileSpec extends ObjectBehavior
         $this->useFixture('full');
         $this->getWebdriverUrl()->shouldReturn('http://wd:4444/wd/hub');
     }
+
+    function it_should_return_base_url()
+    {
+        $this->useFixture('full');
+        $this->getBaseUrl()->shouldReturn('http://localhost/');
+    }
 }

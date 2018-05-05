@@ -46,6 +46,12 @@ class ConfigFile
     protected $webdriverUrl;
 
     /**
+     * Base url.
+     * @var string|null
+     */
+    protected $baseUrl;
+
+    /**
      * Pages to verify.
      *
      * Hash of name => path
@@ -84,6 +90,10 @@ class ConfigFile
 
         if (!empty($config['webdriver_url'])) {
             $this->webdriverUrl = $config['webdriver_url'];
+        }
+
+        if (!empty($config['base_url'])) {
+            $this->baseUrl = $config['base_url'];
         }
 
         if (!empty($config['steps'])) {
@@ -130,5 +140,10 @@ class ConfigFile
     public function getWebdriverUrl()
     {
         return $this->webdriverUrl;
+    }
+
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
     }
 }
