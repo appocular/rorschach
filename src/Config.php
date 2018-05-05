@@ -9,41 +9,47 @@ use Rorschach\Helpers\Env;
  */
 class Config
 {
+    /**
+     * Applitool API key.
+     * @var string
+     */
+    private $applitoolsApiKey;
+
+    /**
+     * Applitools batch ID.
+     * @var string
+     */
+    private $applitoolsBatchId;
+
     const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY contains thu Applitools API key.";
     const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the batch ID.";
 
     public function __construct(Env $env)
     {
-        $this->env = $env;
+        $this->applitoolsApiKey = $env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
+        if (empty($this->applitoolsApiKey)) {
+            throw new \RuntimeException(self::MISSING_API_KEY_ERROR);
+        }
+
+        $this->applitoolsBatchId = $env->get('CIRCLE_SHA1', self::MISSING_BATCH_ID_ERROR);
+        if (empty($this->applitoolsBatchId)) {
+            throw new \RuntimeException(self::MISSING_BATCH_ID_ERROR);
+        }
     }
 
     /**
-     * Get Applitools key from env.
-     *
-     * @throws RuntimeException
-     *   If APPLITOOLS_API_KEY env variable is not set.
+     * Get Applitools API key.
      */
     public function getApplitoolsApiKey()
     {
-        $apiKey = $this->env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
-        if (empty($apiKey)) {
-            throw new \RuntimeException(self::MISSING_API_KEY_ERROR);
-        }
-        return $apiKey;
+        return $this->applitoolsApiKey;
     }
 
     /**
-     * Get batch ID from env.
-     *
-     * @throws RuntimeException
-     *   If CIRCLE_SHA1 env variable is not set.
+     * Get Applitools batch ID.
      */
     public function getApplitoolsBatchId()
     {
-        $batchId = $this->env->get('CIRCLE_SHA1', self::MISSING_BATCH_ID_ERROR);
-        if (empty($batchId)) {
-            throw new \RuntimeException(self::MISSING_BATCH_ID_ERROR);
-        }
-        return $batchId;
+        return $this->applitoolsBatchId;
     }
 }
