@@ -9,8 +9,8 @@ use Rorschach\Helpers\Env;
  */
 class Config
 {
-    const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY env variable is set.";
-    const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable is set.";
+    const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY contains thu Applitools API key.";
+    const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the batch ID.";
 
     public function __construct(Env $env)
     {
@@ -25,7 +25,11 @@ class Config
      */
     public function getApplitoolsApiKey()
     {
-        return $this->env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
+        $apiKey = $this->env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
+        if (empty($apiKey)) {
+            throw new \RuntimeException(self::MISSING_API_KEY_ERROR);
+        }
+        return $apiKey;
     }
 
     /**
@@ -36,6 +40,10 @@ class Config
      */
     public function getApplitoolsBatchId()
     {
-        return $this->env->get('CIRCLE_SHA1', self::MISSING_BATCH_ID_ERROR);
+        $batchId = $this->env->get('CIRCLE_SHA1', self::MISSING_BATCH_ID_ERROR);
+        if (empty($batchId)) {
+            throw new \RuntimeException(self::MISSING_BATCH_ID_ERROR);
+        }
+        return $batchId;
     }
 }
