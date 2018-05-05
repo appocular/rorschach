@@ -65,8 +65,10 @@ class RunCommand
                 $size
             );
 
-            // $this->webDriver->get($this->url);
-            // $eyes->checkWindow("Hello!");
+            foreach ($this->config->getSteps() as $name => $path) {
+                $webDriver->get($path);
+                $this->eyes->checkWindow($name);
+            }
         } finally {
             $webDriver->quit();
             // Simply close() without throwing, rather than the documented

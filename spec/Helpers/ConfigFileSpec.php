@@ -108,4 +108,10 @@ class ConfigFileSpec extends ObjectBehavior
         $this->getBrowserHeight()->shouldReturn(ConfigFile::DEFAULT_BROWSER_HEIGHT);
         $this->getBrowserWidth()->shouldReturn(ConfigFile::DEFAULT_BROWSER_WIDTH);
     }
+
+    function it_should_return_steps()
+    {
+        $this->useFixture('full');
+        $this->getSteps()->shouldReturn(['front' => '/', 'Page two' => '/two']);
+    }
 }

@@ -39,6 +39,14 @@ class ConfigFile
      */
     protected $browserWidth;
 
+    /**
+     * Pages to verify.
+     *
+     * Hash of name => path
+     * @var array
+     */
+    protected $steps = [];
+
     public function __construct()
     {
         $dir = getcwd();
@@ -66,6 +74,12 @@ class ConfigFile
             $this->testName = $config['test_name'];
         } else {
             $errors[] = self::MISSING_TEST_NAME_ERROR;
+        }
+
+        if (!empty($config['steps'])) {
+            foreach ($config['steps'] as $name => $path) {
+                $this->steps[$name] = $path;
+            }
         }
 
         $this->browserHeight = !empty($config['browser_height']) ?
@@ -96,5 +110,10 @@ class ConfigFile
     public function getBrowserWidth()
     {
         return $this->browserWidth;
+    }
+
+    public function getSteps()
+    {
+        return $this->steps;
     }
 }

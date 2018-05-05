@@ -92,4 +92,12 @@ class Config
     {
         return $this->configFile->getBrowserWidth();
     }
+
+    /**
+     * Get pages to validate.
+     */
+    public function getSteps()
+    {
+        return $this->configFile->getSteps();
+    }
 }

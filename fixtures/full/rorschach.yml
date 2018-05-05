@@ -2,3 +2,6 @@ app_name: Testapp
 test_name: Testname
 browser_height: 300
 browser_width: 400
+steps:
+  front: /
+  "Page two": /two

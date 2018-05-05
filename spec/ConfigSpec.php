@@ -16,10 +16,13 @@ class ConfigSpec extends ObjectBehavior
         // A working configuration.
         $env->get('APPLITOOLS_API_KEY', Config::MISSING_API_KEY_ERROR)->willReturn('api_key_value');
         $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willReturn('batch_id_value');
+
         $configFile->getAppName()->willReturn('app_name');
         $configFile->getTestName()->willReturn('test_name');
         $configFile->getBrowserHeight()->willReturn(600);
         $configFile->getBrowserWidth()->willReturn(800);
+        $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
+
         $this->beConstructedWith($env, $configFile);
     }
 
@@ -73,5 +76,10 @@ class ConfigSpec extends ObjectBehavior
     {
         $this->getBrowserHeight()->shouldReturn(600);
         $this->getBrowserWidth()->shouldReturn(800);
+    }
+
+    function it_should_provide_steps()
+    {
+        $this->getSteps()->shouldReturn(['one' => '1', 'two' => '2']);
     }
 }

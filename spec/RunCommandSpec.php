@@ -22,6 +22,7 @@ class RunCommandSpec extends ObjectBehavior
         $config->getTestName()->willReturn('test-name');
         $config->getBrowserHeight()->willReturn(600);
         $config->getBrowserWidth()->willReturn(800);
+        $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
 
         $webdriverFactory->get(Argument::any(), Argument::any())->willReturn($webdriver);
 
@@ -49,8 +50,7 @@ class RunCommandSpec extends ObjectBehavior
         $this->shouldThrow($exception)->during('__invoke', ['']);
     }
 
-    // Work in progress.
-    function it_should_provide_proper_configuration_to_eyes(Config $config, Eyes $eyes, Webdriver $webdriver)
+    function it_should_run_the_validations(Config $config, Eyes $eyes, Webdriver $webdriver)
     {
         $eyes->setApiKey('eyes-key')->shouldBeCalled();
         $eyes->setBatch(Argument::that(function ($batch) {
@@ -58,7 +58,14 @@ class RunCommandSpec extends ObjectBehavior
         }))->shouldBeCalled();
 
         $eyes->open($webdriver, 'app-name', 'test-name', new RectangleSize(800, 600))->shouldBeCalled();
+
+        $webdriver->get('/')->shouldBeCalled();
+        $eyes->checkWindow('front')->shouldBeCalled();
+        $webdriver->get('/one')->shouldBeCalled();
+        $eyes->checkWindow('Page one')->shouldBeCalled();
+
         $eyes->close(false)->shouldBeCalled();
+        $webdriver->quit()->shouldBeCalled();
         $this->callOnWrappedObject('__invoke', ['']);
     }
 }
