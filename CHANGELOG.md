@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.2.0 - 2018-05-17
+### Changed
+- Make full height screenshots
+
 ## 0.1.0 - 2018-05-09
 ### Added
 - Initial implementation
