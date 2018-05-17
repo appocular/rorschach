@@ -65,7 +65,6 @@ class RunCommand
             throw new \RuntimeException(self::MISSING_BASE_URL);
         }
 
-        // Todo: make browser name configurable.
         $webdriverInstance = $this->webdriverFactory->get($webdriver, 'chrome');
 
         $size = new RectangleSize(
