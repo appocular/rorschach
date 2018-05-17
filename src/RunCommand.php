@@ -79,6 +79,7 @@ class RunCommand
                 $this->config->getTestName(),
                 $size
             );
+            $this->eyes->setForceFullPageScreenshot(true);
 
             foreach ($this->config->getSteps() as $name => $path) {
                 $webdriverInstance->get($baseUrl . $path);

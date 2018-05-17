@@ -91,6 +91,7 @@ class RunCommandSpec extends ObjectBehavior
     function it_should_run_the_validations(Config $config, Eyes $eyes, Webdriver $webdriver)
     {
         $eyes->setApiKey('eyes-key')->shouldBeCalled();
+        $eyes->setForceFullPageScreenshot(true)->shouldBeCalled();
         $eyes->setBatch(Argument::that(function ($batch) {
             return $batch->getId() === 'eyes-batch';
         }))->shouldBeCalled();
