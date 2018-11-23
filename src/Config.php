@@ -11,35 +11,23 @@ use Rorschach\Helpers\Env;
 class Config
 {
     /**
-     * Applitool API key.
+     * Commit SHA.
      * @var string
      */
-    private $applitoolsApiKey;
-
-    /**
-     * Applitools batch ID.
-     * @var string
-     */
-    private $applitoolsBatchId;
+    private $sha;
 
     /**
      * @var ConfigFile
      */
     private $configFile;
 
-    const MISSING_API_KEY_ERROR = "Please ensure that the APPLITOOLS_API_KEY env variable contains thu Applitools API key.";
-    const MISSING_BATCH_ID_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the batch ID.";
+    const MISSING_SHA_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the commit SHA.";
 
     public function __construct(Env $env, ConfigFile $configFile)
     {
-        $this->applitoolsApiKey = $env->get('APPLITOOLS_API_KEY', self::MISSING_API_KEY_ERROR);
-        if (empty($this->applitoolsApiKey)) {
-            throw new \RuntimeException(self::MISSING_API_KEY_ERROR);
-        }
-
-        $this->applitoolsBatchId = $env->get('CIRCLE_SHA1', self::MISSING_BATCH_ID_ERROR);
-        if (empty($this->applitoolsBatchId)) {
-            throw new \RuntimeException(self::MISSING_BATCH_ID_ERROR);
+        $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
+        if (empty($this->sha)) {
+            throw new \RuntimeException(self::MISSING_SHA_ERROR);
         }
 
         $this->configFile = $configFile;
@@ -54,27 +42,11 @@ class Config
     }
 
     /**
-     * Get Applitools batch ID.
+     * Get commit SHA.
      */
-    public function getApplitoolsBatchId()
+    public function getSha()
     {
-        return $this->applitoolsBatchId;
-    }
-
-    /**
-     * Get app name.
-     */
-    public function getAppName()
-    {
-        return $this->configFile->getAppName();
-    }
-
-    /**
-     * Get test name.
-     */
-    public function getTestName()
-    {
-        return $this->configFile->getTestName();
+        return $this->sha;
     }
 
     /**

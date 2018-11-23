@@ -9,5 +9,4 @@ Rorschach
 Documentation still to be written...
 
 The important env vars is:
-`APPLITOOLS_API_KEY`
 `CIRCLE_SHA1`

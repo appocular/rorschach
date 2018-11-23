@@ -4,7 +4,6 @@ namespace Rorschach;
 
 use Applitools\BatchInfo;
 use Applitools\RectangleSize;
-use Applitools\Selenium\Eyes;
 use Rorschach\Config;
 use Rorschach\Helpers\WebdriverFactory;
 
@@ -20,21 +19,14 @@ class RunCommand
     protected $config;
 
     /**
-     * Applitools Eyes.
-     * @var Eyes
-     */
-    protected $eyes;
-
-    /**
      * Webdriver factory.
      * @var WebdriverFactory
      */
     protected $webdriverFactory;
 
-    public function __construct(Config $config, Eyes $eyes, WebdriverFactory $webdriverFactory)
+    public function __construct(Config $config, WebdriverFactory $webdriverFactory)
     {
         $this->config = $config;
-        $this->eyes = $eyes;
         $this->webdriverFactory = $webdriverFactory;
     }
 
@@ -44,14 +36,8 @@ class RunCommand
      * @throws RuntimeException
      *   In case of error.
      */
-    public function __invoke($webdriver = null, $baseUrl = null)
+    public function __invoke(Appocular $appocular, $webdriver = null, $baseUrl = null)
     {
-        // Eyes automatically uses this env var, but we'll set it explicitly.
-        $this->eyes->setApiKey($this->config->getApplitoolsApiKey());
-        $batch = new BatchInfo(null);
-        $batch->setId($this->config->getApplitoolsBatchId());
-        $this->eyes->setBatch($batch);
-
         $webdriver = $webdriver ?: $this->config->getWebdriverUrl();
         $baseUrl = $baseUrl ?: $this->config->getBaseUrl();
         // Strip trailing slash, we ensure all paths starts with one.
@@ -67,31 +53,20 @@ class RunCommand
 
         $webdriverInstance = $this->webdriverFactory->get($webdriver, 'chrome');
 
-        $size = new RectangleSize(
-            $this->config->getBrowserWidth(),
-            $this->config->getBrowserHeight()
-        );
+        $batch = null;
         try {
-            $this->eyes->open(
-                $webdriverInstance,
-                $this->config->getAppName(),
-                $this->config->getTestName(),
-                $size
-            );
-            $this->eyes->setForceFullPageScreenshot(true);
+            // todo: get branch name and repo...
+            $batch = $appocular->startBatch($webdriverInstance, $this->config->getSha());
 
             foreach ($this->config->getSteps() as $name => $path) {
                 $webdriverInstance->get($baseUrl . $path);
-                $this->eyes->checkWindow($name);
+                $batch->snapshot($name);
             }
         } finally {
             $webdriverInstance->quit();
-            // Simply close() without throwing, rather than the documented
-            // abortIfNotClosed(). We don't want to exit with an error when
-            // validations fail, we'll leave that up to the GitHub
-            // integration.
-            $this->eyes->close(false);
-
+            if ($batch) {
+                $batch->close();
+            }
         }
     }
 }

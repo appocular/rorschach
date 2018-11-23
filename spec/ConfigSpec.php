@@ -14,11 +14,8 @@ class ConfigSpec extends ObjectBehavior
     function let(Env $env, ConfigFile $configFile)
     {
         // A working configuration.
-        $env->get('APPLITOOLS_API_KEY', Config::MISSING_API_KEY_ERROR)->willReturn('api_key_value');
-        $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willReturn('batch_id_value');
+        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
 
-        $configFile->getAppName()->willReturn('app_name');
-        $configFile->getTestName()->willReturn('test_name');
         $configFile->getBrowserHeight()->willReturn(600);
         $configFile->getBrowserWidth()->willReturn(800);
         $configFile->getWebdriverUrl()->willReturn('webdriver-url');
@@ -33,45 +30,19 @@ class ConfigSpec extends ObjectBehavior
         $this->shouldHaveType(Config::class);
     }
 
-
-    function it_throw_on_missing_or_empty_api_key(Env $env)
+    function it_throw_on_missing_or_empty_sha(Env $env)
     {
-        $exception = new \RuntimeException(Config::MISSING_API_KEY_ERROR);
-        $env->get('APPLITOOLS_API_KEY', Config::MISSING_API_KEY_ERROR)->willThrow($exception);
+        $exception = new \RuntimeException(Config::MISSING_SHA_ERROR);
+        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willThrow($exception);
         $this->shouldThrow($exception)->duringInstantiation();
 
-        $env->get('APPLITOOLS_API_KEY', Config::MISSING_API_KEY_ERROR)->willReturn('');
-        $this->shouldThrow($exception)->duringInstantiation();
-    }
-
-    function it_should_provide_an_api_key()
-    {
-        $this->getApplitoolsApiKey()->shouldReturn('api_key_value');
-    }
-
-    function it_throw_on_missing_or_empty_batch_id(Env $env)
-    {
-        $exception = new \RuntimeException(Config::MISSING_BATCH_ID_ERROR);
-        $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willThrow($exception);
-        $this->shouldThrow($exception)->duringInstantiation();
-
-        $env->get('CIRCLE_SHA1', Config::MISSING_BATCH_ID_ERROR)->willReturn('');
+        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('');
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_provide_a_batch_id()
+    function it_should_provide_a_sha()
     {
-        $this->getApplitoolsBatchId()->shouldReturn('batch_id_value');
-    }
-
-    function it_should_provide_an_app_name()
-    {
-        $this->getAppName()->shouldReturn('app_name');
-    }
-
-    function it_should_provide_a_test_name()
-    {
-        $this->getTestName()->shouldReturn('test_name');
+        $this->getSha()->shouldReturn('sha');
     }
 
     function it_should_provide_browser_size()

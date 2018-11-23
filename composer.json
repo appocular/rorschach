@@ -1,6 +1,6 @@
 {
     "name": "xendk/rorschach",
-    "description": "Do visual tests using Selenium and Applitool Eyes.",
+    "description": "Do visual tests using Selenium and Appocular.",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -16,8 +16,9 @@
     "require": {
         "mnapoli/silly": "1.5.*",
         "mnapoli/silly-php-di": "^1.2",
-        "applitools/eyes.sdk.php": "dev-master",
-        "symfony/yaml": "^3.4"
+        "symfony/yaml": "^3.4",
+        "facebook/webdriver": "^1.6",
+        "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "phpspec/phpspec": "^3.4",
