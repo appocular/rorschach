@@ -36,12 +36,16 @@ class Client
      */
     public function createBatch($sha)
     {
-        $response = $this->client->post('batch', ['json' => ['sha' => $sha]]);
-        $json = json_decode($response->getBody());
-        if (!isset($json->id)) {
-            throw new RuntimeException("Could not create batch.");
+        try {
+            $response = $this->client->post('batch', ['json' => ['sha' => $sha]]);
+            $json = json_decode($response->getBody());
+            if (isset($json->id)) {
+                return $json->id;
+            }
+        } catch (Exception $e) {
+            //
         }
-        return $json->id;
+        throw new RuntimeException("Could not create batch.");
     }
 
     /**

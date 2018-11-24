@@ -2,12 +2,14 @@
 
 namespace spec\Rorschach\Appocular;
 
+use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Appocular\Client;
 use Rorschach\Appocular\GuzzleFactory;
+use RuntimeException;
 
 class ClientSpec extends ObjectBehavior
 {
@@ -22,6 +24,15 @@ class ClientSpec extends ObjectBehavior
         $this->createBatch($sha)->shouldReturn($batchId);
     }
 
+    function it_should_throw_on_creation_failure(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    {
+        $sha = 'the sha';
+        $client->post('batch', ['json' => ['sha' => $sha]])->willThrow(new Exception());
+        $guzzleFactory->get()->willReturn($client);
+        $this->beConstructedWith($guzzleFactory);
+        $this->shouldThrow(RuntimeException::class)->duringCreateBatch($sha);
+    }
+
     function it_should_delete_a_batch(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
         $batchId = 'batch_id';
@@ -30,6 +41,8 @@ class ClientSpec extends ObjectBehavior
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
         $this->deleteBatch($batchId)->shouldReturn(true);
+
+        $this->deleteBatch('banana')->shouldReturn(false);
     }
 
     function it_saves_images(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
@@ -44,5 +57,7 @@ class ClientSpec extends ObjectBehavior
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
         $this->snapshot($batchId, 'name', 'png data')->shouldReturn(true);
+
+        $this->snapshot('banana', 'name', 'png data')->shouldReturn(false);
     }
 }
