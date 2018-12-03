@@ -42,10 +42,10 @@ class Client
             if (isset($json->id)) {
                 return $json->id;
             }
+            throw new RuntimeException("Unexpected reply to create batch:" . $response->getBody());
         } catch (Exception $e) {
-            //
+            throw new RuntimeException("Error creating batch:" . $e->getMessage());
         }
-        throw new RuntimeException("Could not create batch.");
     }
 
     /**
@@ -61,11 +61,9 @@ class Client
     {
         try {
             $response = $this->client->delete('batch/' . $batchId);
-            if ($response->getStatusCode() == 200) {
-                return true;
-            }
+            return true;
         } catch (Exception $e) {
-            //
+            throw new RuntimeException("Error deleting batch:" . $e->getMessage());
         }
         return false;
     }
@@ -90,12 +88,12 @@ class Client
                 'name' => $name,
                 'image' => base64_encode($pngData),
             ];
-            $response = $this->client->post('batch/' . $batchId . '/image', $json);
+            $response = $this->client->post('batch/' . $batchId . '/image', ['json' => $json]);
             if ($response->getStatusCode() == 200) {
                 return true;
             }
         } catch (Exception $e) {
-            //
+            throw new RuntimeException("Error submitting image:" . $e->getMessage());
         }
         return false;
     }

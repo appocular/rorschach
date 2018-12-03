@@ -42,7 +42,8 @@ class ClientSpec extends ObjectBehavior
         $this->beConstructedWith($guzzleFactory);
         $this->deleteBatch($batchId)->shouldReturn(true);
 
-        $this->deleteBatch('banana')->shouldReturn(false);
+        // Deleting non-existing batch should throw an error.
+        $this->shouldThrow(RuntimeException::class)->duringDeleteBatch('banana');
     }
 
     function it_saves_images(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
@@ -53,11 +54,12 @@ class ClientSpec extends ObjectBehavior
             'name' => 'name',
             'image' => base64_encode('png data'),
         ];
-        $client->post('batch/' . $batchId . '/image', $json)->willReturn($response);
+        $client->post('batch/' . $batchId . '/image', ['json' => $json])->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
         $this->snapshot($batchId, 'name', 'png data')->shouldReturn(true);
 
-        $this->snapshot('banana', 'name', 'png data')->shouldReturn(false);
+        // Should throw on errors.
+        $this->shouldThrow(RuntimeException::class)->duringSnapshot('banana', 'name', 'png data');
     }
 }
