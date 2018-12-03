@@ -1,2 +1,2 @@
-app_name: Testapp
-test_name: Testname
+steps:
+  first: '/'

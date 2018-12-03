@@ -50,7 +50,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_find_config_file_current_dir()
     {
         $this->useFixture('minimal');
-        $this->getAppName()->shouldReturn('Testapp');
+        $this->getSteps()->shouldReturn(['first' => '/']);
     }
 
     function it_should_find_config_from_subdir()
@@ -62,7 +62,6 @@ class ConfigFileSpec extends ObjectBehavior
             mkdir('sub/dir', 0777, true);
         }
         chdir('sub/dir');
-        $this->getAppName()->shouldReturn('Testapp');
     }
 
     function it_should_error_on_malformed_file()
@@ -72,26 +71,10 @@ class ConfigFileSpec extends ObjectBehavior
         $this->shouldThrow(\RuntimeException::class)->duringInstantiation();
     }
 
-    function it_should_return_app_name()
-    {
-        $this->useFixture('minimal');
-        $this->getAppName()->shouldReturn('Testapp');
-    }
-
-    function it_should_return_test_name()
-    {
-        $this->useFixture('minimal');
-        $this->getTestName()->shouldReturn('Testname');
-    }
-
     function it_should_require_proper_configuration()
     {
         $this->useFixture('empty');
-        $errors = [
-            ConfigFile::MISSING_APP_NAME_ERROR,
-            ConfigFile::MISSING_TEST_NAME_ERROR,
-        ];
-        $exception = new \RuntimeException(implode('\n', $errors));
+        $exception = new \RuntimeException(ConfigFile::NO_STEPS_ERROR);
         $this->shouldThrow($exception)->duringInstantiation();
     }
 

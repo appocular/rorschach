@@ -11,21 +11,9 @@ class ConfigFile
 {
     const FILE_NAME = 'rorschach.yml';
     const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
-    const MISSING_APP_NAME_ERROR = 'Please specify app_name in ' . self::FILE_NAME;
-    const MISSING_TEST_NAME_ERROR = 'Please specify test_name in ' . self::FILE_NAME;
+    const NO_STEPS_ERROR = 'No steps defined in ' . self::FILE_NAME . '.';
     const DEFAULT_BROWSER_HEIGHT = 1080;
     const DEFAULT_BROWSER_WIDTH = 1920;
-    /**
-     * Configured app name.
-     * @var string
-     */
-    protected $appName;
-
-    /**
-     * Configured test name.
-     * @var string
-     */
-    protected $testName;
 
     /**
      * Browser height.
@@ -76,18 +64,6 @@ class ConfigFile
             $errors[] = 'Error parsing ' . self::FILE_NAME . ': ' . $e->getMessage();
         }
 
-        if (!empty($config['app_name'])) {
-            $this->appName = $config['app_name'];
-        } else {
-            $errors[] = self::MISSING_APP_NAME_ERROR;
-        }
-
-        if (!empty($config['test_name'])) {
-            $this->testName = $config['test_name'];
-        } else {
-            $errors[] = self::MISSING_TEST_NAME_ERROR;
-        }
-
         if (!empty($config['webdriver_url'])) {
             $this->webdriverUrl = $config['webdriver_url'];
         }
@@ -101,6 +77,8 @@ class ConfigFile
                 // Ensure all paths starts with a slash.
                 $this->steps[$name] = '/' . ltrim($path, '/');
             }
+        } else {
+            throw new \RuntimeException(self::NO_STEPS_ERROR);
         }
 
         $this->browserHeight = !empty($config['browser_height']) ?

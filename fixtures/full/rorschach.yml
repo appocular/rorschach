@@ -1,5 +1,3 @@
-app_name: Testapp
-test_name: Testname
 browser_height: 300
 browser_width: 400
 webdriver_url: http://wd:4444/wd/hub
