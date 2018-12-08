@@ -29,9 +29,9 @@ class BatchSpec extends ObjectBehavior
     function it_saves_images(WebDriver $webDriver, Client $client)
     {
         $client->createBatch('the sha')->willReturn('batch id');
-        $client->snapshot('batch id', 'name', 'png data')->willReturn(true);
+        $client->checkpoint('batch id', 'name', 'png data')->willReturn(true);
         $webDriver->takeScreenshot()->willReturn('png data');
         $this->beConstructedWith($webDriver, $client, 'the sha');
-        $this->snapshot('name')->shouldReturn(true);
+        $this->checkpoint('name')->shouldReturn(true);
     }
 }

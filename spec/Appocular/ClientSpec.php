@@ -18,7 +18,7 @@ class ClientSpec extends ObjectBehavior
         $sha = 'the sha';
         $batchId = 'batch_id';
         $response->getBody()->willReturn(json_encode(['id' => $batchId]));
-        $client->post('batch', ['json' => ['sha' => $sha]])->willReturn($response);
+        $client->post('batch', ['json' => ['id' => $sha]])->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
         $this->createBatch($sha)->shouldReturn($batchId);
@@ -27,7 +27,7 @@ class ClientSpec extends ObjectBehavior
     function it_should_throw_on_creation_failure(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
-        $client->post('batch', ['json' => ['sha' => $sha]])->willThrow(new Exception());
+        $client->post('batch', ['json' => ['id' => $sha]])->willThrow(new Exception());
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
         $this->shouldThrow(RuntimeException::class)->duringCreateBatch($sha);
@@ -46,7 +46,7 @@ class ClientSpec extends ObjectBehavior
         $this->shouldThrow(RuntimeException::class)->duringDeleteBatch('banana');
     }
 
-    function it_saves_images(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_saves_checkpoint(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
         $batchId = 'batch_id';
         $response->getStatusCode()->willReturn(200);
@@ -54,12 +54,12 @@ class ClientSpec extends ObjectBehavior
             'name' => 'name',
             'image' => base64_encode('png data'),
         ];
-        $client->post('batch/' . $batchId . '/image', ['json' => $json])->willReturn($response);
+        $client->post('batch/' . $batchId . '/checkpoint', ['json' => $json])->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->beConstructedWith($guzzleFactory);
-        $this->snapshot($batchId, 'name', 'png data')->shouldReturn(true);
+        $this->checkpoint($batchId, 'name', 'png data')->shouldReturn(true);
 
         // Should throw on errors.
-        $this->shouldThrow(RuntimeException::class)->duringSnapshot('banana', 'name', 'png data');
+        $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
     }
 }

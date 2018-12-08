@@ -28,16 +28,16 @@ class Client
     /**
      * Create new batch.
      *
-     * @param string $sha
-     *   Commit sha of batch.
+     * @param string $id
+     *   Id of batch snapshot
      *
      * @return string
      *   The ID of the created batch.
      */
-    public function createBatch($sha)
+    public function createBatch($id)
     {
         try {
-            $response = $this->client->post('batch', ['json' => ['sha' => $sha]]);
+            $response = $this->client->post('batch', ['json' => ['id' => $id]]);
             $json = json_decode($response->getBody());
             if (isset($json->id)) {
                 return $json->id;
@@ -69,26 +69,26 @@ class Client
     }
 
     /**
-     * Submit an image.
+     * Submit a checkpoint image.
      *
      * @param string $batchId
      *   Id of batch.
      * @param string $name
-     *   Name of image.
+     *   Name of checkpoint.
      * @param string $pngData
      *   PNG data.
      *
      * @return bool
-     *   Whether the image was submitted.
+     *   Whether the checkpoint was submitted.
      */
-    public function snapshot($batchId, $name, $pngData)
+    public function checkpoint($batchId, $name, $pngData)
     {
         try {
             $json = [
                 'name' => $name,
                 'image' => base64_encode($pngData),
             ];
-            $response = $this->client->post('batch/' . $batchId . '/image', ['json' => $json]);
+            $response = $this->client->post('batch/' . $batchId . '/checkpoint', ['json' => $json]);
             if ($response->getStatusCode() == 200) {
                 return true;
             }

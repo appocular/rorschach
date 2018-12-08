@@ -25,7 +25,7 @@ class RunCommandSpec extends ObjectBehavior
 
         $appocular->startBatch($webdriver, Argument::any())->willReturn($batch);
 
-        $batch->snapshot(Argument::any())->willReturn(true);
+        $batch->checkpoint(Argument::any())->willReturn(true);
 
         $batch->close()->willReturn(true);
 
@@ -80,9 +80,9 @@ class RunCommandSpec extends ObjectBehavior
         $appocular->startBatch()->willReturn($batch);
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $batch->snapshot('front')->shouldBeCalled();
+        $batch->checkpoint('front')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $batch->snapshot('Page one')->shouldBeCalled();
+        $batch->checkpoint('Page one')->shouldBeCalled();
 
         $batch->close()->willReturn(true);
         $webdriver->quit()->shouldBeCalled();

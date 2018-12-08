@@ -60,7 +60,7 @@ class RunCommand
 
             foreach ($this->config->getSteps() as $name => $path) {
                 $webdriverInstance->get($baseUrl . $path);
-                $batch->snapshot($name);
+                $batch->checkpoint($name);
             }
         } finally {
             $webdriverInstance->quit();

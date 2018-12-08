@@ -52,9 +52,9 @@ class Batch
         return $this->batchId;
     }
 
-    public function snapshot($name)
+    public function checkpoint($name)
     {
         $pngData = $this->webDriver->takeScreenshot();
-        return $this->client->snapshot($this->batchId, $name, $pngData);
+        return $this->client->checkpoint($this->batchId, $name, $pngData);
     }
 }
