@@ -1,4 +1,5 @@
 suites:
-  dais_suite:
+  rorschach_suite:
     namespace: Rorschach
     psr4_prefix: Rorschach
+formatter.name: pretty

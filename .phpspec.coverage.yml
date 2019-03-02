@@ -1,5 +1,5 @@
 suites:
-  dais_suite:
+  rorschach_suite:
     namespace: Rorschach
     psr4_prefix: Rorschach
 extensions:
@@ -8,3 +8,4 @@ extensions:
       - clover
     output:
       clover: clover.xml
+formatter.name: pretty
