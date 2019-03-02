@@ -31,12 +31,14 @@ class Appocular
      *   WebDriver to use.
      * @param string $sha
      *   SHA of the commit of the batch.
+     * @param string $history
+     *   History of the commit, newline separated.
      *
      * @return Batch
      *   Batch object.
      */
-    public function startBatch($webDriver, $sha)
+    public function startBatch($webDriver, $sha, $history = null)
     {
-        return new Batch($webDriver, $this->client, $sha);
+        return new Batch($webDriver, $this->client, $sha, $history);
     }
 }

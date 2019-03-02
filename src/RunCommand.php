@@ -56,7 +56,7 @@ class RunCommand
         $batch = null;
         try {
             // todo: get branch name and repo...
-            $batch = $appocular->startBatch($webdriverInstance, $this->config->getSha());
+            $batch = $appocular->startBatch($webdriverInstance, $this->config->getSha(), $this->config->getHistory());
 
             foreach ($this->config->getSteps() as $name => $path) {
                 $webdriverInstance->get($baseUrl . $path);

@@ -17,6 +17,12 @@ class Config
     private $sha;
 
     /**
+     * Commit history.
+     * @var string
+     */
+    private $history;
+
+    /**
      * @var ConfigFile
      */
     private $configFile;
@@ -31,6 +37,7 @@ class Config
         }
 
         $this->configFile = $configFile;
+        $this->history = $env->getOptional('RORSCHACH_HISTORY', null);
     }
 
     /**
@@ -84,5 +91,10 @@ class Config
     public function getBaseUrl()
     {
         return $this->configFile->getBaseUrl();
+    }
+
+    public function getHistory()
+    {
+        return $this->history;
     }
 }

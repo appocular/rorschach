@@ -62,4 +62,16 @@ class ClientSpec extends ObjectBehavior
         // Should throw on errors.
         $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
     }
+
+    function it_passes_history(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    {
+        $sha = 'the sha';
+        $batchId = 'batch_id';
+        $history = "a\nhistory\nwith\nmultiple\nlines";
+        $response->getBody()->willReturn(json_encode(['id' => $batchId]));
+        $client->post('batch', ['json' => ['id' => $sha, 'history' => $history]])->willReturn($response);
+        $guzzleFactory->get()->willReturn($client);
+        $this->beConstructedWith($guzzleFactory);
+        $this->createBatch($sha, $history)->shouldReturn($batchId);
+    }
 }

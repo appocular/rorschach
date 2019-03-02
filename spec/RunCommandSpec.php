@@ -22,8 +22,9 @@ class RunCommandSpec extends ObjectBehavior
         $config->getWebdriverUrl()->willReturn('http://webdriver/');
         $config->getBaseUrl()->willReturn('http://baseurl/');
         $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
+        $config->getHistory()->willReturn(null);
 
-        $appocular->startBatch($webdriver, Argument::any())->willReturn($batch);
+        $appocular->startBatch($webdriver, Argument::any(), Argument::any())->willReturn($batch);
 
         $batch->checkpoint(Argument::any())->willReturn(true);
 
@@ -86,6 +87,16 @@ class RunCommandSpec extends ObjectBehavior
 
         $batch->close()->willReturn(true);
         $webdriver->quit()->shouldBeCalled();
+        $this->callOnWrappedObject('__invoke', [$appocular]);
+    }
+
+    function it_should_pass_the_history(Config $config, Appocular $appocular, Batch $batch, Webdriver $webdriver)
+    {
+        $history = "the\nhistroy";
+        $config->getHistory()->willReturn($history);
+        $appocular->startBatch($webdriver, 'the sha', $history)->shouldBeCalled()->willReturn($batch);
+        $batch->close()->willReturn(true);
+
         $this->callOnWrappedObject('__invoke', [$appocular]);
     }
 }

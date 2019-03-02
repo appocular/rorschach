@@ -28,4 +28,10 @@ class Env
         }
         return $value;
     }
+
+    public function getOptional($name, $default)
+    {
+        $value = getenv($name);
+        return $value === false ? $default : $value;
+    }
 }

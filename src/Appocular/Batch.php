@@ -29,14 +29,16 @@ class Batch
      *   The WebDriver to use.
      * @param Client $client
      *   Appocular Client.
-     * @param string $sha
-     *   The commit SHA.
+     * @param string $id
+     *   The snapshot id.
+     * @param string $history
+     *   The snapshot history.
      */
-    public function __construct(WebDriver $webDriver, Client $client, $sha)
+    public function __construct(WebDriver $webDriver, Client $client, $id, $history = null)
     {
         $this->webDriver = $webDriver;
         $this->client = $client;
-        $this->batchId = $this->client->createBatch($sha);
+        $this->batchId = $this->client->createBatch($id, $history);
     }
 
     public function close()

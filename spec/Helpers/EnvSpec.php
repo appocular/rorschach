@@ -30,4 +30,16 @@ class EnvSpec extends ObjectBehavior
         $exception = new \RuntimeException('deriparamaxx');
         $this->shouldThrow($exception)->duringGet('slartibartfast', 'deriparamaxx');
     }
+
+    function it_should_return_optional_variables()
+    {
+        putenv('rorschach_test_optional_env_variable=banana');
+        $this->getOptional('rorschach_test_optional_env_variable', null)->shouldReturn('banana');
+    }
+
+    function it_should_return_default_for_unset_optional_variables()
+    {
+        $this->getOptional('rorschach_test_optional_env_variable2', null)->shouldReturn(null);
+        $this->getOptional('rorschach_test_optional_env_variable2', 'apple')->shouldReturn('apple');
+    }
 }

@@ -15,6 +15,7 @@ class ConfigSpec extends ObjectBehavior
     {
         // A working configuration.
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
+        $env->getOptional('RORSCHACH_HISTORY', null)->willReturn(null);
 
         $configFile->getBrowserHeight()->willReturn(600);
         $configFile->getBrowserWidth()->willReturn(800);
@@ -68,5 +69,16 @@ class ConfigSpec extends ObjectBehavior
         $this->getBaseUrl()->shouldReturn('base-url');
         $configFile->getBaseUrl()->willReturn(null);
         $this->getBaseUrl()->shouldReturn(null);
+    }
+
+    function it_should_return_null_for_no__history(Env $env)
+    {
+        $this->getHistory()->shouldReturn(null);
+    }
+
+    function it_can_provide_a_history(Env $env)
+    {
+        $env->getOptional('RORSCHACH_HISTORY', null)->willReturn("a\nhistory");
+        $this->getHistory()->shouldReturn("a\nhistory");
     }
 }

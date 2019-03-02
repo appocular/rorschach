@@ -30,14 +30,20 @@ class Client
      *
      * @param string $id
      *   Id of batch snapshot
+     * @param string $history
+     *   History of the snapshot, newline separated.
      *
      * @return string
      *   The ID of the created batch.
      */
-    public function createBatch($id)
+    public function createBatch($id, $history = null)
     {
         try {
-            $response = $this->client->post('batch', ['json' => ['id' => $id]]);
+            $json = ['id' => $id];
+            if ($history) {
+                $json['history'] = $history;
+            }
+            $response = $this->client->post('batch', ['json' => $json]);
             $json = json_decode($response->getBody());
             if (isset($json->id)) {
                 return $json->id;
