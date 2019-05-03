@@ -17,6 +17,7 @@ class RunCommandSpec extends ObjectBehavior
     function let(Config $config, WebdriverFactory $webdriverFactory, WebDriver $webdriver, Appocular $appocular, Batch $batch)
     {
         $config->getSha()->willReturn('the sha');
+        $config->getToken()->willReturn('the token');
         $config->getBrowserHeight()->willReturn(600);
         $config->getBrowserWidth()->willReturn(800);
         $config->getWebdriverUrl()->willReturn('http://webdriver/');

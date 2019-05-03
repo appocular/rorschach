@@ -4,6 +4,7 @@ namespace Rorschach\Appocular;
 
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
+use Rorschach\Config;
 use RuntimeException;
 
 class Client
@@ -15,14 +16,27 @@ class Client
     protected $client;
 
     /**
+     * @var \Rorschach\Config
+     */
+    protected $config;
+
+    /**
      * Construct a new client.
      *
      * @param GuzzleFactory $guzzleFactory
      *   Factory to get Guzzle client from.
      */
-    public function __construct(GuzzleFactory $guzzleFactory)
+    public function __construct(GuzzleFactory $guzzleFactory, Config $config)
     {
         $this->client = $guzzleFactory->get();
+        $this->config = $config;
+    }
+
+    /**
+     * Get the request options with authorization header.
+     */
+    protected function getOptions() {
+        return ['headers' => ['Authorization' => 'Bearer ' . $this->config->getToken()]];
     }
 
     /**
@@ -43,7 +57,7 @@ class Client
             if ($history) {
                 $json['history'] = $history;
             }
-            $response = $this->client->post('batch', ['json' => $json]);
+            $response = $this->client->post('batch', ['json' => $json] + $this->getOptions());
             $json = json_decode($response->getBody());
             if (isset($json->id)) {
                 return $json->id;
@@ -66,7 +80,7 @@ class Client
     public function deleteBatch($batchId)
     {
         try {
-            $response = $this->client->delete('batch/' . $batchId);
+            $response = $this->client->delete('batch/' . $batchId, $this->getOptions());
             return true;
         } catch (Exception $e) {
             throw new RuntimeException("Error deleting batch:" . $e->getMessage());
@@ -94,7 +108,7 @@ class Client
                 'name' => $name,
                 'image' => base64_encode($pngData),
             ];
-            $response = $this->client->post('batch/' . $batchId . '/checkpoint', ['json' => $json]);
+            $response = $this->client->post('batch/' . $batchId . '/checkpoint', ['json' => $json] + $this->getOptions());
             if ($response->getStatusCode() == 200) {
                 return true;
             }

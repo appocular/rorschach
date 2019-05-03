@@ -17,6 +17,12 @@ class Config
     private $sha;
 
     /**
+     * Appocular token.
+     * @var string
+     */
+    private $token;
+
+    /**
      * Commit history.
      * @var string
      */
@@ -28,12 +34,18 @@ class Config
     private $configFile;
 
     const MISSING_SHA_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the commit SHA.";
+    const MISSING_TOKEN_ERROR = "Please ensure that the APPOCULAR_TOKEN env variable contains the token for Appocular.";
 
     public function __construct(Env $env, ConfigFile $configFile)
     {
         $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
         if (empty($this->sha)) {
             throw new \RuntimeException(self::MISSING_SHA_ERROR);
+        }
+
+        $this->token = $env->get('APPOCULAR_TOKEN', self::MISSING_TOKEN_ERROR);
+        if (empty($this->token)) {
+            throw new \RuntimeException(self::MISSING_TOKEN_ERROR);
         }
 
         $this->configFile = $configFile;
@@ -54,6 +66,14 @@ class Config
     public function getSha()
     {
         return $this->sha;
+    }
+
+    /**
+     * Get Appocular token.
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     /**

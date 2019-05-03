@@ -15,6 +15,7 @@ class ConfigSpec extends ObjectBehavior
     {
         // A working configuration.
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
+        $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willReturn('appocular-token');
         $env->getOptional('RORSCHACH_HISTORY', null)->willReturn(null);
 
         $configFile->getBrowserHeight()->willReturn(600);
@@ -44,6 +45,21 @@ class ConfigSpec extends ObjectBehavior
     function it_should_provide_a_sha()
     {
         $this->getSha()->shouldReturn('sha');
+    }
+
+    function it_throw_on_missing_or_empty_token(Env $env)
+    {
+        $exception = new \RuntimeException(Config::MISSING_TOKEN_ERROR);
+        $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willThrow($exception);
+        $this->shouldThrow($exception)->duringInstantiation();
+
+        $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willReturn('');
+        $this->shouldThrow($exception)->duringInstantiation();
+    }
+
+    function it_should_provide_a_token()
+    {
+        $this->getToken()->shouldReturn('appocular-token');
     }
 
     function it_should_provide_browser_size()
