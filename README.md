@@ -10,3 +10,5 @@ Documentation still to be written...
 
 The important env vars is:
 `CIRCLE_SHA1`
+`APPOCULAR_TOKEN`
+`RORSCHACH_HISTORY`
