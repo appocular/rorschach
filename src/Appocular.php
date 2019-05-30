@@ -2,7 +2,6 @@
 
 namespace Rorschach;
 
-use Facebook\WebDriver\WebDriver;
 use Rorschach\Appocular\Batch;
 use Rorschach\Appocular\Client;
 
@@ -27,8 +26,6 @@ class Appocular
     /**
      * Start a new batch.
      *
-     * @param WebDriver $webDriver
-     *   WebDriver to use.
      * @param string $sha
      *   SHA of the commit of the batch.
      * @param string $history
@@ -37,8 +34,8 @@ class Appocular
      * @return Batch
      *   Batch object.
      */
-    public function startBatch($webDriver, $sha, $history = null)
+    public function startBatch($sha, $history = null)
     {
-        return new Batch($webDriver, $this->client, $sha, $history);
+        return new Batch($this->client, $sha, $history);
     }
 }

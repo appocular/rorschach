@@ -2,7 +2,6 @@
 
 namespace Rorschach\Appocular;
 
-use Facebook\WebDriver\WebDriver;
 use Rorschach\Appocular\Client;
 
 class Batch
@@ -25,8 +24,6 @@ class Batch
     /**
      * Start a new batch.
      *
-     * @param WebDriver $webDriver
-     *   The WebDriver to use.
      * @param Client $client
      *   Appocular Client.
      * @param string $id
@@ -34,9 +31,8 @@ class Batch
      * @param string $history
      *   The snapshot history.
      */
-    public function __construct(WebDriver $webDriver, Client $client, $id, $history = null)
+    public function __construct(Client $client, $id, $history = null)
     {
-        $this->webDriver = $webDriver;
         $this->client = $client;
         $this->batchId = $this->client->createBatch($id, $history);
     }
@@ -54,9 +50,16 @@ class Batch
         return $this->batchId;
     }
 
-    public function checkpoint($name)
+    /**
+     * Submit checkpoint.
+     *
+     * @param string $name
+     *   Checkpoint name.
+     * @param string $pngData
+     *   PNG image to submit.
+     */
+    public function checkpoint(string $name, string $pngData)
     {
-        $pngData = $this->webDriver->takeScreenshot();
         return $this->client->checkpoint($this->batchId, $name, $pngData);
     }
 }

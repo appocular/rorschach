@@ -25,9 +25,9 @@ class RunCommandSpec extends ObjectBehavior
         $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
         $config->getHistory()->willReturn(null);
 
-        $appocular->startBatch($webdriver, Argument::any(), Argument::any())->willReturn($batch);
+        $appocular->startBatch(Argument::any(), Argument::any())->willReturn($batch);
 
-        $batch->checkpoint(Argument::any())->willReturn(true);
+        $batch->checkpoint(Argument::any(), Argument::any())->willReturn(true);
 
         $batch->close()->willReturn(true);
 
@@ -50,6 +50,9 @@ class RunCommandSpec extends ObjectBehavior
         $this->shouldThrow($exception)->during('__invoke', [$appocular]);
 
         $webdriverFactory->get('webdriver', Argument::any())->willReturn($webdriver);
+        $webdriver->takeScreenshot()->willReturn('');
+        $webdriver->get(Argument::any())->willReturn(null);
+        $webdriver->quit()->willReturn(null);
         $this->callOnWrappedObject('__invoke', [$appocular, 'webdriver']);
     }
 
@@ -57,7 +60,9 @@ class RunCommandSpec extends ObjectBehavior
     {
         $webdriver->get('http://baseurl/')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
+        $webdriver->takeScreenshot()->willReturn('');
         $webdriver->quit()->shouldBeCalled();
+
 
         $this->callOnWrappedObject('__invoke', [$appocular]);
 
@@ -72,6 +77,7 @@ class RunCommandSpec extends ObjectBehavior
         $webdriver->get('http://baseurl/one')->shouldNotBeCalled();
         $webdriver->get('http://base2/')->shouldBeCalled();
         $webdriver->get('http://base2/one')->shouldBeCalled();
+        $webdriver->takeScreenshot()->willReturn('');
         $webdriver->quit()->shouldBeCalled();
 
         $this->callOnWrappedObject('__invoke', [$appocular, null, 'http://base2/']);
@@ -82,9 +88,10 @@ class RunCommandSpec extends ObjectBehavior
         $appocular->startBatch()->willReturn($batch);
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $batch->checkpoint('front')->shouldBeCalled();
+        $webdriver->takeScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
+        $batch->checkpoint('front', 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $batch->checkpoint('Page one')->shouldBeCalled();
+        $batch->checkpoint('Page one', 'more png data')->shouldBeCalled();
 
         $batch->close()->willReturn(true);
         $webdriver->quit()->shouldBeCalled();
@@ -95,9 +102,14 @@ class RunCommandSpec extends ObjectBehavior
     {
         $history = "the\nhistroy";
         $config->getHistory()->willReturn($history);
-        $appocular->startBatch($webdriver, 'the sha', $history)->shouldBeCalled()->willReturn($batch);
+        // No steps, to avoid calls on $webdriver.
+        $config->getSteps()->willReturn([]);
+        $appocular->startBatch('the sha', $history)->shouldBeCalled()->willReturn($batch);
         $batch->close()->willReturn(true);
 
         $this->callOnWrappedObject('__invoke', [$appocular]);
     }
+
+    // it_should_skip_failed_screenshots
+    // when takeScreenshot returns null.
 }
