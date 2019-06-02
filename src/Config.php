@@ -53,14 +53,6 @@ class Config
     }
 
     /**
-     * Get Applitools API key.
-     */
-    public function getApplitoolsApiKey()
-    {
-        return $this->applitoolsApiKey;
-    }
-
-    /**
      * Get commit SHA.
      */
     public function getSha()
