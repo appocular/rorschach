@@ -2,8 +2,6 @@
 
 namespace Rorschach;
 
-use Applitools\BatchInfo;
-use Applitools\RectangleSize;
 use Rorschach\Config;
 use Rorschach\Helpers\WebdriverFactory;
 
