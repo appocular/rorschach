@@ -1,9 +1,14 @@
 #!/usr/bin/env php
 <?php
 
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\WebDriverCapabilityType;
+use Psr\Container\ContainerInterface as Container;
 use Rorschach\Config;
 use Rorschach\Helpers\Env;
-use Rorschach\RunCommand;
+use Rorschach\Snapshot;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -11,7 +16,23 @@ $app = new Silly\Edition\PhpDi\Application('Rorschach', '@git-version@');
 
 $container = $app->getContainer();
 
-$app->command('run [--webdriver=] [--base-url=]', 'Rorschach\\RunCommand');
+$container->set(\Facebook\WebDriver\WebDriver::class, function (Config $config) {
+    try {
+        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'chrome');
+        $webdriver = RemoteWebDriver::create($config->getWebdriverUrl(), $capabilities);
+        return $webdriver;
+    } catch (\Exception $e) {
+        throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $address, $e->getMessage()));
+    }}
+);
+
+$app->command('run [--webdriver=] [--base-url=]', function (Container $container, InputInterface $input, OutputInterface $output) {
+    $container->set(InputInterface::class, $input);
+    $container->set(OutputInterface::class, $output);
+
+    // Do the snapshot.
+    $container->make(Snapshot::class)->run();
+});
 $app->setDefaultCommand('run', true);
 
 $app->run();

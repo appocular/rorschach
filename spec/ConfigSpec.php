@@ -7,11 +7,12 @@ use Prophecy\Argument;
 use Rorschach\Config;
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
+use Symfony\Component\Console\Input\InputInterface;
 
 class ConfigSpec extends ObjectBehavior
 {
 
-    function let(Env $env, ConfigFile $configFile)
+    function let(Env $env, ConfigFile $configFile, InputInterface $input)
     {
         // A working configuration.
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
@@ -24,7 +25,7 @@ class ConfigSpec extends ObjectBehavior
         $configFile->getBaseUrl()->willReturn('base-url');
         $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
 
-        $this->beConstructedWith($env, $configFile);
+        $this->beConstructedWith($env, $configFile, $input);
     }
 
     function it_is_initializable()
@@ -73,18 +74,45 @@ class ConfigSpec extends ObjectBehavior
         $this->getSteps()->shouldReturn(['one' => '1', 'two' => '2']);
     }
 
-    function it_con_provide_a_webdriver_url(ConfigFile $configFile)
+    function it_should_provide_a_webdriver_url(ConfigFile $configFile, InputInterface $input)
     {
+        // From config.
         $this->getWebdriverUrl()->shouldReturn('webdriver-url');
+
+        // From command line.
+        $input->getOption('webdriver')->willReturn('new-webdriver-url');
+        $this->getWebdriverUrl()->shouldReturn('new-webdriver-url');
+
+        // Should error if neither config or command line arg is set.
+        $exception = new \RuntimeException(Config::MISSING_WEBDRIVER_URL);
         $configFile->getWebdriverUrl()->willReturn(null);
-        $this->getWebdriverUrl()->shouldReturn(null);
+        $input->getOption('webdriver')->willReturn(null);
+        $this->shouldThrow($exception)->duringGetWebdriverUrl();
     }
 
-    function it_con_provide_a_base_url(ConfigFile $configFile)
+    function it_should_provide_a_base_url(ConfigFile $configFile, InputInterface $input)
     {
+        // From config.
         $this->getBaseUrl()->shouldReturn('base-url');
+
+        // From command line.
+        $input->getOption('base-url')->willReturn('new-base-url');
+        $this->getBaseUrl()->shouldReturn('new-base-url');
+
+        // Should error if neither config or command line arg is set.
+        $exception = new \RuntimeException(Config::MISSING_BASE_URL);
         $configFile->getBaseUrl()->willReturn(null);
-        $this->getBaseUrl()->shouldReturn(null);
+        $input->getOption('base-url')->willReturn(null);
+        $this->shouldThrow($exception)->duringGetBaseUrl();
+    }
+
+    function it_should_strip_trailling_slashes_on_base_url(ConfigFile $configFile, InputInterface $input)
+    {
+        $configFile->getBaseUrl()->willReturn('/base-url///');
+        $this->getBaseUrl()->shouldReturn('/base-url');
+
+        $input->getOption('base-url')->willReturn('/new-base-url///');
+        $this->getBaseUrl()->shouldReturn('/new-base-url');
     }
 
     function it_should_return_null_for_no__history(Env $env)

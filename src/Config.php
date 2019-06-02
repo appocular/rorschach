@@ -4,6 +4,7 @@ namespace Rorschach;
 
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Handles configuration and environment.
@@ -29,14 +30,21 @@ class Config
     private $history;
 
     /**
-     * @var ConfigFile
+     * @var \Rorschach\ConfigFile
      */
     private $configFile;
 
+    /**
+     * @var \Symfony\Component\Console\Input\InputInterface
+     */
+    private $input;
+
     const MISSING_SHA_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the commit SHA.";
     const MISSING_TOKEN_ERROR = "Please ensure that the APPOCULAR_TOKEN env variable contains the token for Appocular.";
+    const MISSING_WEBDRIVER_URL = 'Please provide a webdriver url, either in the config file or with the --webdriver option.';
+    const MISSING_BASE_URL = 'Please provide a base url, either in the config file or with the --base-url option.';
 
-    public function __construct(Env $env, ConfigFile $configFile)
+    public function __construct(Env $env, ConfigFile $configFile, InputInterface $input)
     {
         $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
         if (empty($this->sha)) {
@@ -50,6 +58,7 @@ class Config
 
         $this->configFile = $configFile;
         $this->history = $env->getOptional('RORSCHACH_HISTORY', null);
+        $this->input = $input;
     }
 
     /**
@@ -97,12 +106,33 @@ class Config
      */
     public function getWebdriverUrl()
     {
-        return $this->configFile->getWebdriverUrl();
+        $webDriverUrl = $this->input->getOption('webdriver');
+
+        if (empty($webDriverUrl)) {
+            $webDriverUrl = $this->configFile->getWebdriverUrl();
+        }
+
+        if (empty($webDriverUrl)) {
+            throw new \RuntimeException(self::MISSING_WEBDRIVER_URL);
+        }
+
+        return $webDriverUrl;
     }
 
     public function getBaseUrl()
     {
-        return $this->configFile->getBaseUrl();
+        $baseUrl = $this->input->getOption('base-url');
+
+        if (empty($baseUrl)) {
+            $baseUrl = $this->configFile->getBaseUrl();
+        }
+
+        if (empty($baseUrl)) {
+            throw new \RuntimeException(self::MISSING_BASE_URL);
+        }
+
+        // Strip trailing slash, we ensure all paths starts with one.
+        return rtrim($baseUrl, '/');
     }
 
     public function getHistory()
