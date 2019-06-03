@@ -10,12 +10,19 @@ use Rorschach\Appocular\Batch;
 use Rorschach\Config;
 use Rorschach\Snapshot;
 use Rorschach\Stitcher;
+use Symfony\Component\Console\Style\StyleInterface;
 
 class SnapshotSpec extends ObjectBehavior
 {
 
-    function let(Config $config, WebDriver $webdriver, Appocular $appocular, Batch $batch, Stitcher $stitcher)
-    {
+    function let(
+        Config $config,
+        WebDriver $webdriver,
+        Appocular $appocular,
+        Batch $batch,
+        Stitcher $stitcher,
+        StyleInterface $io
+    ) {
         $config->getSha()->willReturn('the sha');
         $config->getToken()->willReturn('the token');
         $config->getBrowserHeight()->willReturn(600);
@@ -31,7 +38,7 @@ class SnapshotSpec extends ObjectBehavior
 
         $batch->close()->willReturn(true);
 
-        $this->beConstructedWith($config, $appocular, $webdriver, $stitcher);
+        $this->beConstructedWith($config, $appocular, $webdriver, $stitcher, $io);
     }
 
     function it_is_initializable()
@@ -44,9 +51,11 @@ class SnapshotSpec extends ObjectBehavior
         Appocular $appocular,
         Batch $batch,
         Webdriver $webdriver,
-        Stitcher $stitcher
+        Stitcher $stitcher,
+        StyleInterface $io
     ) {
         $appocular->startBatch()->willReturn($batch);
+        $io->error()->shouldNotBeCalled();
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
         $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
@@ -72,6 +81,37 @@ class SnapshotSpec extends ObjectBehavior
         $this->getWrappedObject()->run();
     }
 
-    // it_should_skip_failed_screenshots
-    // when takeScreenshot returns null.
+    function it_should_skip_failed_screenshots(
+        Config $config,
+        Appocular $appocular,
+        Batch $batch,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one', 'Page two' => '/two']);
+        $appocular->startBatch()->willReturn($batch);
+
+
+        // We need to get a bit verbose here, as we want the second call to
+        // throw an exception.
+        $stitcher->stitchScreenshot()->will(function () use ($stitcher) {
+            $stitcher->stitchScreenshot()->will(function () use ($stitcher) {
+                $stitcher->stitchScreenshot()->willReturn('more png data');
+                throw new \RuntimeException('bad stuff');
+            });
+            return 'png data';
+        });
+
+        $webdriver->get('http://baseurl/')->shouldBeCalled();
+        $batch->checkpoint('front', 'png data')->shouldBeCalled();
+        $webdriver->get('http://baseurl/one')->shouldBeCalled();
+        $batch->checkpoint('Page one', Argument::any())->shouldNotBeCalled();
+        $webdriver->get('http://baseurl/two')->shouldBeCalled();
+        $batch->checkpoint('Page two', 'more png data')->shouldBeCalled();
+
+        $batch->close()->willReturn(true);
+        $webdriver->quit()->shouldBeCalled();
+
+        $this->getWrappedObject()->run();
+    }
 }
