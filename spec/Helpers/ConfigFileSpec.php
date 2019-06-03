@@ -3,6 +3,7 @@
 namespace spec\Rorschach\Helpers;
 
 use Rorschach\Helpers\ConfigFile;
+use Rorschach\Step;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -12,6 +13,7 @@ class ConfigFileSpec extends ObjectBehavior
     // them to the object being tested.
     protected $fixtures;
     protected $oldPwd;
+    protected $dir;
 
     function __construct()
     {
@@ -26,11 +28,29 @@ class ConfigFileSpec extends ObjectBehavior
         chdir($this->fixtures . '/' . $name);
     }
 
+    function withFixture($yaml)
+    {
+        $this->dir = sys_get_temp_dir() . '/rorschach-test-' . getmypid();
+        mkdir($this->dir);
+        \file_put_contents($this->dir . '/rorschach.yml', $yaml);
+
+        if (!isset($this->oldPwd)) {
+            $this->oldPwd = getcwd();
+        }
+        chdir($this->dir);
+    }
+
     function letGo()
     {
         // Undo useFixture.
         if (isset($this->oldPwd)) {
             chdir($this->oldPwd);
+        }
+
+        // Clean up after withFixture.
+        if (isset($this->dir) && \file_exists($this->dir)) {
+            unlink($this->dir . '/rorschach.yml');
+            rmdir($this->dir);
         }
     }
 
@@ -50,7 +70,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_find_config_file_current_dir()
     {
         $this->useFixture('minimal');
-        $this->getSteps()->shouldReturn(['first' => '/']);
+        $this->getSteps()->shouldBeLike([new Step('first', '/')]);
     }
 
     function it_should_find_config_from_subdir()
@@ -95,7 +115,11 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_return_steps()
     {
         $this->useFixture('full');
-        $this->getSteps()->shouldReturn(['front' => '/', 'Page two' => '/two', 'three' => '/slashless']);
+        $this->getSteps()->shouldBeLike([
+            new Step('front', '/'),
+            new Step('Page two', '/two'),
+            new Step('three', '/slashless'),
+        ]);
     }
 
     function it_should_return_webdriver_url()
@@ -108,5 +132,20 @@ class ConfigFileSpec extends ObjectBehavior
     {
         $this->useFixture('full');
         $this->getBaseUrl()->shouldReturn('http://localhost/');
+    }
+
+    function it_should_handle_complex_steps()
+    {
+        $yaml = <<<'EOF'
+steps:
+  front: /
+  "with-path":
+    path: /the-path
+EOF;
+        $this->withFixture($yaml);
+        $this->getSteps()->shouldBeLike([
+            new Step('front', '/'),
+            new Step('with-path', '/the-path'),
+        ]);
     }
 }

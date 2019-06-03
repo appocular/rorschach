@@ -2,6 +2,7 @@
 
 namespace Rorschach\Helpers;
 
+use Rorschach\Step;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -73,9 +74,8 @@ class ConfigFile
         }
 
         if (!empty($config['steps'])) {
-            foreach ($config['steps'] as $name => $path) {
-                // Ensure all paths starts with a slash.
-                $this->steps[$name] = '/' . ltrim($path, '/');
+            foreach ($config['steps'] as $name => $step) {
+                $this->steps[] = new Step($name, $step);
             }
         } else {
             throw new \RuntimeException(self::NO_STEPS_ERROR);

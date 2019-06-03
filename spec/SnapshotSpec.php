@@ -9,6 +9,7 @@ use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
 use Rorschach\Config;
 use Rorschach\Snapshot;
+use Rorschach\Step;
 use Rorschach\Stitcher;
 use Symfony\Component\Console\Style\StyleInterface;
 
@@ -29,7 +30,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getBrowserWidth()->willReturn(800);
         $config->getWebdriverUrl()->willReturn('http://webdriver/');
         $config->getBaseUrl()->willReturn('http://baseurl');
-        $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one']);
+        $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
 
         $appocular->startBatch(Argument::any(), Argument::any())->willReturn($batch);
@@ -88,7 +89,11 @@ class SnapshotSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $config->getSteps()->willReturn(['front' => '/', 'Page one' => '/one', 'Page two' => '/two']);
+        $config->getSteps()->willReturn([
+            new Step('front', '/'),
+            new Step('Page one', '/one'),
+            new Step('Page two', '/two'),
+        ]);
         $appocular->startBatch()->willReturn($batch);
 
 

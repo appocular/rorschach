@@ -36,12 +36,12 @@ class Snapshot
             // todo: get branch name and repo...
             $batch = $this->appocular->startBatch($this->config->getSha(), $this->config->getHistory());
 
-            foreach ($this->config->getSteps() as $name => $path) {
+            foreach ($this->config->getSteps() as $step) {
                 try {
-                    $this->webdriver->get($this->config->getBaseUrl() . $path);
-                    $batch->checkpoint($name, $this->stitcher->stitchScreenshot());
+                    $this->webdriver->get($this->config->getBaseUrl() . $step->path);
+                    $batch->checkpoint($step->name, $this->stitcher->stitchScreenshot());
                 } catch (Throwable $e) {
-                    $this->io->error(sprintf('Error checkpointing "%s": "%s", skipping.', $name, $e->getMessage()));
+                    $this->io->error(sprintf('Error checkpointing "%s": "%s", skipping.', $step->name, $e->getMessage()));
                 }
             }
         } finally {
