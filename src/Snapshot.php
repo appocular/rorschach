@@ -9,12 +9,14 @@ class Snapshot
     protected $config;
     protected $appocular;
     protected $webdriver;
+    protected $stitcher;
 
-    public function __construct(Config $config, Appocular $appocular, WebDriver $webdriver)
+    public function __construct(Config $config, Appocular $appocular, WebDriver $webdriver, Stitcher $stitcher)
     {
         $this->config = $config;
         $this->appocular = $appocular;
         $this->webdriver = $webdriver;
+        $this->stitcher = $stitcher;
     }
     /**
      * Run snapshot and submit checkpoints to Appocular.
@@ -28,7 +30,7 @@ class Snapshot
 
             foreach ($this->config->getSteps() as $name => $path) {
                 $this->webdriver->get($this->config->getBaseUrl() . $path);
-                $batch->checkpoint($name, $this->webdriver->takeScreenshot());
+                $batch->checkpoint($name, $this->stitcher->stitchScreenshot());
             }
         } finally {
             $this->webdriver->quit();

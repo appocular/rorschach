@@ -9,11 +9,12 @@ use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
 use Rorschach\Config;
 use Rorschach\Snapshot;
+use Rorschach\Stitcher;
 
 class SnapshotSpec extends ObjectBehavior
 {
 
-    function let(Config $config, WebDriver $webdriver, Appocular $appocular, Batch $batch)
+    function let(Config $config, WebDriver $webdriver, Appocular $appocular, Batch $batch, Stitcher $stitcher)
     {
         $config->getSha()->willReturn('the sha');
         $config->getToken()->willReturn('the token');
@@ -30,7 +31,7 @@ class SnapshotSpec extends ObjectBehavior
 
         $batch->close()->willReturn(true);
 
-        $this->beConstructedWith($config, $appocular, $webdriver);
+        $this->beConstructedWith($config, $appocular, $webdriver, $stitcher);
     }
 
     function it_is_initializable()
@@ -38,12 +39,17 @@ class SnapshotSpec extends ObjectBehavior
         $this->shouldHaveType(Snapshot::class);
     }
 
-    function it_should_run_the_validations(Config $config, Appocular $appocular, Batch $batch, Webdriver $webdriver)
-    {
+    function it_should_run_the_validations(
+        Config $config,
+        Appocular $appocular,
+        Batch $batch,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
         $appocular->startBatch()->willReturn($batch);
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $webdriver->takeScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
+        $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
         $batch->checkpoint('front', 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
         $batch->checkpoint('Page one', 'more png data')->shouldBeCalled();
