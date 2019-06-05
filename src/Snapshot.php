@@ -39,6 +39,9 @@ class Snapshot
             foreach ($this->config->getSteps() as $step) {
                 try {
                     $this->webdriver->get($this->config->getBaseUrl() . $step->path);
+                    if ($step->hide && $selectors = array_filter(array_values($step->hide))) {
+                        $this->stitcher->hideElements($selectors);
+                    }
                     $batch->checkpoint($step->name, $this->stitcher->stitchScreenshot());
                 } catch (Throwable $e) {
                     $this->io->error(sprintf('Error checkpointing "%s": "%s", skipping.', $step->name, $e->getMessage()));

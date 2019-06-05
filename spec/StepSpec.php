@@ -37,4 +37,11 @@ class StepSpec extends ObjectBehavior
         $this->hide->shouldBe('tohide');
     }
 
+    function it_should_let_values_override_defaults()
+    {
+        $this->beConstructedWith('test', ['path' => 'path', 'hide' => 'hidden'], ['hide' => 'default']);
+        $this->name->shouldBe('test');
+        $this->path->shouldBe('/path');
+        $this->hide->shouldBe('hidden');
+    }
 }

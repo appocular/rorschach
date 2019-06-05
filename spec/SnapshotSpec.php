@@ -47,7 +47,10 @@ class SnapshotSpec extends ObjectBehavior
         $this->shouldHaveType(Snapshot::class);
     }
 
-    function it_should_run_the_validations(
+    /**
+     * Tests that it sends a snapshot to Appocular for each defined step.
+     */
+    function it_should_run_the_checkpoints(
         Config $config,
         Appocular $appocular,
         Batch $batch,
@@ -70,6 +73,9 @@ class SnapshotSpec extends ObjectBehavior
         $this->getWrappedObject()->run();
     }
 
+    /**
+     * Tests that it passes the history when creating the batch.
+     */
     function it_should_pass_the_history(Config $config, Appocular $appocular, Batch $batch, Webdriver $webdriver)
     {
         $history = "the\nhistroy";
@@ -82,6 +88,9 @@ class SnapshotSpec extends ObjectBehavior
         $this->getWrappedObject()->run();
     }
 
+    /**
+     * Test that it skips failed screenshots.
+     */
     function it_should_skip_failed_screenshots(
         Config $config,
         Appocular $appocular,
@@ -111,6 +120,38 @@ class SnapshotSpec extends ObjectBehavior
         $batch->checkpoint('front', 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
         $batch->checkpoint('Page one', Argument::any())->shouldNotBeCalled();
+        $webdriver->get('http://baseurl/two')->shouldBeCalled();
+        $batch->checkpoint('Page two', 'more png data')->shouldBeCalled();
+
+        $batch->close()->willReturn(true);
+        $webdriver->quit()->shouldBeCalled();
+
+        $this->getWrappedObject()->run();
+    }
+
+    /**
+     * Test that the hide method hides elements.
+     */
+    function it_should_hide_specified_elements(
+        Config $config,
+        Appocular $appocular,
+        Batch $batch,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $config->getSteps()->willReturn([
+            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]),
+            // Null values should be ignored.
+            new Step('Page two', ['path' => '/two', 'hide' => ['cookiepopup' => null]]),
+        ]);
+        $appocular->startBatch()->willReturn($batch);
+
+
+        $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
+        $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
+
+        $webdriver->get('http://baseurl/')->shouldBeCalled();
+        $batch->checkpoint('front', 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/two')->shouldBeCalled();
         $batch->checkpoint('Page two', 'more png data')->shouldBeCalled();
 

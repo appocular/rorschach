@@ -73,9 +73,10 @@ class ConfigFile
             $this->baseUrl = $config['base_url'];
         }
 
+        $defaults = !empty($config['defaults']) ? $config['defaults'] : [];
         if (!empty($config['steps'])) {
             foreach ($config['steps'] as $name => $step) {
-                $this->steps[] = new Step($name, $step);
+                $this->steps[] = new Step($name, $step, $defaults);
             }
         } else {
             throw new \RuntimeException(self::NO_STEPS_ERROR);

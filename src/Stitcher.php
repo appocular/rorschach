@@ -3,6 +3,9 @@
 namespace Rorschach;
 
 use Facebook\WebDriver\WebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use RuntimeException;
+use Throwable;
 
 class Stitcher
 {
@@ -68,5 +71,22 @@ class Stitcher
         $data = fread($file, $stat['size']);
         fclose($file);
         return $data;
+    }
+
+    public function hideElements($cssSelectors)
+    {
+        $selector = implode(', ', $cssSelectors);
+        try {
+            $elements = $this->webdriver->findElements(WebDriverBy::cssSelector($selector));
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
+                'Error hiding elements with selector "%s": %s',
+                $selector,
+                $e->getMessage()
+            ));
+        }
+        foreach ($elements as $element) {
+            $this->webdriver->executeScript("arguments[0].style.visibility='hidden'", [$element]);
+        }
     }
 }

@@ -148,4 +148,22 @@ EOF;
             new Step('with-path', '/the-path'),
         ]);
     }
+
+    function it_should_handle_step_defaults()
+    {
+        $yaml = <<<'EOF'
+defaults:
+  hide:
+    cookiepopup: "#cookiepopup"
+steps:
+  front: /
+  "with-path":
+    path: /the-path
+EOF;
+        $this->withFixture($yaml);
+        $this->getSteps()->shouldBeLike([
+            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]),
+            new Step('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']]),
+        ]);
+    }
 }

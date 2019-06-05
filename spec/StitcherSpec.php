@@ -3,7 +3,9 @@
 namespace spec\Rorschach;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
 use PhpSpec\ObjectBehavior;
+use RuntimeException;
 
 class StitcherSpec extends ObjectBehavior
 {
@@ -48,6 +50,10 @@ class StitcherSpec extends ObjectBehavior
         $this->beConstructedWith($webdriver);
     }
 
+    /**
+     * Test that stitching works by mocking the expected chunks and checking
+     * that the returned image matches the original image.
+     */
     function it_should_stitch_together_a_full_screenshot(RemoteWebDriver $webdriver)
     {
 
@@ -62,7 +68,10 @@ class StitcherSpec extends ObjectBehavior
         unlink('/tmp/rorschach-test.png');
     }
 
-    function it_should_stitch_together_a_full_screenshot2(RemoteWebDriver $webdriver)
+    /**
+     * Test that errors in getting a screenshot throws an error.
+     */
+    function it_should_throw_on_screenshot_error(RemoteWebDriver $webdriver)
     {
         $webdriver->takeScreenshot()->willReturn(
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk1.png'),
@@ -74,5 +83,30 @@ class StitcherSpec extends ObjectBehavior
         );
 
         $png = $this->shouldThrow(\RuntimeException::class)->duringStitchScreenshot();
+    }
+
+    /**
+     * Test that it can hide elements.
+     */
+    function it_should_hide_elements(RemoteWebDriver $webdriver)
+    {
+        $webdriver->findElements(WebDriverBy::cssSelector('#the_selector'))
+            ->willReturn(['le element', '.video'])->shouldBeCalled();
+        $webdriver->executeScript("arguments[0].style.visibility='hidden'", ['le element'])
+            ->shouldBeCalled();
+        $webdriver->executeScript("arguments[0].style.visibility='hidden'", ['.video'])
+            ->shouldBeCalled();
+
+        // No return value to check, so call directly on the object.
+        $this->getWrappedObject()->hideElements(['#the_selector']);
+    }
+
+    function it_should_catch_errors_in_hide_selector(RemoteWebDriver $webdriver)
+    {
+        $webdriver->findElements(WebDriverBy::cssSelector('bad selector'))
+            ->willThrow(new RuntimeException('oh no'))->shouldBeCalled();
+
+        $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
+        $this->shouldThrow($exception)->duringHideElements(['bad selector']);
     }
 }

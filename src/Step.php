@@ -25,7 +25,11 @@ class Step
         // Ensure all paths starts with a slash.
         $this->path = '/' . ltrim($step['path'], '/');
 
-        $path += $defaults;
+        $step += $defaults;
+
+        if (isset($step['hide'])) {
+            $this->hide = $step['hide'];
+        }
 
     }
 }
