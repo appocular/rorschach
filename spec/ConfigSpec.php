@@ -125,4 +125,10 @@ class ConfigSpec extends ObjectBehavior
         $env->getOptional('RORSCHACH_HISTORY', null)->willReturn("a\nhistory");
         $this->getHistory()->shouldReturn("a\nhistory");
     }
+
+    function it_can_provide_a_writeout_directory(InputInterface $input)
+    {
+        $input->getOption('write-out')->willReturn('the_dir');
+        $this->getWriteOut()->shouldReturn('the_dir');
+    }
 }

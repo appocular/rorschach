@@ -9,6 +9,7 @@ use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Helpers\Env;
 use Rorschach\Processors\AppocularProcessor;
+use Rorschach\Processors\WriteOutProcessor;
 use Rorschach\Snapshot;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,11 +36,15 @@ $container->set(StyleInterface::class, function (InputInterface $input, OutputIn
     return new SymfonyStyle($input, $output);
 });
 
-$container->set(CheckpointProcessor::class, function (Container $container) {
-    return $container->make(AppocularProcessor::class);
+$container->set(CheckpointProcessor::class, function (Container $container, Config $config) {
+    if ($config->getWriteOut()) {
+        return $container->make(WriteOutProcessor::class);
+    } else {
+        return $container->make(AppocularProcessor::class);
+    }
 });
 
-$app->command('run [--webdriver=] [--base-url=]', function (Container $container, InputInterface $input, OutputInterface $output) {
+$app->command('run [--webdriver=] [--base-url=] [--write-out=]', function (Container $container, InputInterface $input, OutputInterface $output) {
     $container->set(InputInterface::class, $input);
     $container->set(OutputInterface::class, $output);
 

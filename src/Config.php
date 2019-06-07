@@ -139,4 +139,9 @@ class Config
     {
         return $this->history;
     }
+
+    public function getWriteOut()
+    {
+        return $this->input->getOption('write-out');
+    }
 }
