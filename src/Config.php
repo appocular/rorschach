@@ -144,4 +144,9 @@ class Config
     {
         return $this->input->getOption('write-out');
     }
+
+    public function getReadIn()
+    {
+        return $this->input->getOption('read-in');
+    }
 }

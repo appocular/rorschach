@@ -9,6 +9,7 @@ use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Fetchers\StitcherFetcher;
+use Rorschach\Fetchers\ReadInFetcher;
 use Rorschach\Helpers\Env;
 use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Processors\WriteOutProcessor;
@@ -46,11 +47,15 @@ $container->set(CheckpointProcessor::class, function (Container $container, Conf
     }
 });
 
-$container->set(CheckpointFetcher::class, function (Container $container) {
-    return $container->make(StitcherFetcher::class);
+$container->set(CheckpointFetcher::class, function (Container $container, Config $config) {
+    if ($config->getReadIn()) {
+        return $container->make(ReadInFetcher::class);
+    } else {
+        return $container->make(StitcherFetcher::class);
+    }
 });
 
-$app->command('run [--webdriver=] [--base-url=] [--write-out=]', function (Container $container, InputInterface $input, OutputInterface $output) {
+$app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=]', function (Container $container, InputInterface $input, OutputInterface $output) {
     $container->set(InputInterface::class, $input);
     $container->set(OutputInterface::class, $output);
 

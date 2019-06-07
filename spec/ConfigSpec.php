@@ -131,4 +131,10 @@ class ConfigSpec extends ObjectBehavior
         $input->getOption('write-out')->willReturn('the_dir');
         $this->getWriteOut()->shouldReturn('the_dir');
     }
+
+    function it_can_provide_a_readin_directory(InputInterface $input)
+    {
+        $input->getOption('read-in')->willReturn('the_dir');
+        $this->getReadIn()->shouldReturn('the_dir');
+    }
 }
