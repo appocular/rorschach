@@ -5,8 +5,7 @@ namespace spec\Rorschach;
 use Facebook\WebDriver\WebDriver;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Rorschach\Appocular;
-use Rorschach\Appocular\Batch;
+use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Snapshot;
 use Rorschach\Step;
@@ -19,8 +18,7 @@ class SnapshotSpec extends ObjectBehavior
     function let(
         Config $config,
         WebDriver $webdriver,
-        Appocular $appocular,
-        Batch $batch,
+        CheckpointProcessor $processor,
         Stitcher $stitcher,
         StyleInterface $io
     ) {
@@ -33,13 +31,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
 
-        $appocular->startBatch(Argument::any(), Argument::any())->willReturn($batch);
-
-        $batch->checkpoint(Argument::any(), Argument::any())->willReturn(true);
-
-        $batch->close()->willReturn(true);
-
-        $this->beConstructedWith($config, $appocular, $webdriver, $stitcher, $io);
+        $this->beConstructedWith($config, $processor, $webdriver, $stitcher, $io);
     }
 
     function it_is_initializable()
@@ -48,42 +40,25 @@ class SnapshotSpec extends ObjectBehavior
     }
 
     /**
-     * Tests that it sends a snapshot to Appocular for each defined step.
+     * Tests that it sends a snapshot to processor for each defined step.
      */
     function it_should_run_the_checkpoints(
         Config $config,
-        Appocular $appocular,
-        Batch $batch,
+        CheckpointProcessor $processor,
         Webdriver $webdriver,
         Stitcher $stitcher,
         StyleInterface $io
     ) {
-        $appocular->startBatch()->willReturn($batch);
         $io->error()->shouldNotBeCalled();
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
         $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
-        $batch->checkpoint('front', 'png data')->shouldBeCalled();
+        $processor->process(new Step('front', '/'), 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $batch->checkpoint('Page one', 'more png data')->shouldBeCalled();
+        $processor->process(new Step('Page one', '/one'), 'more png data')->shouldBeCalled();
 
-        $batch->close()->willReturn(true);
+        $processor->end()->shouldBeCalled();
         $webdriver->quit()->shouldBeCalled();
-
-        $this->getWrappedObject()->run();
-    }
-
-    /**
-     * Tests that it passes the history when creating the batch.
-     */
-    function it_should_pass_the_history(Config $config, Appocular $appocular, Batch $batch, Webdriver $webdriver)
-    {
-        $history = "the\nhistroy";
-        $config->getHistory()->willReturn($history);
-        // No steps, to avoid calls on $webdriver.
-        $config->getSteps()->willReturn([]);
-        $appocular->startBatch('the sha', $history)->shouldBeCalled()->willReturn($batch);
-        $batch->close()->willReturn(true);
 
         $this->getWrappedObject()->run();
     }
@@ -93,8 +68,7 @@ class SnapshotSpec extends ObjectBehavior
      */
     function it_should_skip_failed_screenshots(
         Config $config,
-        Appocular $appocular,
-        Batch $batch,
+        CheckpointProcessor $processor,
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
@@ -103,8 +77,6 @@ class SnapshotSpec extends ObjectBehavior
             new Step('Page one', '/one'),
             new Step('Page two', '/two'),
         ]);
-        $appocular->startBatch()->willReturn($batch);
-
 
         // We need to get a bit verbose here, as we want the second call to
         // throw an exception.
@@ -117,13 +89,13 @@ class SnapshotSpec extends ObjectBehavior
         });
 
         $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $batch->checkpoint('front', 'png data')->shouldBeCalled();
+        $processor->process(new Step('front', '/'), 'png data')->shouldBeCalled();
         $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $batch->checkpoint('Page one', Argument::any())->shouldNotBeCalled();
+        $processor->process(new Step('Page one', '/one'), Argument::any())->shouldNotBeCalled();
         $webdriver->get('http://baseurl/two')->shouldBeCalled();
-        $batch->checkpoint('Page two', 'more png data')->shouldBeCalled();
+        $processor->process(new Step('Page two', '/two'), 'more png data')->shouldBeCalled();
 
-        $batch->close()->willReturn(true);
+        $processor->end()->shouldBeCalled();
         $webdriver->quit()->shouldBeCalled();
 
         $this->getWrappedObject()->run();
@@ -134,8 +106,7 @@ class SnapshotSpec extends ObjectBehavior
      */
     function it_should_hide_specified_elements(
         Config $config,
-        Appocular $appocular,
-        Batch $batch,
+        CheckpointProcessor $processor,
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
@@ -144,19 +115,8 @@ class SnapshotSpec extends ObjectBehavior
             // Null values should be ignored.
             new Step('Page two', ['path' => '/two', 'hide' => ['cookiepopup' => null]]),
         ]);
-        $appocular->startBatch()->willReturn($batch);
-
 
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
-        $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
-
-        $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $batch->checkpoint('front', 'png data')->shouldBeCalled();
-        $webdriver->get('http://baseurl/two')->shouldBeCalled();
-        $batch->checkpoint('Page two', 'more png data')->shouldBeCalled();
-
-        $batch->close()->willReturn(true);
-        $webdriver->quit()->shouldBeCalled();
 
         $this->getWrappedObject()->run();
     }

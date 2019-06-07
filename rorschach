@@ -5,8 +5,10 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriver;
 use Psr\Container\ContainerInterface as Container;
+use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Helpers\Env;
+use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Snapshot;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,8 +30,13 @@ $container->set(WebDriver::class, function (Config $config) {
         throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $address, $e->getMessage()));
     }}
 );
+
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {
     return new SymfonyStyle($input, $output);
+});
+
+$container->set(CheckpointProcessor::class, function (Container $container) {
+    return $container->make(AppocularProcessor::class);
 });
 
 $app->command('run [--webdriver=] [--base-url=]', function (Container $container, InputInterface $input, OutputInterface $output) {
