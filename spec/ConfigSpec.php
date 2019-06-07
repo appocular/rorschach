@@ -137,4 +137,10 @@ class ConfigSpec extends ObjectBehavior
         $input->getOption('read-in')->willReturn('the_dir');
         $this->getReadIn()->shouldReturn('the_dir');
     }
+
+    function it_can_provide_a_verbose_option(InputInterface $input)
+    {
+        $input->getOption('verbose')->willReturn(true);
+        $this->getVerbose()->shouldReturn(true);
+    }
 }

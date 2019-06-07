@@ -149,4 +149,9 @@ class Config
     {
         return $this->input->getOption('read-in');
     }
+
+    public function getVerbose()
+    {
+        return $this->input->getOption('verbose');
+    }
 }

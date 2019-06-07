@@ -28,6 +28,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getBaseUrl()->willReturn('http://baseurl');
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
+        $config->getVerbose()->willReturn(false);
 
         $this->beConstructedWith($config, $fetcher, $processor, $io);
     }
@@ -82,6 +83,36 @@ class SnapshotSpec extends ObjectBehavior
         $processor->process($steps[1], Argument::any())->shouldNotBeCalled();
         $fetcher->fetch($steps[2])->willReturn('more png data')->shouldBeCalled();
         $processor->process($steps[2], 'more png data')->shouldBeCalled();
+
+        $fetcher->end()->shouldBeCalled();
+        $processor->end()->shouldBeCalled();
+
+        $this->getWrappedObject()->run();
+    }
+
+    /**
+     * It should be verbose when asked to.
+     */
+    function it_should_be_verbose(
+        Config $config,
+        CheckpointFetcher $fetcher,
+        CheckpointProcessor $processor,
+        StyleInterface $io
+    ) {
+        $steps = [
+            new Step('front', '/'),
+            new Step('Page two', '/two'),
+        ];
+        $config->getSteps()->willReturn($steps);
+        $config->getVerbose()->willReturn(true);
+
+        $io->text('Checkpointing "front"...')->shouldBeCalled();
+        $io->text('Checkpointing "Page two"...')->shouldBeCalled();
+
+        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($steps[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($steps[1])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($steps[1], 'more png data')->shouldBeCalled();
 
         $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
