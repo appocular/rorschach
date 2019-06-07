@@ -5,8 +5,10 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriver;
 use Psr\Container\ContainerInterface as Container;
+use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
+use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Helpers\Env;
 use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Processors\WriteOutProcessor;
@@ -42,6 +44,10 @@ $container->set(CheckpointProcessor::class, function (Container $container, Conf
     } else {
         return $container->make(AppocularProcessor::class);
     }
+});
+
+$container->set(CheckpointFetcher::class, function (Container $container) {
+    return $container->make(StitcherFetcher::class);
 });
 
 $app->command('run [--webdriver=] [--base-url=] [--write-out=]', function (Container $container, InputInterface $input, OutputInterface $output) {

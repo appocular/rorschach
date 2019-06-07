@@ -2,14 +2,13 @@
 
 namespace spec\Rorschach;
 
-use Facebook\WebDriver\WebDriver;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\CheckpointProcessor;
+use Rorschach\CheckpointFetcher;
 use Rorschach\Config;
 use Rorschach\Snapshot;
 use Rorschach\Step;
-use Rorschach\Stitcher;
 use Symfony\Component\Console\Style\StyleInterface;
 
 class SnapshotSpec extends ObjectBehavior
@@ -17,9 +16,8 @@ class SnapshotSpec extends ObjectBehavior
 
     function let(
         Config $config,
-        WebDriver $webdriver,
+        CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        Stitcher $stitcher,
         StyleInterface $io
     ) {
         $config->getSha()->willReturn('the sha');
@@ -31,7 +29,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
 
-        $this->beConstructedWith($config, $processor, $webdriver, $stitcher, $io);
+        $this->beConstructedWith($config, $fetcher, $processor, $io);
     }
 
     function it_is_initializable()
@@ -44,21 +42,21 @@ class SnapshotSpec extends ObjectBehavior
      */
     function it_should_run_the_checkpoints(
         Config $config,
+        CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        Webdriver $webdriver,
-        Stitcher $stitcher,
         StyleInterface $io
     ) {
         $io->error()->shouldNotBeCalled();
 
-        $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $stitcher->stitchScreenshot()->willReturn('png data', 'more png data')->shouldBeCalled();
-        $processor->process(new Step('front', '/'), 'png data')->shouldBeCalled();
-        $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $processor->process(new Step('Page one', '/one'), 'more png data')->shouldBeCalled();
+        $step = new Step('front', '/');
+        $fetcher->fetch($step)->willReturn('png data')->shouldBeCalled();
+        $processor->process($step, 'png data')->shouldBeCalled();
+        $step = new Step('Page one', '/one');
+        $fetcher->fetch($step)->willReturn('more png data')->shouldBeCalled();
+        $processor->process($step, 'more png data')->shouldBeCalled();
 
+        $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
-        $webdriver->quit()->shouldBeCalled();
 
         $this->getWrappedObject()->run();
     }
@@ -68,55 +66,25 @@ class SnapshotSpec extends ObjectBehavior
      */
     function it_should_skip_failed_screenshots(
         Config $config,
-        CheckpointProcessor $processor,
-        Webdriver $webdriver,
-        Stitcher $stitcher
+        CheckpointFetcher $fetcher,
+        CheckpointProcessor $processor
     ) {
-        $config->getSteps()->willReturn([
+        $steps = [
             new Step('front', '/'),
             new Step('Page one', '/one'),
             new Step('Page two', '/two'),
-        ]);
+        ];
+        $config->getSteps()->willReturn($steps);
 
-        // We need to get a bit verbose here, as we want the second call to
-        // throw an exception.
-        $stitcher->stitchScreenshot()->will(function () use ($stitcher) {
-            $stitcher->stitchScreenshot()->will(function () use ($stitcher) {
-                $stitcher->stitchScreenshot()->willReturn('more png data');
-                throw new \RuntimeException('bad stuff');
-            });
-            return 'png data';
-        });
+        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($steps[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($steps[1])->willThrow(new \RuntimeException('bad stuff'))->shouldBeCalled();
+        $processor->process($steps[1], Argument::any())->shouldNotBeCalled();
+        $fetcher->fetch($steps[2])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($steps[2], 'more png data')->shouldBeCalled();
 
-        $webdriver->get('http://baseurl/')->shouldBeCalled();
-        $processor->process(new Step('front', '/'), 'png data')->shouldBeCalled();
-        $webdriver->get('http://baseurl/one')->shouldBeCalled();
-        $processor->process(new Step('Page one', '/one'), Argument::any())->shouldNotBeCalled();
-        $webdriver->get('http://baseurl/two')->shouldBeCalled();
-        $processor->process(new Step('Page two', '/two'), 'more png data')->shouldBeCalled();
-
+        $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
-        $webdriver->quit()->shouldBeCalled();
-
-        $this->getWrappedObject()->run();
-    }
-
-    /**
-     * Test that the hide method hides elements.
-     */
-    function it_should_hide_specified_elements(
-        Config $config,
-        CheckpointProcessor $processor,
-        Webdriver $webdriver,
-        Stitcher $stitcher
-    ) {
-        $config->getSteps()->willReturn([
-            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]),
-            // Null values should be ignored.
-            new Step('Page two', ['path' => '/two', 'hide' => ['cookiepopup' => null]]),
-        ]);
-
-        $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
 
         $this->getWrappedObject()->run();
     }
