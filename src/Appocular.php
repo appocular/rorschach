@@ -26,16 +26,16 @@ class Appocular
     /**
      * Start a new batch.
      *
-     * @param string $sha
-     *   SHA of the commit of the batch.
+     * @param string $id
+     *   Snapshot ID.
      * @param string $history
      *   History of the commit, newline separated.
      *
      * @return Batch
      *   Batch object.
      */
-    public function startBatch($sha, $history = null)
+    public function startBatch($id, $history = null)
     {
-        return new Batch($this->client, $sha, $history);
+        return new Batch($this->client, $id, $history);
     }
 }

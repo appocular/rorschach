@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 class Config
 {
     /**
-     * Commit SHA.
+     * Snapshot ID (git SHA in our case).
      * @var string
      */
     private $sha;
@@ -24,7 +24,7 @@ class Config
     private $token;
 
     /**
-     * Commit history.
+     * Snapshot history.
      * @var string
      */
     private $history;
