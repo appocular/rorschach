@@ -23,14 +23,19 @@ class ClientSpec extends ObjectBehavior
      * Options expected on all requests.
      */
     function requestOptions() {
-        return ['headers' => ['Authorization' => 'Bearer the-token']];
+        return [
+            'headers' => ['Authorization' => 'Bearer the-token'],
+            'allow_redirects' => false,
+        ];
     }
 
     function it_should_create_a_batch(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
-        $batchId = 'batch_id';
-        $response->getBody()->willReturn(json_encode(['id' => $batchId]));
+        $batchId = 'http://host/batch/batch_id';
+        $response->getStatusCode()->willReturn(201);
+        $response->hasHeader('Location')->willReturn(true);
+        $response->getHeader('Location')->willReturn([$batchId]);
         $client->post('batch', ['json' => ['id' => $sha]] + $this->requestOptions())->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->createBatch($sha)->shouldReturn($batchId);
@@ -46,9 +51,9 @@ class ClientSpec extends ObjectBehavior
 
     function it_should_delete_a_batch(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
-        $batchId = 'batch_id';
+        $batchId = 'http://host/batch/batch_id';
         $response->getStatusCode()->willReturn(200);
-        $client->delete('batch/' . $batchId, $this->requestOptions())->willReturn($response);
+        $client->delete($batchId, $this->requestOptions())->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->deleteBatch($batchId)->shouldReturn(true);
 
@@ -58,13 +63,13 @@ class ClientSpec extends ObjectBehavior
 
     function it_saves_checkpoint(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
-        $batchId = 'batch_id';
+        $batchId = 'http://host/batch/batch_id';
         $response->getStatusCode()->willReturn(200);
         $json = [
             'name' => 'name',
             'image' => base64_encode('png data'),
         ];
-        $client->post('batch/' . $batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);
+        $client->post($batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->checkpoint($batchId, 'name', 'png data')->shouldReturn(true);
 
@@ -75,11 +80,15 @@ class ClientSpec extends ObjectBehavior
     function it_passes_history(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
-        $batchId = 'batch_id';
+        $batchId = 'http://host/batch/batch_id';
         $history = "a\nhistory\nwith\nmultiple\nlines";
-        $response->getBody()->willReturn(json_encode(['id' => $batchId]));
+        $response->getStatusCode()->willReturn(201);
+        $response->hasHeader('Location')->willReturn(true);
+        $response->getHeader('Location')->willReturn([$batchId]);
         $client->post('batch', ['json' => ['id' => $sha, 'history' => $history]] + $this->requestOptions())->willReturn($response);
         $guzzleFactory->get()->willReturn($client);
         $this->createBatch($sha, $history)->shouldReturn($batchId);
     }
+
+    // todo: checkpoint and close should return void and throw on errors
 }

@@ -36,7 +36,11 @@ class Client
      * Get the request options with authorization header.
      */
     protected function getOptions() {
-        return ['headers' => ['Authorization' => 'Bearer ' . $this->config->getToken()]];
+        return [
+            'headers' => ['Authorization' => 'Bearer ' . $this->config->getToken()],
+            // Don't follow location headers. We want those.
+            'allow_redirects' => false,
+        ];
     }
 
     /**
@@ -58,9 +62,8 @@ class Client
                 $json['history'] = $history;
             }
             $response = $this->client->post('batch', ['json' => $json] + $this->getOptions());
-            $json = json_decode($response->getBody());
-            if (isset($json->id)) {
-                return $json->id;
+            if ($response->getStatusCode() === 201 && $response->hasHeader('Location')) {
+                return $response->getHeader('Location')[0];
             }
             throw new RuntimeException("Unexpected reply to create batch:" . $response->getBody());
         } catch (Exception $e) {
@@ -80,7 +83,7 @@ class Client
     public function deleteBatch($batchId)
     {
         try {
-            $response = $this->client->delete('batch/' . $batchId, $this->getOptions());
+            $response = $this->client->delete($batchId, $this->getOptions());
             return true;
         } catch (Exception $e) {
             throw new RuntimeException("Error deleting batch:" . $e->getMessage());
@@ -108,7 +111,7 @@ class Client
                 'name' => $name,
                 'image' => base64_encode($pngData),
             ];
-            $response = $this->client->post('batch/' . $batchId . '/checkpoint', ['json' => $json] + $this->getOptions());
+            $response = $this->client->post($batchId . '/checkpoint', ['json' => $json] + $this->getOptions());
             if ($response->getStatusCode() == 200) {
                 return true;
             }
