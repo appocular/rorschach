@@ -3,6 +3,7 @@
 namespace Rorschach\Fetchers;
 
 use Facebook\WebDriver\WebDriver;
+use Facebook\WebDriver\WebDriverDimension;
 use Rorschach\CheckpointFetcher;
 use Rorschach\Config;
 use Rorschach\Step;
@@ -29,6 +30,10 @@ class StitcherFetcher implements CheckpointFetcher
         if ($step->hide && $selectors = array_filter(array_values($step->hide))) {
             $this->stitcher->hideElements($selectors);
         }
+
+        $width = $this->config->getBrowserWidth();
+        $height = $this->config->getBrowserHeight();
+        $this->webdriver->manage()->window()->setSize(new WebDriverDimension($width, $height));
 
         return $this->stitcher->stitchScreenshot();
     }
