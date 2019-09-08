@@ -22,8 +22,6 @@ class SnapshotSpec extends ObjectBehavior
     ) {
         $config->getSha()->willReturn('the sha');
         $config->getToken()->willReturn('the token');
-        $config->getBrowserHeight()->willReturn(600);
-        $config->getBrowserWidth()->willReturn(800);
         $config->getWebdriverUrl()->willReturn('http://webdriver/');
         $config->getBaseUrl()->willReturn('http://baseurl');
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);

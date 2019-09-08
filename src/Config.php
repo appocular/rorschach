@@ -78,22 +78,6 @@ class Config
     }
 
     /**
-     * Get browser height.
-     */
-    public function getBrowserHeight()
-    {
-        return $this->configFile->getBrowserHeight();
-    }
-
-    /**
-     * Get browser width.
-     */
-    public function getBrowserWidth()
-    {
-        return $this->configFile->getBrowserWidth();
-    }
-
-    /**
      * Get pages to validate.
      */
     public function getSteps()

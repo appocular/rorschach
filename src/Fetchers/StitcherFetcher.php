@@ -31,9 +31,11 @@ class StitcherFetcher implements CheckpointFetcher
             $this->stitcher->hideElements($selectors);
         }
 
-        $width = $this->config->getBrowserWidth();
-        $height = $this->config->getBrowserHeight();
-        $this->webdriver->manage()->window()->setSize(new WebDriverDimension($width, $height));
+        // Only resize if given sizes. While ConfigFile will make sure these
+        // are always set, keeping it optional eases testing.
+        if ($step->browserHeight && $step->browserWidth) {
+            $this->webdriver->manage()->window()->setSize(new WebDriverDimension($step->browserWidth, $step->browserHeight));
+        }
 
         return $this->stitcher->stitchScreenshot();
     }

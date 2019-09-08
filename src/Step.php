@@ -11,8 +11,10 @@ class Step
     public $name;
     public $path;
     public $hide;
+    public $browserWidth;
+    public $browserHeight;
 
-    public function __construct(string $name, $step, $defaults  = [])
+    public function __construct(string $name, $step, $defaults = [])
     {
         $this->name = $name;
         if (is_string($step)) {
@@ -27,9 +29,12 @@ class Step
 
         $step += $defaults;
 
-        if (isset($step['hide'])) {
-            $this->hide = $step['hide'];
-        }
+        foreach (['hide', 'browser_height', 'browser_width'] as $key) {
+            $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
+            if (isset($step[$key])) {
+                $this->{$prop} = $step[$key];
+            }
+        }
     }
 }

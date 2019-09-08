@@ -15,6 +15,12 @@ class ConfigFileSpec extends ObjectBehavior
     protected $oldPwd;
     protected $dir;
 
+    // Defaults added to all steps.
+    protected $stepDefaults = [
+        'browser_height' => ConfigFile::DEFAULT_BROWSER_HEIGHT,
+        'browser_width' => ConfigFile::DEFAULT_BROWSER_WIDTH,
+    ];
+
     function __construct()
     {
         $this->fixtures = dirname(dirname(__DIR__)) . '/fixtures';
@@ -70,7 +76,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_find_config_file_current_dir()
     {
         $this->useFixture('minimal');
-        $this->getSteps()->shouldBeLike([new Step('first', '/')]);
+        $this->getSteps()->shouldBeLike([new Step('first', '/', $this->stepDefaults)]);
     }
 
     function it_should_find_config_from_subdir()
@@ -98,27 +104,13 @@ class ConfigFileSpec extends ObjectBehavior
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_return_browser_size()
-    {
-        $this->useFixture('full');
-        $this->getBrowserHeight()->shouldReturn(300);
-        $this->getBrowserWidth()->shouldReturn(400);
-    }
-
-    function it_should_default_browser_size()
-    {
-        $this->useFixture('minimal');
-        $this->getBrowserHeight()->shouldReturn(ConfigFile::DEFAULT_BROWSER_HEIGHT);
-        $this->getBrowserWidth()->shouldReturn(ConfigFile::DEFAULT_BROWSER_WIDTH);
-    }
-
     function it_should_return_steps()
     {
         $this->useFixture('full');
         $this->getSteps()->shouldBeLike([
-            new Step('front', '/'),
-            new Step('Page two', '/two'),
-            new Step('three', '/slashless'),
+            new Step('front', '/', $this->stepDefaults),
+            new Step('Page two', '/two', $this->stepDefaults),
+            new Step('three', '/slashless', $this->stepDefaults),
         ]);
     }
 
@@ -144,8 +136,8 @@ steps:
 EOF;
         $this->withFixture($yaml);
         $this->getSteps()->shouldBeLike([
-            new Step('front', '/'),
-            new Step('with-path', '/the-path'),
+            new Step('front', '/', $this->stepDefaults),
+            new Step('with-path', '/the-path', $this->stepDefaults),
         ]);
     }
 
@@ -162,8 +154,8 @@ steps:
 EOF;
         $this->withFixture($yaml);
         $this->getSteps()->shouldBeLike([
-            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]),
-            new Step('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']]),
+            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->stepDefaults),
+            new Step('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->stepDefaults),
         ]);
     }
 }

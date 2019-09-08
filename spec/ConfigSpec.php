@@ -19,8 +19,6 @@ class ConfigSpec extends ObjectBehavior
         $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willReturn('appocular-token');
         $env->getOptional('RORSCHACH_HISTORY', null)->willReturn(null);
 
-        $configFile->getBrowserHeight()->willReturn(600);
-        $configFile->getBrowserWidth()->willReturn(800);
         $configFile->getWebdriverUrl()->willReturn('webdriver-url');
         $configFile->getBaseUrl()->willReturn('base-url');
         $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
@@ -61,12 +59,6 @@ class ConfigSpec extends ObjectBehavior
     function it_should_provide_a_token()
     {
         $this->getToken()->shouldReturn('appocular-token');
-    }
-
-    function it_should_provide_browser_size()
-    {
-        $this->getBrowserHeight()->shouldReturn(600);
-        $this->getBrowserWidth()->shouldReturn(800);
     }
 
     function it_should_provide_steps()

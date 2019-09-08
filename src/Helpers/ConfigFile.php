@@ -17,18 +17,6 @@ class ConfigFile
     const DEFAULT_BROWSER_WIDTH = 1920;
 
     /**
-     * Browser height.
-     * @var int
-     */
-    protected $browserHeight;
-
-    /**
-     * Browser width.
-     * @var int
-     */
-    protected $browserWidth;
-
-    /**
      * Webdriver url.
      * @var string|null
      */
@@ -74,6 +62,12 @@ class ConfigFile
         }
 
         $defaults = !empty($config['defaults']) ? $config['defaults'] : [];
+
+        // Add in a default browser size.
+        $defaults += [
+            'browser_height' => self::DEFAULT_BROWSER_HEIGHT,
+            'browser_width' => self::DEFAULT_BROWSER_WIDTH,
+        ];
         if (!empty($config['steps'])) {
             foreach ($config['steps'] as $name => $step) {
                 $this->steps[] = new Step($name, $step, $defaults);
@@ -81,11 +75,6 @@ class ConfigFile
         } else {
             throw new \RuntimeException(self::NO_STEPS_ERROR);
         }
-
-        $this->browserHeight = !empty($config['browser_height']) ?
-            $config['browser_height'] : self::DEFAULT_BROWSER_HEIGHT;
-        $this->browserWidth = !empty($config['browser_width']) ?
-            $config['browser_width'] : self::DEFAULT_BROWSER_WIDTH;
 
         if (!empty($errors)) {
             throw new \RuntimeException(implode('\n', $errors));
@@ -100,16 +89,6 @@ class ConfigFile
     public function getTestName()
     {
         return $this->testName;
-    }
-
-    public function getBrowserHeight()
-    {
-        return $this->browserHeight;
-    }
-
-    public function getBrowserWidth()
-    {
-        return $this->browserWidth;
     }
 
     public function getSteps()
