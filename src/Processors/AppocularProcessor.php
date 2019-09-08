@@ -12,7 +12,6 @@ class AppocularProcessor implements CheckpointProcessor
 
     public function __construct(Config $config, Appocular $appocular)
     {
-        // todo: get branch name and repo...
         $this->batch = $appocular->startBatch($config->getSha(), $config->getHistory());
     }
 

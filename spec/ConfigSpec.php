@@ -7,12 +7,13 @@ use Prophecy\Argument;
 use Rorschach\Config;
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
+use Rorschach\Helpers\Git;
 use Symfony\Component\Console\Input\InputInterface;
 
 class ConfigSpec extends ObjectBehavior
 {
 
-    function let(Env $env, ConfigFile $configFile, InputInterface $input)
+    function let(Env $env, ConfigFile $configFile, InputInterface $input, Git $git)
     {
         // A working configuration.
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
@@ -23,7 +24,7 @@ class ConfigSpec extends ObjectBehavior
         $configFile->getBaseUrl()->willReturn('base-url');
         $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
 
-        $this->beConstructedWith($env, $configFile, $input);
+        $this->beConstructedWith($env, $configFile, $input, $git);
     }
 
     function it_is_initializable()
@@ -115,6 +116,20 @@ class ConfigSpec extends ObjectBehavior
     function it_can_provide_a_history(Env $env)
     {
         $env->getOptional('RORSCHACH_HISTORY', null)->willReturn("a\nhistory");
+        $this->getHistory()->shouldReturn("a\nhistory");
+    }
+
+    function it_can_get_history_from_git(Git $git)
+    {
+        $git->getHistory()->willReturn("sha1\nsha2\n");
+
+        $this->getHistory()->shouldReturn("sha1\nsha2\n");
+    }
+
+    function it_should_let_history_env_var_override_git(Env $env, Git $git)
+    {
+        $env->getOptional('RORSCHACH_HISTORY', null)->willReturn("a\nhistory");
+        $git->getHistory()->willReturn("sha1\nsha2\n");
         $this->getHistory()->shouldReturn("a\nhistory");
     }
 

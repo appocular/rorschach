@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "sha1"
+echo "sha2"
+echo "sha3"
+echo "sha4"

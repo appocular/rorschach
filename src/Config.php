@@ -4,6 +4,7 @@ namespace Rorschach;
 
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
+use Rorschach\Helpers\Git;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -44,7 +45,7 @@ class Config
     const MISSING_WEBDRIVER_URL = 'Please provide a webdriver url, either in the config file or with the --webdriver option.';
     const MISSING_BASE_URL = 'Please provide a base url, either in the config file or with the --base-url option.';
 
-    public function __construct(Env $env, ConfigFile $configFile, InputInterface $input)
+    public function __construct(Env $env, ConfigFile $configFile, InputInterface $input, Git $git)
     {
         $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
         if (empty($this->sha)) {
@@ -58,6 +59,9 @@ class Config
 
         $this->configFile = $configFile;
         $this->history = $env->getOptional('RORSCHACH_HISTORY', null);
+        if (is_null($this->history)) {
+            $this->history = $git->getHistory();
+        }
         $this->input = $input;
     }
 
