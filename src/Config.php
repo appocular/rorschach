@@ -134,8 +134,8 @@ class Config
         return $this->input->getOption('read-in');
     }
 
-    public function getVerbose()
+    public function getQuiet()
     {
-        return $this->input->getOption('verbose');
+        return $this->input->getOption('quiet');
     }
 }

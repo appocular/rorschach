@@ -30,7 +30,7 @@ class Snapshot
         try {
             foreach ($this->config->getSteps() as $step) {
                 try {
-                    if ($this->config->getVerbose()) {
+                    if (!$this->config->getQuiet()) {
                         $this->io->text(sprintf('Checkpointing "%s"...', $step->name));
                     }
                     $this->processor->process($step, $this->fetcher->fetch($step));

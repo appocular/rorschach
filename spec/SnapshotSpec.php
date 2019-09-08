@@ -26,7 +26,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getBaseUrl()->willReturn('http://baseurl');
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
-        $config->getVerbose()->willReturn(false);
+        $config->getQuiet()->willReturn(false);
 
         $this->beConstructedWith($config, $fetcher, $processor, $io);
     }
@@ -46,6 +46,7 @@ class SnapshotSpec extends ObjectBehavior
         StyleInterface $io
     ) {
         $io->error()->shouldNotBeCalled();
+        $io->text(Argument::any())->willReturn();
 
         $step = new Step('front', '/');
         $fetcher->fetch($step)->willReturn('png data')->shouldBeCalled();
@@ -89,7 +90,7 @@ class SnapshotSpec extends ObjectBehavior
     }
 
     /**
-     * It should be verbose when asked to.
+     * It should be verbose per default.
      */
     function it_should_be_verbose(
         Config $config,
@@ -102,10 +103,38 @@ class SnapshotSpec extends ObjectBehavior
             new Step('Page two', '/two'),
         ];
         $config->getSteps()->willReturn($steps);
-        $config->getVerbose()->willReturn(true);
 
         $io->text('Checkpointing "front"...')->shouldBeCalled();
         $io->text('Checkpointing "Page two"...')->shouldBeCalled();
+
+        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($steps[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($steps[1])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($steps[1], 'more png data')->shouldBeCalled();
+
+        $fetcher->end()->shouldBeCalled();
+        $processor->end()->shouldBeCalled();
+
+        $this->getWrappedObject()->run();
+    }
+
+    /**
+     * It should be quiet when asked to.
+     */
+    function it_should_be_quiet(
+        Config $config,
+        CheckpointFetcher $fetcher,
+        CheckpointProcessor $processor,
+        StyleInterface $io
+    ) {
+        $steps = [
+            new Step('front', '/'),
+            new Step('Page two', '/two'),
+        ];
+        $config->getSteps()->willReturn($steps);
+        $config->getQuiet()->willReturn(true);
+
+        $io->text()->shouldNotBeCalled();
 
         $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($steps[0], 'png data')->shouldBeCalled();

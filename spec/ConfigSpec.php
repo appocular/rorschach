@@ -130,9 +130,9 @@ class ConfigSpec extends ObjectBehavior
         $this->getReadIn()->shouldReturn('the_dir');
     }
 
-    function it_can_provide_a_verbose_option(InputInterface $input)
+    function it_can_provide_a_quiet_option(InputInterface $input)
     {
-        $input->getOption('verbose')->willReturn(true);
-        $this->getVerbose()->shouldReturn(true);
+        $input->getOption('quiet')->willReturn(true);
+        $this->getQuiet()->shouldReturn(true);
     }
 }
