@@ -19,7 +19,7 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function process(Step $step, $pngData) : void
+    public function process(Step $step, string $pngData) : void
     {
         $this->batch->checkpoint($step->name, $pngData);
     }
