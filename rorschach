@@ -36,8 +36,12 @@ $container->set(WebDriver::class, function (Config $config) {
     }}
 );
 
-$container->set(Client::class, function () {
-    return new Client(['base_uri' => 'http://assessor.caddy.appocular.docker/']);
+$container->set(Client::class, function (InputInterface $input) {
+    $base = 'alpha.appocular.io';
+    if ($input->hasOption('base')) {
+        $base = $input->getOption('base');
+    }
+    return new Client(['base_uri' => 'http://assessor.' . $base . '/']);
 });
 
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {
@@ -60,7 +64,7 @@ $container->set(CheckpointFetcher::class, function (Container $container, Config
     }
 });
 
-$app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=]', function (Container $container, InputInterface $input, OutputInterface $output) {
+$app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--base=]', function (Container $container, InputInterface $input, OutputInterface $output) {
     $container->set(InputInterface::class, $input);
     $container->set(OutputInterface::class, $output);
 
