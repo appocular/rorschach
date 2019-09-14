@@ -36,12 +36,8 @@ $container->set(WebDriver::class, function (Config $config) {
     }}
 );
 
-$container->set(Client::class, function (InputInterface $input) {
-    $base = 'alpha.appocular.io';
-    if ($input->hasOption('base')) {
-        $base = $input->getOption('base');
-    }
-    return new Client(['base_uri' => 'http://assessor.' . $base . '/']);
+$container->set(Client::class, function (Config $config) {
+    return new Client(['base_uri' => 'http://assessor.' . $config->getBase() . '/']);
 });
 
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {

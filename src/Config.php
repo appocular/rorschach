@@ -142,4 +142,9 @@ class Config
     {
         return $this->input->getOption('quiet');
     }
+
+    public function getBase()
+    {
+        return $this->input->hasOption('base') ? $this->input->getOption('base') : 'alpha.appocular.io';
+    }
 }
