@@ -10,9 +10,15 @@ use Rorschach\Step;
 class AppocularProcessor implements CheckpointProcessor
 {
 
+    /**
+     * @var \Rorschach\Config
+     */
+    protected $config;
+
     public function __construct(Config $config, Appocular $appocular)
     {
         $this->batch = $appocular->startBatch($config->getSha(), $config->getHistory());
+        $this->config = $config;
     }
 
     /**
@@ -26,8 +32,10 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function end() : void
+    public function end() : ?array
     {
         $this->batch->close();
+        return ["Verify snapshot at http://stopgap." . $this->config->getBase() .
+                '/snapshot/' . $this->config->getSha()];
     }
 }

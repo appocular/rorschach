@@ -26,7 +26,8 @@ class WriteOutProcessor implements CheckpointProcessor
     /**
      * End processing.
      */
-    public function end() : void
+    public function end() : ?array
     {
+        return null;
     }
 }

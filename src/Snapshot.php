@@ -44,7 +44,13 @@ class Snapshot
             }
         } finally {
             $this->fetcher->end();
-            $this->processor->end();
+            $output = $this->processor->end();
+            if ($output) {
+                $this->io->newLine();
+                foreach ($output as $line) {
+                    $this->io->text($line);
+                }
+            }
         }
     }
 }

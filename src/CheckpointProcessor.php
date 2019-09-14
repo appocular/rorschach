@@ -15,6 +15,11 @@ interface CheckpointProcessor
 
     /**
      * End processing.
+     *
+     * May return output strings.
+     *
+     * @return array|null
+     *   Array of strings to output.
      */
-    public function end() : void;
+    public function end() : ?array;
 }
