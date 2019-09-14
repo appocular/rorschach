@@ -8,15 +8,14 @@ use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Appocular\Client;
-use Rorschach\Appocular\GuzzleFactory;
 use Rorschach\Config;
 use RuntimeException;
 
 class ClientSpec extends ObjectBehavior
 {
-    function let(GuzzleFactory $guzzleFactory, Config $config) {
+    function let(GuzzleClient $client, Config $config) {
         $config->getToken()->willReturn('the-token');
-        $this->beConstructedWith($guzzleFactory, $config);
+        $this->beConstructedWith($client, $config);
     }
 
     /**
@@ -29,7 +28,7 @@ class ClientSpec extends ObjectBehavior
         ];
     }
 
-    function it_should_create_a_batch(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_should_create_a_batch(GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
         $batchId = 'http://host/batch/batch_id';
@@ -37,31 +36,28 @@ class ClientSpec extends ObjectBehavior
         $response->hasHeader('Location')->willReturn(true);
         $response->getHeader('Location')->willReturn([$batchId]);
         $client->post('batch', ['json' => ['id' => $sha]] + $this->requestOptions())->willReturn($response);
-        $guzzleFactory->get()->willReturn($client);
         $this->createBatch($sha)->shouldReturn($batchId);
     }
 
-    function it_should_throw_on_creation_failure(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_should_throw_on_creation_failure(GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
         $client->post('batch', ['json' => ['id' => $sha]] + $this->requestOptions())->willThrow(new Exception());
-        $guzzleFactory->get()->willReturn($client);
         $this->shouldThrow(RuntimeException::class)->duringCreateBatch($sha);
     }
 
-    function it_should_delete_a_batch(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_should_delete_a_batch(GuzzleClient $client, Response $response)
     {
         $batchId = 'http://host/batch/batch_id';
         $response->getStatusCode()->willReturn(200);
         $client->delete($batchId, $this->requestOptions())->willReturn($response);
-        $guzzleFactory->get()->willReturn($client);
         $this->deleteBatch($batchId)->shouldReturn(true);
 
         // Deleting non-existing batch should throw an error.
         $this->shouldThrow(RuntimeException::class)->duringDeleteBatch('banana');
     }
 
-    function it_saves_checkpoint(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_saves_checkpoint(GuzzleClient $client, Response $response)
     {
         $batchId = 'http://host/batch/batch_id';
         $response->getStatusCode()->willReturn(200);
@@ -70,14 +66,13 @@ class ClientSpec extends ObjectBehavior
             'image' => base64_encode('png data'),
         ];
         $client->post($batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);
-        $guzzleFactory->get()->willReturn($client);
         $this->checkpoint($batchId, 'name', 'png data')->shouldReturn(true);
 
         // Should throw on errors.
         $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
     }
 
-    function it_passes_history(GuzzleFactory $guzzleFactory, GuzzleClient $client, Response $response)
+    function it_passes_history(GuzzleClient $client, Response $response)
     {
         $sha = 'the sha';
         $batchId = 'http://host/batch/batch_id';
@@ -86,7 +81,6 @@ class ClientSpec extends ObjectBehavior
         $response->hasHeader('Location')->willReturn(true);
         $response->getHeader('Location')->willReturn([$batchId]);
         $client->post('batch', ['json' => ['id' => $sha, 'history' => $history]] + $this->requestOptions())->willReturn($response);
-        $guzzleFactory->get()->willReturn($client);
         $this->createBatch($sha, $history)->shouldReturn($batchId);
     }
 

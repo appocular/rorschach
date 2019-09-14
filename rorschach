@@ -4,12 +4,13 @@
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriver;
+use GuzzleHttp\Client;
 use Psr\Container\ContainerInterface as Container;
 use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
-use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Fetchers\ReadInFetcher;
+use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Helpers\Env;
 use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Processors\WriteOutProcessor;
@@ -34,6 +35,10 @@ $container->set(WebDriver::class, function (Config $config) {
         throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $address, $e->getMessage()));
     }}
 );
+
+$container->set(Client::class, function () {
+    return new Client(['base_uri' => 'http://assessor.caddy.appocular.docker/']);
+});
 
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {
     return new SymfonyStyle($input, $output);

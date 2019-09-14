@@ -3,7 +3,7 @@
 namespace Rorschach\Appocular;
 
 use Exception;
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client as Guzzle;
 use Rorschach\Config;
 use RuntimeException;
 
@@ -23,19 +23,20 @@ class Client
     /**
      * Construct a new client.
      *
-     * @param GuzzleFactory $guzzleFactory
-     *   Factory to get Guzzle client from.
+     * @param Guzzle $client
+     *   Guzzle client.
      */
-    public function __construct(GuzzleFactory $guzzleFactory, Config $config)
+    public function __construct(Guzzle $client, Config $config)
     {
-        $this->client = $guzzleFactory->get();
+        $this->client = $client;
         $this->config = $config;
     }
 
     /**
      * Get the request options with authorization header.
      */
-    protected function getOptions() {
+    protected function getOptions()
+    {
         return [
             'headers' => ['Authorization' => 'Bearer ' . $this->config->getToken()],
             // Don't follow location headers. We want those.
