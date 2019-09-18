@@ -30,4 +30,4 @@ release:
 	@git tag $(version)
 
 test:
-	@phpdbg -qrr ./vendor/bin/phpspec run -c .phpspec.coverage.yml
+	@phpdbg -qrr ./vendor/bin/phpspec run -n -c .phpspec.coverage.yml
