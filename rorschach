@@ -37,7 +37,7 @@ $container->set(WebDriver::class, function (Config $config) {
 );
 
 $container->set(Client::class, function (Config $config) {
-    return new Client(['base_uri' => 'http://assessor.' . $config->getBase() . '/']);
+    return new Client(['base_uri' => 'https://assessor.' . $config->getBase() . '/', 'timeout' => 60]);
 });
 
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {

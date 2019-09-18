@@ -35,7 +35,7 @@ class AppocularProcessor implements CheckpointProcessor
     public function end() : ?array
     {
         $this->batch->close();
-        return ["Verify snapshot at http://stopgap." . $this->config->getBase() .
+        return ["Verify snapshot at https://stopgap." . $this->config->getBase() .
                 '/snapshot/' . $this->config->getSha()];
     }
 }
