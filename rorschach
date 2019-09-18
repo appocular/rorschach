@@ -37,7 +37,12 @@ $container->set(WebDriver::class, function (Config $config) {
 );
 
 $container->set(Client::class, function (Config $config) {
-    return new Client(['base_uri' => 'https://assessor.' . $config->getBase() . '/', 'timeout' => 60]);
+    $base = $config->getBase();
+    $scheme = 'https';
+    if (preg_match('/docker$/', $base)) {
+        $scheme = 'http';
+    }
+    return new Client(['base_uri' => $scheme . '://assessor.' . $config->getBase() . '/', 'timeout' => 60]);
 });
 
 $container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {
