@@ -113,12 +113,13 @@ class Client
                 'image' => base64_encode($pngData),
             ];
             $response = $this->client->post($batchId . '/checkpoint', ['json' => $json] + $this->getOptions());
-            if ($response->getStatusCode() == 200) {
+            if ($response->getStatusCode() == 201) {
                 return true;
             }
         } catch (Exception $e) {
             throw new RuntimeException("Error submitting image:" . $e->getMessage());
         }
-        return false;
+        throw new RuntimeException("Error submitting image, unknown response, code " .
+                                   $response->getStatusCode() . ', body: ' . $response->getBody());
     }
 }
