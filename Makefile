@@ -2,16 +2,15 @@
 # why not use it?
 SHELL=/usr/bin/fish
 
-.PHONY: test
+.PHONY: build release test watch-test
 
-build:
-	# Remove dev dependencies while building.
-	composer install --no-dev
-	./box build
-	# Restore dev dependencies.
-	composer install
+box.phar:
+	wget https://github.com/humbug/box/releases/download/3.8.0/box.phar
 
-release:
+build: box.phar $(shell find src vendor -type f)
+	php box.phar compile
+
+release: test build
 	@if string match -qrv '^[0-9]+\.[0-9]+\.[0-9]+$$' $(version); \
 	  echo -e "\nPlease spercify version in X.Y.Z format\n"; \
           false; \
@@ -21,7 +20,7 @@ release:
           false; \
 	end
 	@echo "Updating readme"
-	@sed -i -e 's/\\/[^/]*\\/rorshach-.*.phar/\\/$(version)\\/rorshach-$(version).phar/' README.md
+	@sed -i -e 's/\\/[^/]*\\/rorshach.phar/\\/$(version)\\/rorshach.phar/' README.md
 	@echo "Updating changlog"
 	@sed -i -e '/## Unreleased/a \\\n## $(version) - $(shell date +%F)' CHANGELOG.md
 	@echo "Tagging"
@@ -36,3 +35,6 @@ watch-test:
 	while true; \
 	  find . \( -name .git -o -name vendor \) -prune -o -name '#*' -o -name '*.php' -a -print | entr -cd make test; \
 	end
+
+clean:
+	rm box.phar rorschach.phar

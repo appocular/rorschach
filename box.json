@@ -1,16 +1,5 @@
 {
-    "alias": "rorschach.phar",
-    "chmod": "0755",
-    "directories": ["src"],
-    "finder": [
-        {
-            "name": "*.php",
-            "in": "vendor"
-        }
-    ],
-    "git-version": "git-version",
-    "main": "rorschach",
-    "output": "rorschach.phar",
-    "output": "rorschach-@git-version@.phar",
-    "stub": true
+  "main": "rorschach",
+  "git-tag": "git-tag",
+  "compression": "GZ"
 }
