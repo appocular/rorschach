@@ -20,7 +20,7 @@ release: test build
           false; \
 	end
 	@echo "Updating readme"
-	@sed -i -e 's/\\/[^/]*\\/rorshach.phar/\\/$(version)\\/rorshach.phar/' README.md
+	@sed -i -e 's/\\/[^/]*\\/rorschach.phar/\\/$(version)\\/rorshach.phar/' README.md
 	@echo "Updating changlog"
 	@sed -i -e '/## Unreleased/a \\\n## $(version) - $(shell date +%F)' CHANGELOG.md
 	@echo "Tagging"
