@@ -19,7 +19,7 @@ deploy:
   api_key:
     secure: JfHlj7F81HVx7oKZ2uPS5zUkWuQvtWVRISzUj0Vlt9jFM/nYJiw5T74lgbwBkXACE1GfLRw5iX9yBOyskMobUaGMy6+zhFk5QEBLC+BlvBX8WqBJBvCGVWL9NxTm9mS+crMEbPldWkwzZgO1ndRPe+szuF3Ifyx9y2+tqvWY1FvOVgARGmM6TPb06MftqD99xBlNWq/ehkGVrfKPmHSNmNMj19skyTz0cQzDTvT1C0GYGrSvjuWifFZUGv4ADX6tBPbe/t/2RKHQB2khPeZjnq6OiozhZXJMEMxC4De8iIRGjPeTYcwnTShII8MqCsQZgvjd2cO7sR7oCgoDXWwlMYDUYQKAA3Rr7Oot2MX0tzbD8CpaWH8tNoL/nPPWUEKEyMQu0qQBcm4HMyxZ2kGbWHofy8McYUxGzgAE+K3fWtGSOu8ZilyUAEZYRaXhwZSalFXPRxOcjsZIsoyIzaAKXFN08pqLIeCigCP81vL6mxc6ogkTDxYA1rlYiU3dbmsBC0t/tUBpfXkNiOJyQwPAufbMTKLIy20YvH9wm3+eU9PmzAtuUYtJ4xsyb/uSzZqKgzb2Ww20HGY4BXnftqzG0wWROWOt8M0lskkhiqyZhxg6slvqPvC9WMRf9buBm1H+7zuUKyJCEfbO7x7y78oI0ght5jFOeElmFd/PU/lRZLc=
   on:
-    repo: xendk/rorschach
+    repo: appocular/rorschach
     tags: true
     php: '7.1'
   file: rorschach.phar
