@@ -153,10 +153,10 @@ class ConfigSpec extends ObjectBehavior
 
     function it_should_provide_a_base(ConfigFile $configFile, InputInterface $input)
     {
-        $input->hasOption('base')->willReturn(false);
+        $input->getOption('base')->willReturn(false);
         $this->getBase()->shouldReturn('alpha.appocular.io');
 
-        $input->hasOption('base')->willReturn(true);
+        $input->getOption('base')->willReturn(true);
         $input->getOption('base')->willReturn('example.com');
         $this->getBase()->shouldReturn('example.com');
     }

@@ -60,7 +60,7 @@ class ClientSpec extends ObjectBehavior
     function it_saves_checkpoint(GuzzleClient $client, Response $response)
     {
         $batchId = 'http://host/batch/batch_id';
-        $response->getStatusCode()->willReturn(200);
+        $response->getStatusCode()->willReturn(201);
         $json = [
             'name' => 'name',
             'image' => base64_encode('png data'),
