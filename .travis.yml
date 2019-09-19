@@ -13,9 +13,7 @@ script:
   - bash <(curl -s https://codecov.io/bash)
 
 after_success:
-  - composer global require kherge/box --prefer-dist
-  - composer install --no-dev
-  - "~/.composer/vendor/bin/box build --no-interaction"
+  - make build
 
 deploy:
   skip_cleanup: true
