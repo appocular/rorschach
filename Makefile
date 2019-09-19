@@ -7,7 +7,7 @@ SHELL=/usr/bin/fish
 box.phar:
 	wget https://github.com/humbug/box/releases/download/3.8.0/box.phar
 
-build: box.phar $(shell find src vendor -type f)
+build: box.phar
 	php box.phar compile
 
 release: test build
