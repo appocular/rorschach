@@ -10,7 +10,7 @@ The important env vars is:
 To use, add something along these lines to the Circle configuration:
 
 ``` shell
-wget https://github.com/appocular/rorschach/releases/download/0.2.0/rorschach.phar
+wget https://github.com/appocular/rorschach/releases/download/0.3.0/rorshach.phar
 php rorschach.phar
 ```
 
