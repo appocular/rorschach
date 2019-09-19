@@ -1,8 +1,6 @@
 language: php
 
 php:
-  - '5.6'
-  - '7.0'
   - '7.1'
   - '7.2'
 
@@ -23,5 +21,5 @@ deploy:
   on:
     repo: xendk/rorschach
     tags: true
-    php: '5.6'
+    php: '7.1'
   file: rorschach.phar

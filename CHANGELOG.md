@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Retool to submit images to Appocular instead of Applitools Eyes
 - Config file format has changed
+- Require at least PHP 7.1
 
 ### Removed
 - Applitools Eyes support
