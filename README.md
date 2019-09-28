@@ -17,8 +17,8 @@ php rorschach.phar
 ## Environment variables
 
 - `CIRCLE_SHA1`: Used to get the SHA of the commit being tested.
-- `APPOCULAR_TOKEN`: Repository token. So Appocular can find the right
-  repository to put images.
+- `APPOCULAR_TOKEN`: Repository token. Tells Appocular which
+  repository these images belong to.
 - `RORSCHACH_HISTORY`: Overrides the history from git. Primarily for
   testing, but might be useful in special cases. A newline separated
   list of commit SHAs. `git rev-list HEAD` produces the same history
