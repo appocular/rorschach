@@ -16,7 +16,7 @@ class ConfigSpec extends ObjectBehavior
     function let(Env $env, ConfigFile $configFile, InputInterface $input, Git $git)
     {
         // A working configuration.
-        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('sha');
+        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willReturn('github sha');
         $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willReturn('appocular-token');
         $env->getOptional('RORSCHACH_HISTORY', null)->willReturn(null);
 
@@ -35,16 +35,24 @@ class ConfigSpec extends ObjectBehavior
     function it_throw_on_missing_or_empty_sha(Env $env)
     {
         $exception = new \RuntimeException(Config::MISSING_SHA_ERROR);
+        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willThrow($exception);
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willThrow($exception);
         $this->shouldThrow($exception)->duringInstantiation();
 
-        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('');
+        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willReturn('');
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_provide_a_sha()
+    function it_should_provide_a_sha_from_github()
     {
-        $this->getSha()->shouldReturn('sha');
+        $this->getSha()->shouldReturn('github sha');
+    }
+
+    function it_should_provide_a_sha_from_circle(Env $env)
+    {
+        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willThrow(\RuntimeException::class);
+        $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('circle sha');
+        $this->getSha()->shouldReturn('circle sha');
     }
 
     function it_throw_on_missing_or_empty_token(Env $env)

@@ -40,14 +40,19 @@ class Config
      */
     private $input;
 
-    const MISSING_SHA_ERROR = "Please ensure that the CIRCLE_SHA1 env variable contains the commit SHA.";
+    const MISSING_SHA_ERROR = "Please ensure that the GITHUB_SHA or CIRCLE_SHA1 env variable contains the commit SHA.";
     const MISSING_TOKEN_ERROR = "Please ensure that the APPOCULAR_TOKEN env variable contains the token for Appocular.";
     const MISSING_WEBDRIVER_URL = 'Please provide a webdriver url, either in the config file or with the --webdriver option.';
     const MISSING_BASE_URL = 'Please provide a base url, either in the config file or with the --base-url option.';
 
     public function __construct(Env $env, ConfigFile $configFile, InputInterface $input, Git $git)
     {
-        $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
+        try {
+            $this->sha = $env->get('GITHUB_SHA', self::MISSING_SHA_ERROR);
+        }
+        catch (\RuntimeException $e) {
+            $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
+        }
         if (empty($this->sha)) {
             throw new \RuntimeException(self::MISSING_SHA_ERROR);
         }
