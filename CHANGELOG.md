@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   taking the screenshot, when stitching together full page
   screenshots. This allows animations time to settle.
 
+### Fixed
+- Fixed the Stopgap URL printed after completing snapshot
+
 ## 0.3.1 - 2019-09-28
 ### Added
 - Support for Github Actions
