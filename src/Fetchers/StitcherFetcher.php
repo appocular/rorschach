@@ -37,7 +37,11 @@ class StitcherFetcher implements CheckpointFetcher
             $this->webdriver->manage()->window()->setSize(new WebDriverDimension($step->browserWidth, $step->browserHeight));
         }
 
-        return $this->stitcher->stitchScreenshot();
+        if ($step->wait) {
+            usleep($step->wait * 1000000);
+        }
+
+        return $this->stitcher->stitchScreenshot($step->stitchDelay ?? 0);
     }
 
     /**

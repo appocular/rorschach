@@ -22,7 +22,7 @@ class Stitcher
         $this->webdriver = $webdriver;
     }
 
-    public function stitchScreenshot()
+    public function stitchScreenshot($stitchDelay = 0)
     {
         $total_width = $this->webdriver->executeScript('return Math.max.apply(null, [document.body.clientWidth, document.body.scrollWidth, document.documentElement.scrollWidth, document.documentElement.clientWidth])');
         $total_height = $this->webdriver->executeScript('return Math.max.apply(null, [document.body.clientHeight, document.body.scrollHeight, document.documentElement.scrollHeight, document.documentElement.clientHeight])');
@@ -44,6 +44,11 @@ class Stitcher
                 if ($before_top == $scroll_top) {
                     break;
                 }
+
+                if ($stitchDelay) {
+                    usleep($stitchDelay * 1000000);
+                }
+
                 $imageData = $this->webdriver->takeScreenshot();
                 if (!$imageData) {
                     throw new \RuntimeException('Could not save screenshot');

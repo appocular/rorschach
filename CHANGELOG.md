@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- `wait` option for steps, to wait after navigation before taking the
+  screenshot.
+- `stitch_delay` option to wait after moving the viewport before
+  taking the screenshot, when stitching together full page
+  screenshots. This allows animations time to settle.
 
 ## 0.3.1 - 2019-09-28
 ### Added

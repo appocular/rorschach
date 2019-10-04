@@ -56,6 +56,13 @@ defaults:
   # Selfevident..
   browser_height: 800
   browser_width: 1280
+  # Wait one second after loading the page before taking screenshot,
+  # to allow things to load.
+  wait: 1
+  # Wait one second after moving the viewport before taking the
+  # screenshot, when stitching full page screenshots together. This
+  # allows animations to settle.
+  stitch_delay: 1
 # Pages to screenshot. Will be renamed "checkpoints" at some time.
 steps:
   # Short syntax, name: path.

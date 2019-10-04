@@ -24,10 +24,26 @@ class StitcherFetcherSpec extends ObjectBehavior
     ) {
         $config->getBaseUrl()->willReturn('base');
         $webdriver->get('base/path')->shouldBeCalled();
-        $stitcher->stitchScreenshot()->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
+    }
+
+    /**
+     * Test that it passes stitchDelay
+     */
+    function it_passes_stitch_delay(
+        Config $config,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $config->getBaseUrl()->willReturn('base');
+        $webdriver->get('base/path')->shouldBeCalled();
+        $stitcher->stitchScreenshot(42)->willReturn('image data');
+        $this->beConstructedWith($config, $webdriver, $stitcher);
+
+        $this->fetch(new Step('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
     }
 
     /**
@@ -39,7 +55,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Stitcher $stitcher
     ) {
         $config->getBaseUrl()->willReturn('base');
-        $stitcher->stitchScreenshot()->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
         $this->beConstructedWith($config, $webdriver, $stitcher);
 
@@ -59,7 +75,7 @@ class StitcherFetcherSpec extends ObjectBehavior
     ) {
         $config->getBaseUrl()->willReturn('base');
         $webdriver->get('base/path')->shouldBeCalled();
-        $stitcher->stitchScreenshot()->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $webdriverWindow->setSize(new WebDriverDimension('800', '600'))->shouldBeCalled();
