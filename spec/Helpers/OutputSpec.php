@@ -2,18 +2,21 @@
 
 namespace spec\Rorschach\Helpers;
 
-use Rorschach\Helpers\Output;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Rorschach\Helpers\Output;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class OutputSpec extends ObjectBehavior
 {
 
-    function let(OutputInterface $output)
+    function let(OutputInterface $output, OutputFormatter $formatter, ConsoleOutputInterface $stdOutput)
     {
+        $output->getFormatter()->willReturn($formatter);
+        $stdOutput->getFormatter()->willReturn($formatter);
         $this->beConstructedWith($output);
     }
 
@@ -24,7 +27,7 @@ class OutputSpec extends ObjectBehavior
 
     function it_outputs_messages(OutputInterface $output)
     {
-        $output->writeln('test', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
+        $output->writeln('<message>test</>', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
         $this->message('test');
     }
 

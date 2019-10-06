@@ -2,6 +2,7 @@
 
 namespace Rorschach\Helpers;
 
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -15,6 +16,13 @@ class Output
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
+        $formatter = $this->output->getFormatter();
+
+        $formatter->setStyle('debug', new OutputFormatterStyle('cyan'));
+        $formatter->setStyle('message', new OutputFormatterStyle());
+        $formatter->setStyle('info', new OutputFormatterStyle('magenta'));
+        $formatter->setStyle('warning', new OutputFormatterStyle('yellow'));
+        $formatter->setStyle('error', new OutputFormatterStyle('red'));
     }
 
     public function debug($message)
@@ -24,7 +32,7 @@ class Output
 
     public function message($message)
     {
-        $this->output->writeln($message, OutputInterface::VERBOSITY_NORMAL);
+        $this->writeln('message', $message, OutputInterface::VERBOSITY_NORMAL);
     }
 
     public function info($message)
