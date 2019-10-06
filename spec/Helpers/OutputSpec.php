@@ -2,6 +2,7 @@
 
 namespace spec\Rorschach\Helpers;
 
+use Carbon\Carbon;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Helpers\Output;
@@ -16,7 +17,9 @@ class OutputSpec extends ObjectBehavior
     function let(OutputInterface $output, OutputFormatter $formatter, ConsoleOutputInterface $stdOutput)
     {
         $output->getFormatter()->willReturn($formatter);
+        $output->isDebug()->willReturn(false);
         $stdOutput->getFormatter()->willReturn($formatter);
+        $stdOutput->isDebug()->willReturn(false);
         $this->beConstructedWith($output);
     }
 
@@ -63,5 +66,14 @@ class OutputSpec extends ObjectBehavior
     {
         $output->writeln('', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
         $this->newLine();
+    }
+
+    function it_outputs_timstamps_in_debug(OutputInterface $output)
+    {
+        Carbon::setTestNow(Carbon::parse('2019-10-06 21:26:12'));
+        $output->isDebug()->willReturn(true);
+        $output->writeln('[<timestamp>2019-10-06 21:26:12</>] <message>test</>', OutputInterface::VERBOSITY_NORMAL)
+            ->shouldBeCalled();
+        $this->message('test');
     }
 }

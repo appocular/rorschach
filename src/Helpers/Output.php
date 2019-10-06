@@ -2,6 +2,8 @@
 
 namespace Rorschach\Helpers;
 
+use Carbon\Carbon;
+use DateTimeZone;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,6 +25,7 @@ class Output
         $formatter->setStyle('info', new OutputFormatterStyle('magenta'));
         $formatter->setStyle('warning', new OutputFormatterStyle('yellow'));
         $formatter->setStyle('error', new OutputFormatterStyle('red'));
+        $formatter->setStyle('timestamp', new OutputFormatterStyle('white'));
     }
 
     public function debug($message)
@@ -57,10 +60,18 @@ class Output
 
     protected function writeln($style, $message, $verbosity, $errorOutput = false)
     {
+        $message = sprintf("<%s>%s</>", $style, $message);
+
+        // Add timestamps in debug mode.
+        if ($this->output->isDebug()) {
+            $message = sprintf("[<timestamp>%s</>] %s", Carbon::now()->format('Y-m-d H:i:s'), $message);
+        }
+
+        // Print errors to stderr.
         if ($errorOutput && $this->output instanceof ConsoleOutputInterface) {
-            $this->output->getErrorOutput()->writeln(sprintf("<%s>%s</>", $style, $message), $verbosity);
+            $this->output->getErrorOutput()->writeln($message, $verbosity);
         } else {
-            $this->output->writeln(sprintf("<%s>%s</>", $style, $message), $verbosity);
+            $this->output->writeln($message, $verbosity);
         }
     }
 }
