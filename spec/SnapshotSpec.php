@@ -26,7 +26,6 @@ class SnapshotSpec extends ObjectBehavior
         $config->getBaseUrl()->willReturn('http://baseurl');
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
-        $config->getQuiet()->willReturn(false);
 
         $this->beConstructedWith($config, $fetcher, $processor, $output);
     }
@@ -90,9 +89,9 @@ class SnapshotSpec extends ObjectBehavior
     }
 
     /**
-     * It should print progress per default.
+     * It should print progress.
      */
-    function it_should_print_progress_per_default(
+    function it_should_print_progress(
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
@@ -106,35 +105,6 @@ class SnapshotSpec extends ObjectBehavior
 
         $output->message('Checkpointing "front"...')->shouldBeCalled();
         $output->message('Checkpointing "Page two"...')->shouldBeCalled();
-
-        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
-        $processor->process($steps[0], 'png data')->shouldBeCalled();
-        $fetcher->fetch($steps[1])->willReturn('more png data')->shouldBeCalled();
-        $processor->process($steps[1], 'more png data')->shouldBeCalled();
-
-        $fetcher->end()->shouldBeCalled();
-        $processor->end()->shouldBeCalled();
-
-        $this->getWrappedObject()->run();
-    }
-
-    /**
-     * It should be quiet when asked to.
-     */
-    function it_should_be_quiet(
-        Config $config,
-        CheckpointFetcher $fetcher,
-        CheckpointProcessor $processor,
-        Output $output
-    ) {
-        $steps = [
-            new Step('front', '/'),
-            new Step('Page two', '/two'),
-        ];
-        $config->getSteps()->willReturn($steps);
-        $config->getQuiet()->willReturn(true);
-
-        $output->message()->shouldNotBeCalled();
 
         $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($steps[0], 'png data')->shouldBeCalled();

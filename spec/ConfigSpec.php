@@ -153,12 +153,6 @@ class ConfigSpec extends ObjectBehavior
         $this->getReadIn()->shouldReturn('the_dir');
     }
 
-    function it_can_provide_a_quiet_option(InputInterface $input)
-    {
-        $input->getOption('quiet')->willReturn(true);
-        $this->getQuiet()->shouldReturn(true);
-    }
-
     function it_should_provide_a_base(ConfigFile $configFile, InputInterface $input)
     {
         $input->getOption('base')->willReturn(false);

@@ -143,11 +143,6 @@ class Config
         return $this->input->getOption('read-in');
     }
 
-    public function getQuiet()
-    {
-        return $this->input->getOption('quiet');
-    }
-
     public function getBase()
     {
         return $this->input->getOption('base') ? $this->input->getOption('base') : 'alpha.appocular.io';

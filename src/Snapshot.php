@@ -46,9 +46,7 @@ class Snapshot
         try {
             foreach ($this->config->getSteps() as $step) {
                 try {
-                    if (!$this->config->getQuiet()) {
-                        $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
-                    }
+                    $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
                     $this->processor->process($step, $this->fetcher->fetch($step));
                 } catch (Throwable $e) {
                     $this->output->error(sprintf(
