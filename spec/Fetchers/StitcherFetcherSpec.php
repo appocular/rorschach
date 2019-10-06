@@ -2,18 +2,30 @@
 
 namespace spec\Rorschach\Fetchers;
 
+use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWindow;
-use Facebook\WebDriver\WebDriver;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Config;
+use Rorschach\Helpers\Output;
 use Rorschach\Step;
 use Rorschach\Stitcher;
 
 class StitcherFetcherSpec extends ObjectBehavior
 {
+    function let(
+        Config $config,
+        Webdriver $webdriver,
+        Stitcher $stitcher,
+        Output $output
+    ) {
+        $config->getBaseUrl()->willReturn('base');
+
+        $this->beConstructedWith($config, $webdriver, $stitcher, $output);
+    }
+
     /**
      * Test that it writes out images.
      */
@@ -22,10 +34,8 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $config->getBaseUrl()->willReturn('base');
         $webdriver->get('base/path')->shouldBeCalled();
         $stitcher->stitchScreenshot(0)->willReturn('image data');
-        $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
     }
@@ -38,10 +48,8 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $config->getBaseUrl()->willReturn('base');
         $webdriver->get('base/path')->shouldBeCalled();
         $stitcher->stitchScreenshot(42)->willReturn('image data');
-        $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $this->fetch(new Step('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
     }
@@ -54,10 +62,8 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $config->getBaseUrl()->willReturn('base');
         $stitcher->stitchScreenshot(0)->willReturn('image data');
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
-        $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $this->fetch(new Step('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
             ->shouldReturn('image data');
@@ -73,10 +79,8 @@ class StitcherFetcherSpec extends ObjectBehavior
         WebDriverOptions $webdriverOptions,
         WebDriverWindow $webdriverWindow
     ) {
-        $config->getBaseUrl()->willReturn('base');
         $webdriver->get('base/path')->shouldBeCalled();
         $stitcher->stitchScreenshot(0)->willReturn('image data');
-        $this->beConstructedWith($config, $webdriver, $stitcher);
 
         $webdriverWindow->setSize(new WebDriverDimension('800', '600'))->shouldBeCalled();
         $webdriverOptions->window()->willReturn($webdriverWindow);
@@ -84,6 +88,5 @@ class StitcherFetcherSpec extends ObjectBehavior
 
         $defaults = ['browser_height' => 600, 'browser_width' => 800];
         $this->fetch(new Step('Test', '/path', $defaults))->shouldReturn('image data');
-
     }
 }

@@ -27,6 +27,8 @@ class SnapshotSpec extends ObjectBehavior
         $config->getSteps()->willReturn([new Step('front', '/'), new Step('Page one', '/one')]);
         $config->getHistory()->willReturn(null);
 
+        $output->debug(Argument::any())->willReturn();
+        $output->info(Argument::any())->willReturn();
         $this->beConstructedWith($config, $fetcher, $processor, $output);
     }
 
@@ -66,7 +68,8 @@ class SnapshotSpec extends ObjectBehavior
     function it_should_skip_failed_screenshots(
         Config $config,
         CheckpointFetcher $fetcher,
-        CheckpointProcessor $processor
+        CheckpointProcessor $processor,
+        Output $output
     ) {
         $steps = [
             new Step('front', '/'),
@@ -74,6 +77,9 @@ class SnapshotSpec extends ObjectBehavior
             new Step('Page two', '/two'),
         ];
         $config->getSteps()->willReturn($steps);
+
+        $output->error(Argument::any())->willReturn();
+        $output->message(Argument::any())->willReturn();
 
         $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($steps[0], 'png data')->shouldBeCalled();

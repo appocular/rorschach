@@ -44,10 +44,17 @@ class Snapshot
     public function run()
     {
         try {
+            $this->output->debug('Starting snapshot');
             foreach ($this->config->getSteps() as $step) {
                 try {
                     $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
-                    $this->processor->process($step, $this->fetcher->fetch($step));
+                    $this->output->info('Taking screenshot');
+                    $screenshot = $this->fetcher->fetch($step);
+
+                    $this->output->info('Processing screenshot');
+                    $this->processor->process($step, $screenshot);
+
+                    $this->output->info('Done');
                 } catch (Throwable $e) {
                     $this->output->error(sprintf(
                         'Error checkpointing "%s": "%s", skipping.',
@@ -57,8 +64,13 @@ class Snapshot
                 }
             }
         } finally {
+            $this->output->debug('Ending snapshot, closing fetcher...');
             $this->fetcher->end();
+
+            $this->output->debug('Ending snapshot, closing processor...');
             $this->processor->end();
+
+            $this->output->debug('Done');
         }
     }
 }

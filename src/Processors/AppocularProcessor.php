@@ -27,6 +27,7 @@ class AppocularProcessor implements CheckpointProcessor
 
     public function __construct(Config $config, Appocular $appocular, Output $output)
     {
+        $output->debug('Creating batch.');
         $this->batch = $appocular->startBatch($config->getSha(), $config->getHistory());
         $this->config = $config;
         $this->output = $output;
@@ -37,6 +38,7 @@ class AppocularProcessor implements CheckpointProcessor
      */
     public function process(Step $step, string $pngData) : void
     {
+        $this->output->debug("Submitting checkpoint \"{$step->name}\".");
         $this->batch->checkpoint($step->name, $pngData);
     }
 

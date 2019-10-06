@@ -3,6 +3,7 @@
 namespace spec\Rorschach\Processors;
 
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
 use Rorschach\Config;
@@ -59,6 +60,7 @@ class AppocularProcessorSpec extends ObjectBehavior
 
         $appocular->startBatch('the sha', "")->willReturn($batch);
 
+        $output->debug(Argument::any())->willReturn();
         $output->newLine()->shouldBeCalled();
         $output->message('Verify snapshot at https://test.appocular.io/the sha')->shouldBeCalled();
 
