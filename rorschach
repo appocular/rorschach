@@ -12,13 +12,12 @@ use Rorschach\Config;
 use Rorschach\Fetchers\ReadInFetcher;
 use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Helpers\Env;
+use Rorschach\Helpers\Output;
 use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Processors\WriteOutProcessor;
 use Rorschach\Snapshot;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\StyleInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -45,8 +44,8 @@ $container->set(Client::class, function (Config $config) {
     return new Client(['base_uri' => $scheme . '://assessor.' . $config->getBase() . '/', 'timeout' => 60]);
 });
 
-$container->set(StyleInterface::class, function (InputInterface $input, OutputInterface $output) {
-    return new SymfonyStyle($input, $output);
+$container->set(Output::class, function (OutputInterface $output) {
+    return new Output($output);
 });
 
 $container->set(CheckpointProcessor::class, function (Container $container, Config $config) {

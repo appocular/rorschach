@@ -4,12 +4,12 @@ namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Rorschach\CheckpointProcessor;
 use Rorschach\CheckpointFetcher;
+use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
+use Rorschach\Helpers\Output;
 use Rorschach\Snapshot;
 use Rorschach\Step;
-use Symfony\Component\Console\Style\StyleInterface;
 
 class SnapshotSpec extends ObjectBehavior
 {
@@ -18,7 +18,7 @@ class SnapshotSpec extends ObjectBehavior
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        StyleInterface $io
+        Output $output
     ) {
         $config->getSha()->willReturn('the sha');
         $config->getToken()->willReturn('the token');
@@ -28,7 +28,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getHistory()->willReturn(null);
         $config->getQuiet()->willReturn(false);
 
-        $this->beConstructedWith($config, $fetcher, $processor, $io);
+        $this->beConstructedWith($config, $fetcher, $processor, $output);
     }
 
     function it_is_initializable()
@@ -43,10 +43,10 @@ class SnapshotSpec extends ObjectBehavior
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        StyleInterface $io
+        Output $output
     ) {
-        $io->error()->shouldNotBeCalled();
-        $io->text(Argument::any())->willReturn();
+        $output->error()->shouldNotBeCalled();
+        $output->message(Argument::any())->willReturn();
 
         $step = new Step('front', '/');
         $fetcher->fetch($step)->willReturn('png data')->shouldBeCalled();
@@ -90,13 +90,13 @@ class SnapshotSpec extends ObjectBehavior
     }
 
     /**
-     * It should be verbose per default.
+     * It should print progress per default.
      */
-    function it_should_be_verbose(
+    function it_should_print_progress_per_default(
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        StyleInterface $io
+        Output $output
     ) {
         $steps = [
             new Step('front', '/'),
@@ -104,8 +104,8 @@ class SnapshotSpec extends ObjectBehavior
         ];
         $config->getSteps()->willReturn($steps);
 
-        $io->text('Checkpointing "front"...')->shouldBeCalled();
-        $io->text('Checkpointing "Page two"...')->shouldBeCalled();
+        $output->message('Checkpointing "front"...')->shouldBeCalled();
+        $output->message('Checkpointing "Page two"...')->shouldBeCalled();
 
         $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($steps[0], 'png data')->shouldBeCalled();
@@ -125,7 +125,7 @@ class SnapshotSpec extends ObjectBehavior
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        StyleInterface $io
+        Output $output
     ) {
         $steps = [
             new Step('front', '/'),
@@ -134,7 +134,7 @@ class SnapshotSpec extends ObjectBehavior
         $config->getSteps()->willReturn($steps);
         $config->getQuiet()->willReturn(true);
 
-        $io->text()->shouldNotBeCalled();
+        $output->message()->shouldNotBeCalled();
 
         $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($steps[0], 'png data')->shouldBeCalled();

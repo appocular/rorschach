@@ -2,25 +2,41 @@
 
 namespace Rorschach;
 
-use Symfony\Component\Console\Style\StyleInterface;
+use Rorschach\Helpers\Output;
 use Throwable;
 
 class Snapshot
 {
+    /**
+     * @var \Rorschach\Config
+     */
     protected $config;
+
+    /**
+     * @var \Rorschach\CheckpointFetcher
+     */
     protected $fetcher;
+
+    /**
+     * @var \Rorschach\CheckpointProcessor
+     */
     protected $processor;
+
+    /**
+     * @var \Rorschach\Helpers\Output
+     */
+    protected $output;
 
     public function __construct(
         Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        StyleInterface $io
+        Output $output
     ) {
         $this->config = $config;
         $this->fetcher = $fetcher;
         $this->processor = $processor;
-        $this->io = $io;
+        $this->output = $output;
     }
     /**
      * Run snapshot and submit checkpoints to Appocular.
@@ -31,11 +47,11 @@ class Snapshot
             foreach ($this->config->getSteps() as $step) {
                 try {
                     if (!$this->config->getQuiet()) {
-                        $this->io->text(sprintf('Checkpointing "%s"...', $step->name));
+                        $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
                     }
                     $this->processor->process($step, $this->fetcher->fetch($step));
                 } catch (Throwable $e) {
-                    $this->io->error(sprintf(
+                    $this->output->error(sprintf(
                         'Error checkpointing "%s": "%s", skipping.',
                         $step->name,
                         $e->getMessage()
@@ -46,9 +62,9 @@ class Snapshot
             $this->fetcher->end();
             $output = $this->processor->end();
             if ($output) {
-                $this->io->newLine();
+                $this->output->newLine();
                 foreach ($output as $line) {
-                    $this->io->text($line);
+                    $this->output->message($line);
                 }
             }
         }
