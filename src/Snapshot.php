@@ -60,13 +60,7 @@ class Snapshot
             }
         } finally {
             $this->fetcher->end();
-            $output = $this->processor->end();
-            if ($output) {
-                $this->output->newLine();
-                foreach ($output as $line) {
-                    $this->output->message($line);
-                }
-            }
+            $this->processor->end();
         }
     }
 }

@@ -21,5 +21,5 @@ interface CheckpointProcessor
      * @return array|null
      *   Array of strings to output.
      */
-    public function end() : ?array;
+    public function end() : void;
 }

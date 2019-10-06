@@ -50,7 +50,7 @@ class Output
         $this->writeln('error', $message, 0, true);
     }
 
-    public function newline()
+    public function newLine()
     {
         $this->output->writeln('', OutputInterface::VERBOSITY_NORMAL);
     }

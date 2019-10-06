@@ -5,20 +5,31 @@ namespace Rorschach\Processors;
 use Rorschach\Appocular;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
+use Rorschach\Helpers\Output;
 use Rorschach\Step;
 
 class AppocularProcessor implements CheckpointProcessor
 {
+    /**
+     * @var \Rorschach\Appocular\Batch
+     */
+    protected $batch;
 
     /**
      * @var \Rorschach\Config
      */
     protected $config;
 
-    public function __construct(Config $config, Appocular $appocular)
+    /**
+     * @var \Rorschach\Helpers\Output
+     */
+    protected $output;
+
+    public function __construct(Config $config, Appocular $appocular, Output $output)
     {
         $this->batch = $appocular->startBatch($config->getSha(), $config->getHistory());
         $this->config = $config;
+        $this->output = $output;
     }
 
     /**
@@ -32,10 +43,11 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function end() : ?array
+    public function end() : void
     {
         $this->batch->close();
-        return ["Verify snapshot at https://" . $this->config->getBase() .
-                '/' . $this->config->getSha()];
+        $this->output->newLine();
+        $this->output->message("Verify snapshot at https://" . $this->config->getBase() .
+                               '/' . $this->config->getSha());
     }
 }
