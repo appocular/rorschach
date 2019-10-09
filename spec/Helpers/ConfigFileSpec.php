@@ -158,4 +158,15 @@ EOF;
             new Step('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->stepDefaults),
         ]);
     }
+
+    function it_should_return_workers()
+    {
+        $yaml = <<<'EOF'
+workers: 8
+steps:
+  front: /
+EOF;
+        $this->withFixture($yaml);
+        $this->getWorkers()->shouldReturn(8);
+    }
 }

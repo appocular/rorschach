@@ -13,9 +13,12 @@ use Rorschach\Fetchers\ReadInFetcher;
 use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Helpers\Env;
 use Rorschach\Helpers\Output;
+use Rorschach\Helpers\WorkerFactory;
+use Rorschach\Multiplexer;
 use Rorschach\Processors\AppocularProcessor;
 use Rorschach\Processors\WriteOutProcessor;
 use Rorschach\Snapshot;
+use Rorschach\Worker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,7 +34,7 @@ $container->set(WebDriver::class, function (Config $config) {
         $webdriver = RemoteWebDriver::create($config->getWebdriverUrl(), $capabilities);
         return $webdriver;
     } catch (\Exception $e) {
-        throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $address, $e->getMessage()));
+        throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $config->getWebdriverUrl(), $e->getMessage()));
     }}
 );
 
@@ -46,6 +49,35 @@ $container->set(Client::class, function (Config $config) {
 
 $container->set(Output::class, function (OutputInterface $output) {
     return new Output($output);
+});
+
+$container->set(Worker::class, function (CheckpointFetcher $fetcher, CheckpointProcessor $processor, Output $output) {
+    return new Worker(
+        $fetcher,
+        $processor,
+        $output,
+        file_get_contents(
+            'php://stdin'
+        )
+    );
+});
+
+$container->set(WorkerFactory::class, function () use ($argv) {
+    return new WorkerFactory($argv);
+});
+
+$container->set(Multiplexer::class, function (
+    Config $config,
+    Output $output,
+    WorkerFactory $workerFactory,
+    CheckpointProcessor $processor
+) {
+    return new Multiplexer(
+        $config,
+        $output,
+        $workerFactory,
+        $processor
+    );
 });
 
 $container->set(CheckpointProcessor::class, function (Container $container, Config $config) {
@@ -64,12 +96,18 @@ $container->set(CheckpointFetcher::class, function (Container $container, Config
     }
 });
 
-$app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--base=]', function (Container $container, InputInterface $input, OutputInterface $output) {
+$app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--base=] [--worker]', function (Container $container, InputInterface $input, OutputInterface $output) {
     $container->set(InputInterface::class, $input);
     $container->set(OutputInterface::class, $output);
 
-    // Do the snapshot.
-    $container->make(Snapshot::class)->run();
+    if ($input->getOption('worker')) {
+        // Start worker.
+        $container->make(Worker::class)->run();
+    }
+    else {
+        // Do the snapshot.
+        $container->make(Multiplexer::class)->run();
+    }
 });
 $app->setDefaultCommand('run', true);
 

@@ -48,6 +48,8 @@ php rorschach.phar
 webdriver_url: http://webdriver.appocular.docker:4444/wd/hub
 # Base URL of site to snapshot.
 base_url: http://reload.dk/
+# Number of parallel processes. Defaults to 4.
+workers: 2
 # Default values for steps.
 defaults:
   hide:

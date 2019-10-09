@@ -65,6 +65,6 @@ class AppocularProcessorSpec extends ObjectBehavior
         $output->message('Verify snapshot at https://test.appocular.io/the sha')->shouldBeCalled();
 
         $this->beConstructedWith($config, $appocular, $output);
-        $this->end();
+        $this->summarize();
     }
 }

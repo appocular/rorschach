@@ -18,15 +18,23 @@ class WriteOutProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function process(Step $step, string $pngData) : void
+    public function process(Step $step, string $pngData): void
     {
         \file_put_contents($this->path . '/' . \urlencode($step->name) . '.png', $pngData);
     }
 
     /**
-     * End processing.
+     * {@inheritdoc}
      */
-    public function end() : void
+    public function end(): void
+    {
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function summarize(): void
     {
         return;
     }

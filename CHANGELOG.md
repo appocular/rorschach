@@ -5,9 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
-###
-- Output handling changed to properly support -d/-v/-vv/-vvv.
+### Added
 - Debugging output added.
+- `workers` option to set number of parallel processes. Defaults to 4.
+
+### Chonged
+- Output handling changed to properly support -d/-v/-vv/-vvv.
 
 ## 0.3.2 - 2019-10-04
 ### Added
