@@ -29,6 +29,12 @@ class ConfigFile
     protected $baseUrl;
 
     /**
+     * Number of workers.
+     * @var int|null
+     */
+    protected $workers;
+
+    /**
      * Pages to verify.
      *
      * Hash of name => path
@@ -59,6 +65,10 @@ class ConfigFile
 
         if (!empty($config['base_url'])) {
             $this->baseUrl = $config['base_url'];
+        }
+
+        if (!empty($config['workers'])) {
+            $this->workers = (int) $config['workers'];
         }
 
         $defaults = !empty($config['defaults']) ? $config['defaults'] : [];
@@ -104,5 +114,10 @@ class ConfigFile
     public function getBaseUrl()
     {
         return $this->baseUrl;
+    }
+
+    public function getWorkers()
+    {
+        return $this->workers;
     }
 }

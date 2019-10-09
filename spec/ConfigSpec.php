@@ -162,4 +162,13 @@ class ConfigSpec extends ObjectBehavior
         $input->getOption('base')->willReturn('example.com');
         $this->getBase()->shouldReturn('example.com');
     }
+
+    function it_should_provide_number_of_workers(ConfigFile $configFile)
+    {
+        $configFile->getWorkers()->willReturn(null);
+        $this->getWorkers()->shouldReturn(4);
+
+        $configFile->getWorkers()->willReturn(8);
+        $this->getWorkers()->shouldReturn(8);
+    }
 }

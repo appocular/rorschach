@@ -72,8 +72,23 @@ class OutputSpec extends ObjectBehavior
     {
         Carbon::setTestNow(Carbon::parse('2019-10-06 21:26:12'));
         $output->isDebug()->willReturn(true);
-        $output->writeln('[<timestamp>2019-10-06 21:26:12</>] <message>test</>', OutputInterface::VERBOSITY_NORMAL)
+        $output->writeln('<timestamp>[</>2019-10-06 21:26:12<timestamp>]</> <message>test</>', OutputInterface::VERBOSITY_NORMAL)
             ->shouldBeCalled();
         $this->message('test');
+    }
+
+    function it_creates_colored_numbered_output(OutputInterface $output)
+    {
+        $output->writeln('<color1>1</> > test', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
+        $this->numberedLine(1, 'test');
+
+        $output->writeln('<color4>4</> > test', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
+        $this->numberedLine(4, 'test');
+
+        $output->writeln('<color14>14</> > test', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
+        $this->numberedLine(14, 'test');
+
+        $output->writeln('<color2>2</> > test', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();
+        $this->numberedLine(16, 'test');
     }
 }

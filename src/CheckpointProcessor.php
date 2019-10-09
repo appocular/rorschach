@@ -11,15 +11,17 @@ interface CheckpointProcessor
      *   The step to process.
      * @param string $pngData
      */
-    public function process(Step $step, string $pngData) : void;
+    public function process(Step $step, string $pngData): void;
 
     /**
      * End processing.
-     *
-     * May return output strings.
-     *
-     * @return array|null
-     *   Array of strings to output.
      */
-    public function end() : void;
+    public function end(): void;
+
+    /**
+     * Summarize run.
+     *
+     * Is called in the main process.
+     */
+    public function summarize(): void;
 }

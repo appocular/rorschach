@@ -5,13 +5,8 @@ namespace Rorschach;
 use Rorschach\Helpers\Output;
 use Throwable;
 
-class Snapshot
+class Worker
 {
-    /**
-     * @var \Rorschach\Config
-     */
-    protected $config;
-
     /**
      * @var \Rorschach\CheckpointFetcher
      */
@@ -27,16 +22,25 @@ class Snapshot
      */
     protected $output;
 
+    /**
+     * @var \Rorschach\Step[]
+     */
+    protected $steps;
+
     public function __construct(
-        Config $config,
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
-        Output $output
+        Output $output,
+        string $data
     ) {
-        $this->config = $config;
         $this->fetcher = $fetcher;
         $this->processor = $processor;
         $this->output = $output;
+        $this->steps = \unserialize($data);
+
+        if (empty($this->steps)) {
+            $this->output->error('Error, no steps on STDIN');
+        }
     }
     /**
      * Run snapshot and submit checkpoints to Appocular.
@@ -44,8 +48,8 @@ class Snapshot
     public function run()
     {
         try {
-            $this->output->debug('Starting snapshot');
-            foreach ($this->config->getSteps() as $step) {
+            $this->output->debug('Starting worker');
+            foreach ($this->steps as $step) {
                 try {
                     $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
                     $this->output->info('Taking screenshot');
@@ -64,10 +68,10 @@ class Snapshot
                 }
             }
         } finally {
-            $this->output->debug('Ending snapshot, closing fetcher...');
+            $this->output->debug('Ending worker, closing fetcher...');
             $this->fetcher->end();
 
-            $this->output->debug('Ending snapshot, closing processor...');
+            $this->output->debug('Closing processor...');
             $this->processor->end();
 
             $this->output->debug('Done');

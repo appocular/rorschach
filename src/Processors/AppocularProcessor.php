@@ -36,7 +36,7 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function process(Step $step, string $pngData) : void
+    public function process(Step $step, string $pngData): void
     {
         $this->output->debug("Submitting checkpoint \"{$step->name}\".");
         $this->batch->checkpoint($step->name, $pngData);
@@ -45,9 +45,16 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function end() : void
+    public function end(): void
     {
         $this->batch->close();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function summarize(): void
+    {
         $this->output->newLine();
         $this->output->message("Verify snapshot at https://" . $this->config->getBase() .
                                '/' . $this->config->getSha());

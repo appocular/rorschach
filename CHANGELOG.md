@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `stitch_delay` option to wait after moving the viewport before
   taking the screenshot, when stitching together full page
   screenshots. This allows animations time to settle.
+- `workers` option to set number of parallel processes. Defaults to 4.
 
 ### Fixed
 - Fixed the Stopgap URL printed after completing snapshot
