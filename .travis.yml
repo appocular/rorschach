@@ -12,14 +12,3 @@ script:
 
 after_success:
   - make build
-
-deploy:
-  skip_cleanup: true
-  provider: releases
-  api_key:
-    secure: pDhUg63uCN9HyJ1gQKWJ4flq1N+zcH8jh7Y9pHiRGv9oU6Opu9Q9NvbcHcU85f4n56oUr0987cxUFBJfsJpQwwcY+cxXtwMBX8Ei5mDA0BTK62r5NobFSgaYKmxNjTRQ2q5XfBy5KXJocN5fv4hyUxVNE+HSs1WKLBvfCgqKQu+3XxM2ARlyW3+2R2MC/O2AKP+GyH1W/UgYuONFB8Pq1HE4B+0P9ReLaQIYEnV+f8ImIulPpjl2XYP1CTrfCiBU6iYN/PXohFGwIyySzlp8fxJ6vSmDC2vAU+fb9s+Clo4/IRbiLvRfUGGmKuclEO+0pMeiEXbfvYFHZWYe2/exchsc8A5aODoW4fQzwyYlg9vQZ5hcQv8p45wp/Mm9hOxEMNQxX/HlXdBvPfuhye+RuJ//x4hmX8sRFzhWbyWEoB87fEf383BzdGc6lcxRF6lNu3v22ht6cabLbEvz78krsPzFOimYBPkTgZErRlk7YQ9LSmSXRwfZZthoQaFbW1V6zuozEByw0KogGVLN5e/dBp1EFm9MnUFsCYh9uy6UwYAxYyWG7x6MkNzc8vozkBCCcFTH9Gh3NKP/eq9tpVMzDPdx21c0PP50Es5YBRcbepuyhCw1hWIfSfE1N9ti4470CRGbbSrDeyqs1gtujyZTA14oB238qk5Qs/Vn6aqu4PA=
-  file: rorschach.phar
-  on:
-    repo: appocular/rorschach
-    tags: true
-    php: '7.1'
