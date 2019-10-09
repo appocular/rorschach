@@ -33,7 +33,7 @@ test:
 
 watch-test:
 	while true; \
-	  find . \( -name .git -o -name vendor \) -prune -o -name '#*' -o -name '*.php' -a -print | entr -cd make test; \
+	  find . \( -name .git -o -name vendor \) -prune -o -name '*.php' -a -print | entr -cd make test; \
 	end
 
 clean:
