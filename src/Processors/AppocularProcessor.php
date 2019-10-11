@@ -16,6 +16,11 @@ class AppocularProcessor implements CheckpointProcessor
     protected $batch;
 
     /**
+     * @var \Rorschach\Appocular
+     */
+    protected $appocular;
+
+    /**
      * @var \Rorschach\Config
      */
     protected $config;
@@ -27,9 +32,8 @@ class AppocularProcessor implements CheckpointProcessor
 
     public function __construct(Config $config, Appocular $appocular, Output $output)
     {
-        $output->debug('Creating batch.');
-        $this->batch = $appocular->startBatch($config->getSha(), $config->getHistory());
         $this->config = $config;
+        $this->appocular = $appocular;
         $this->output = $output;
     }
 
@@ -38,6 +42,13 @@ class AppocularProcessor implements CheckpointProcessor
      */
     public function process(Step $step, string $pngData): void
     {
+        if (!$this->batch) {
+            $this->output->debug('Creating batch.');
+            $this->batch = $this->appocular->startBatch(
+                $this->config->getSha(),
+                $this->config->getHistory()
+            );
+        }
         $this->output->debug("Submitting checkpoint \"{$step->name}\".");
         $this->batch->checkpoint($step->name, $pngData);
     }
@@ -47,7 +58,9 @@ class AppocularProcessor implements CheckpointProcessor
      */
     public function end(): void
     {
-        $this->batch->close();
+        if ($this->batch) {
+            $this->batch->close();
+        }
     }
 
     /**

@@ -12,7 +12,21 @@ use Rorschach\Step;
 
 class AppocularProcessorSpec extends ObjectBehavior
 {
-    function it_should_start_batch_on_construction(
+    function it_should_not_start_batch_on_construction(
+        Config $config,
+        Appocular $appocular,
+        Batch $batch,
+        Output $output
+    ) {
+        $config->getSha()->willReturn('the sha');
+        $config->getHistory()->willReturn(null);
+
+        $appocular->startBatch()->shouldNotBeCalled();
+
+        $this->beConstructedWith($config, $appocular, $output);
+    }
+
+    function it_should_start_batch_on_first_checkpoint(
         Config $config,
         Appocular $appocular,
         Batch $batch,
