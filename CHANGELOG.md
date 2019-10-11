@@ -25,31 +25,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   screenshots. This allows animations time to settle.
 
 ### Fixed
-- Fixed the Stopgap URL printed after completing snapshot
+- Fixed the Stopgap URL printed after completing snapshot.
 
 ## 0.3.1 - 2019-09-28
 ### Added
-- Support for Github Actions
+- Support for Github Actions.
 
 ## 0.3.0 - 2019-09-19
 ### Added
-- Fetches history from git, or environment var
-- Ability to hide CSS selectors before taking screenshot
-- Write-out/read-in options for testing without WebDriver
-- Setting browser size per step
+- Fetches history from git, or environment var.
+- Ability to hide CSS selectors before taking screenshot.
+- Write-out/read-in options for testing without WebDriver.
+- Setting browser size per step.
 
 ### Changed
-- Retool to submit images to Appocular instead of Applitools Eyes
-- Config file format has changed
-- Require at least PHP 7.1
+- Retool to submit images to Appocular instead of Applitools Eyes.
+- Config file format has changed.
+- Require at least PHP 7.1.
 
 ### Removed
-- Applitools Eyes support
+- Applitools Eyes support.
 
 ## 0.2.0 - 2018-05-17
 ### Changed
-- Make full height screenshots
+- Make full height screenshots.
 
 ## 0.1.0 - 2018-05-09
 ### Added
-- Initial implementation
+- Initial implementation.
