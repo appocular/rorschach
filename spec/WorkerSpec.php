@@ -42,7 +42,7 @@ class WorkerSpec extends ObjectBehavior
         $steps = [];
         $output->error(Argument::any())->shouldBeCalled();
         $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
-        $this->getWrappedObject()->run();
+        $this->run()->shouldReturn(false);
     }
 
     /**
@@ -70,7 +70,7 @@ class WorkerSpec extends ObjectBehavior
 
         $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
 
-        $this->getWrappedObject()->run();
+        $this->run()->shouldReturn(true);
     }
 
     /**
@@ -102,7 +102,7 @@ class WorkerSpec extends ObjectBehavior
 
         $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
 
-        $this->getWrappedObject()->run();
+        $this->run()->shouldReturn(false);
     }
 
     /**
@@ -131,6 +131,6 @@ class WorkerSpec extends ObjectBehavior
 
         $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
 
-        $this->getWrappedObject()->run();
+        $this->run()->shouldReturn(true);
     }
 }

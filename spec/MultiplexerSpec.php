@@ -26,6 +26,7 @@ class MultiplexerSpec extends ObjectBehavior
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
         $workerProcess->getIncrementalErrorOutput()->willReturn(null);
+        $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1, 5, 9])->willReturn($workerProcess)->shouldBeCalled();
         $workerFactory->create([2, 6, 0])->willReturn($workerProcess)->shouldBeCalled();
@@ -34,7 +35,7 @@ class MultiplexerSpec extends ObjectBehavior
 
         $this->beConstructedWith($config, $output, $workerFactory, $processor);
 
-        $this->callOnWrappedObject('run');
+        $this->run()->shouldReturn(true);
     }
 
     function it_only_start_needed_number_of_workers(
@@ -50,6 +51,7 @@ class MultiplexerSpec extends ObjectBehavior
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
         $workerProcess->getIncrementalErrorOutput()->willReturn(null);
+        $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess)->shouldBeCalled();
         $workerFactory->create([2])->willReturn($workerProcess)->shouldBeCalled();
@@ -57,7 +59,7 @@ class MultiplexerSpec extends ObjectBehavior
 
         $this->beConstructedWith($config, $output, $workerFactory, $processor);
 
-        $this->callOnWrappedObject('run');
+        $this->run()->shouldReturn(true);
     }
 
     function it_should_print_worker_output(
@@ -73,6 +75,7 @@ class MultiplexerSpec extends ObjectBehavior
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn('banana');
         $workerProcess->getIncrementalErrorOutput()->willReturn(null);
+        $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess);
 
@@ -81,7 +84,7 @@ class MultiplexerSpec extends ObjectBehavior
 
         $this->beConstructedWith($config, $output, $workerFactory, $processor);
 
-        $this->callOnWrappedObject('run');
+        $this->run()->shouldReturn(true);
     }
 
     function it_should_print_worker_error_output(
@@ -97,6 +100,7 @@ class MultiplexerSpec extends ObjectBehavior
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
         $workerProcess->getIncrementalErrorOutput()->willReturn('the error');
+        $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess);
 
@@ -106,6 +110,32 @@ class MultiplexerSpec extends ObjectBehavior
 
         $this->beConstructedWith($config, $output, $workerFactory, $processor);
 
-        $this->callOnWrappedObject('run');
+        $this->run()->shouldReturn(true);
+    }
+
+    function it_should_return_false_if_worker_exits_with_error(
+        Config $config,
+        Output $output,
+        WorkerFactory $workerFactory,
+        WorkerProcess $workerProcess,
+        CheckpointProcessor $processor
+    ) {
+        $config->getWorkers()->willReturn(16);
+        $config->getSteps()->willReturn([1]);
+
+        $workerProcess->isRunning()->willReturn(false);
+        $workerProcess->getIncrementalOutput()->willReturn(null);
+        $workerProcess->getIncrementalErrorOutput()->willReturn('the error');
+        $workerProcess->getExitCode()->willReturn(1);
+
+        $workerFactory->create([1])->willReturn($workerProcess);
+
+        $output->info(Argument::any())->willReturn();
+        $output->error('Worker 1 error, output:')->shouldBeCalled();
+        $output->numberedLine(1, 'the error')->shouldBeCalled();
+
+        $this->beConstructedWith($config, $output, $workerFactory, $processor);
+
+        $this->run()->shouldReturn(false);
     }
 }

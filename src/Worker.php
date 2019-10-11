@@ -37,18 +37,20 @@ class Worker
         $this->processor = $processor;
         $this->output = $output;
         $this->steps = \unserialize($data);
-
-        if (empty($this->steps)) {
-            $this->output->error('Error, no steps on STDIN');
-        }
     }
     /**
      * Run snapshot and submit checkpoints to Appocular.
      */
     public function run()
     {
+        $success = false;
+        if (empty($this->steps)) {
+            $this->output->error('Error, no steps on STDIN');
+            return false;
+        }
         try {
             $this->output->debug('Starting worker');
+            $success = true;
             foreach ($this->steps as $step) {
                 try {
                     $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
@@ -60,6 +62,7 @@ class Worker
 
                     $this->output->info('Done');
                 } catch (Throwable $e) {
+                    $success = false;
                     $this->output->error(sprintf(
                         'Error checkpointing "%s": "%s", skipping.',
                         $step->name,
@@ -76,5 +79,6 @@ class Worker
 
             $this->output->debug('Done');
         }
+        return $success;
     }
 }

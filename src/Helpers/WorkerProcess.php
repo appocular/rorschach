@@ -33,4 +33,9 @@ class WorkerProcess
     {
         return $this->process->getIncrementalErrorOutput();
     }
+
+    public function getExitCode()
+    {
+        return $this->process->getExitCode();
+    }
 }

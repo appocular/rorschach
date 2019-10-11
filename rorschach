@@ -102,11 +102,11 @@ $app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--b
 
     if ($input->getOption('worker')) {
         // Start worker.
-        $container->make(Worker::class)->run();
+        return $container->make(Worker::class)->run() ? 0 : 1;
     }
     else {
         // Do the snapshot.
-        $container->make(Multiplexer::class)->run();
+        return $container->make(Multiplexer::class)->run() ? 0 : 1;
     }
 });
 $app->setDefaultCommand('run', true);

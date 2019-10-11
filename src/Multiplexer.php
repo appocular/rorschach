@@ -2,9 +2,10 @@
 
 namespace Rorschach;
 
+use Rorschach\CheckpointProcessor;
 use Rorschach\Helpers\Output;
 use Rorschach\Helpers\WorkerFactory;
-use Rorschach\CheckpointProcessor;
+use RuntimeException;
 use Throwable;
 
 class Multiplexer
@@ -45,6 +46,7 @@ class Multiplexer
      */
     public function run()
     {
+        $success = true;
         $numWorkers = $this->config->getWorkers();
         $workerSteps = array_fill(0, $numWorkers, []);
 
@@ -89,5 +91,11 @@ class Multiplexer
 
         $this->output->info('Done');
         $this->processor->summarize();
+
+        foreach ($workers as $num => $worker) {
+            $success = $success && ($worker->getExitCode() == 0);
+        }
+
+        return $success;
     }
 }
