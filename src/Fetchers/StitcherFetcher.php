@@ -43,7 +43,7 @@ class StitcherFetcher implements CheckpointFetcher
         }
 
         if ($step->wait) {
-            $this->output->debug(sprintf('Waiting %.4fs.', $step->wait * 1000000));
+            $this->output->debug(sprintf('Waiting %.4fs.', $step->wait));
             usleep($step->wait * 1000000);
         }
 
