@@ -89,4 +89,22 @@ class StitcherFetcherSpec extends ObjectBehavior
         $defaults = ['browser_height' => 600, 'browser_width' => 800];
         $this->fetch(new Step('Test', '/path', $defaults))->shouldReturn('image data');
     }
+
+    /**
+     * Test that it uses wait_script.
+     */
+    function it_uses_wait_script(
+        Config $config,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->waitScript('script body')->willReturn(false, false, true)->shouldBeCalled();
+
+        $this->fetch(new Step('Test', [
+            'path' => '/',
+            'wait_script' => 'script body',
+        ]))
+            ->shouldReturn('image data');
+    }
 }

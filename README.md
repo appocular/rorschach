@@ -61,6 +61,12 @@ defaults:
   # Wait one second after loading the page before taking screenshot,
   # to allow things to load.
   wait: 1
+  # And/or use a script to wait for some event before taking
+  # screenshot. Rorschach will wait until the snippet returns true.
+  wait_script: |
+    return (Array.from(document.images).find(function (image) {
+      return !image.complete
+    }) === undefined)
   # Wait one second after moving the viewport before taking the
   # screenshot, when stitching full page screenshots together. This
   # allows animations to settle.

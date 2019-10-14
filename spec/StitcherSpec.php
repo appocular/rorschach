@@ -109,4 +109,21 @@ class StitcherSpec extends ObjectBehavior
         $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
         $this->shouldThrow($exception)->duringHideElements(['bad selector']);
     }
+
+    function it_should_wait_for_wait_script(RemoteWebDriver $webdriver)
+    {
+        $webdriver->executeScript('the script')->willReturn(false, false, true)->shouldBeCalled();
+
+        // No return value to check, so call directly on the object.
+        $this->getWrappedObject()->waitScript('the script');
+    }
+
+    function it_should_catch_errors_in_wait_script(RemoteWebDriver $webdriver)
+    {
+        $webdriver->executeScript('the script')
+            ->willThrow(new RuntimeException('oh no'))->shouldBeCalled();
+
+        $exception = new RuntimeException('Error in wait script: oh no');
+        $this->shouldThrow($exception)->duringWaitScript('the script');
+    }
 }

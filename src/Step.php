@@ -6,7 +6,7 @@ use RuntimeException;
 
 class Step
 {
-    const MISSING_PATH_ERROR = 'No path for step "%s".';
+    public const MISSING_PATH_ERROR = 'No path for step "%s".';
 
     public $name;
     public $path;
@@ -15,6 +15,7 @@ class Step
     public $browserHeight;
     public $wait;
     public $stitchDelay;
+    public $waitScript;
 
     public function __construct(string $name, $step, $defaults = [])
     {
@@ -31,7 +32,7 @@ class Step
 
         $step += $defaults;
 
-        foreach (['hide', 'browser_height', 'browser_width', 'wait', 'stitch_delay'] as $key) {
+        foreach (['hide', 'browser_height', 'browser_width', 'wait', 'stitch_delay', 'wait_script'] as $key) {
             $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
             if (isset($step[$key])) {

@@ -30,10 +30,6 @@ class StitcherFetcher implements CheckpointFetcher
     {
         $this->output->debug("Loading \"{$step->path}\" in browser.");
         $this->webdriver->get($this->config->getBaseUrl() . $step->path);
-        if ($step->hide && $selectors = array_filter(array_values($step->hide))) {
-            $this->output->debug(sprintf('Hiding "%s".', implode(',', $selectors)));
-            $this->stitcher->hideElements($selectors);
-        }
 
         // Only resize if given sizes. While ConfigFile will make sure these
         // are always set, keeping it optional eases testing.
@@ -45,6 +41,16 @@ class StitcherFetcher implements CheckpointFetcher
         if ($step->wait) {
             $this->output->debug(sprintf('Waiting %.4fs.', $step->wait));
             usleep($step->wait * 1000000);
+        }
+
+        if ($step->waitScript) {
+            $this->output->debug('Waiting for wait_script');
+            $this->stitcher->waitScript($step->waitScript);
+        }
+
+        if ($step->hide && $selectors = array_filter(array_values($step->hide))) {
+            $this->output->debug(sprintf('Hiding "%s".', implode(',', $selectors)));
+            $this->stitcher->hideElements($selectors);
         }
 
         $this->output->debug('Stitching screenshot' .

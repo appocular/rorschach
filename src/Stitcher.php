@@ -94,4 +94,19 @@ class Stitcher
             $this->webdriver->executeScript("arguments[0].style.visibility='hidden'", [$element]);
         }
     }
+
+    public function waitScript($script)
+    {
+        try {
+            $done = $this->webdriver->executeScript($script);
+            while (!$done) {
+                $done = $this->webdriver->executeScript($script);
+            }
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
+                'Error in wait script: %s',
+                $e->getMessage()
+            ));
+        }
+    }
 }
