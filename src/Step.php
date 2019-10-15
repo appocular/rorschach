@@ -16,6 +16,7 @@ class Step
     public $wait;
     public $stitchDelay;
     public $waitScript;
+    public $dontKillAnimations;
 
     public function __construct(string $name, $step, $defaults = [])
     {
@@ -32,7 +33,16 @@ class Step
 
         $step += $defaults;
 
-        foreach (['hide', 'browser_height', 'browser_width', 'wait', 'stitch_delay', 'wait_script'] as $key) {
+        $keys =  [
+            'hide',
+            'browser_height',
+            'browser_width',
+            'wait',
+            'stitch_delay',
+            'wait_script',
+            'dont_kill_animations',
+        ];
+        foreach ($keys as $key) {
             $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
             if (isset($step[$key])) {

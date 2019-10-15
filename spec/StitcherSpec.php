@@ -5,6 +5,7 @@ namespace spec\Rorschach;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use PhpSpec\ObjectBehavior;
+use Rorschach\Stitcher;
 use RuntimeException;
 
 class StitcherSpec extends ObjectBehavior
@@ -20,6 +21,8 @@ class StitcherSpec extends ObjectBehavior
         // Return the viewport size.
         $webdriver->executeScript('return document.documentElement.clientWidth')->willReturn(640);
         $webdriver->executeScript('return document.documentElement.clientHeight')->willReturn(480);
+
+        $webdriver->executeScript(Stitcher::ANIM_KILL_SCRIPT)->willReturn();
 
         // These are the expected scroll commands. Note that this is not
         // exactly the positions reported in the next section as the browser
@@ -125,5 +128,11 @@ class StitcherSpec extends ObjectBehavior
 
         $exception = new RuntimeException('Error in wait script: oh no');
         $this->shouldThrow($exception)->duringWaitScript('the script');
+    }
+
+    function it_should_allow_for_not_killing_anims(RemoteWebDriver $webdriver)
+    {
+        $webdriver->executeScript(Stitcher::ANIM_KILL_SCRIPT)->shouldNotBeCalled();
+        $png = $this->getWrappedObject()->stitchScreenshot(0, true);
     }
 }

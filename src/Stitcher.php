@@ -9,6 +9,10 @@ use Throwable;
 
 class Stitcher
 {
+    public const ANIM_KILL_SCRIPT = 'var node = document.createElement("style");
+        node.innerHTML = "* {-moz-animation: none !important; -moz-transform: none !important; -moz-transition-property: none !important; -ms-animation: none !important; -ms-transform: none !important; -ms-transition-property: none !important; -o-animation: none !important; -o-transform: none !important; -o-transition-property: none !important; -webkit-animation: none !important; -webkit-transform: none !important; -webkit-transition-property: none !important; animation: none !important; transform: none !important; transition-property: none !important;}";
+        document.body.appendChild(node);';
+
     /**
      * @var \Facebook\WebDriver\WebDriver
      */
@@ -22,13 +26,18 @@ class Stitcher
         $this->webdriver = $webdriver;
     }
 
-    public function stitchScreenshot($stitchDelay = 0)
+    public function stitchScreenshot($stitchDelay = 0, $dontKillAnimation = false)
     {
         $total_width = $this->webdriver->executeScript('return Math.max.apply(null, [document.body.clientWidth, document.body.scrollWidth, document.documentElement.scrollWidth, document.documentElement.clientWidth])');
         $total_height = $this->webdriver->executeScript('return Math.max.apply(null, [document.body.clientHeight, document.body.scrollHeight, document.documentElement.scrollHeight, document.documentElement.clientHeight])');
         $viewport_width = $this->webdriver->executeScript('return document.documentElement.clientWidth');
         $viewport_height = $this->webdriver->executeScript('return document.documentElement.clientHeight');
         $this->webdriver->executeScript('window.scrollTo(0, 0)');
+
+        if (!$dontKillAnimation) {
+            $this->webdriver->executeScript(self::ANIM_KILL_SCRIPT);
+        }
+
         $full_capture = imagecreatetruecolor($total_width, $total_height);
         $repeat_x = ceil($total_width / $viewport_width);
         $repeat_y = ceil($total_height / $viewport_height);

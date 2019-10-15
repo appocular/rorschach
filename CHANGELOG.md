@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - `wait_script` for delaying screenshot until the given JavaScript
   returns true.
+- `dont_kill_animations` to disable the new animation disabling routine.
+
+### Changes
+- Now disables all transitions, translations and animations when
+  taking screenshot.
 
 ### Fixed
 - Print proper amount of seconds in debug output.

@@ -71,6 +71,10 @@ defaults:
   # screenshot, when stitching full page screenshots together. This
   # allows animations to settle.
   stitch_delay: 1
+  # Don't kill CSS transition, transforms and animations before taking
+  # screenshot. Generally not recommended as these CSS properties
+  # often creates variances in screenshots.
+  dont_kill_animations: true
 # Pages to screenshot. Will be renamed "checkpoints" at some time.
 steps:
   # Short syntax, name: path.

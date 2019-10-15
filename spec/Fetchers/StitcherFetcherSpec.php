@@ -35,7 +35,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
-        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
 
         $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
     }
@@ -49,7 +49,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
-        $stitcher->stitchScreenshot(42)->willReturn('image data');
+        $stitcher->stitchScreenshot(42, false)->willReturn('image data');
 
         $this->fetch(new Step('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
     }
@@ -62,7 +62,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
 
         $this->fetch(new Step('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
@@ -80,7 +80,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         WebDriverWindow $webdriverWindow
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
-        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
 
         $webdriverWindow->setSize(new WebDriverDimension('800', '600'))->shouldBeCalled();
         $webdriverOptions->window()->willReturn($webdriverWindow);
@@ -98,12 +98,25 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
         $stitcher->waitScript('script body')->willReturn(false, false, true)->shouldBeCalled();
 
         $this->fetch(new Step('Test', [
             'path' => '/',
             'wait_script' => 'script body',
+        ]))
+            ->shouldReturn('image data');
+    }
+
+    /**
+     * Test that it allows for overriding the animation killing.
+     */
+    function it_disables_anim_killing(Stitcher $stitcher)
+    {
+        $stitcher->stitchScreenshot(0, true)->willReturn('image data')->shouldBeCalled();
+        $this->fetch(new Step('Test', [
+            'path' => '/',
+            'dont_kill_animations' => true,
         ]))
             ->shouldReturn('image data');
     }
