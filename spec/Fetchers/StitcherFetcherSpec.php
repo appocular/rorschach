@@ -35,6 +35,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
+        $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(0, false)->willReturn('image data');
 
         $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
@@ -49,6 +50,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
+        $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(42, false)->willReturn('image data');
 
         $this->fetch(new Step('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
@@ -80,6 +82,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         WebDriverWindow $webdriverWindow
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
+        $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(0, false)->willReturn('image data');
 
         $webdriverWindow->setSize(new WebDriverDimension('800', '600'))->shouldBeCalled();

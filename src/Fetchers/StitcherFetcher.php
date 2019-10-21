@@ -53,9 +53,11 @@ class StitcherFetcher implements CheckpointFetcher
             $this->stitcher->hideElements($selectors);
         }
 
-        $this->output->debug('Stitching screenshot' .
-                             ($step->stitchDelay ? sprintf(' with stitch_delay %.4fs', $step->stitchDelay)
-                              : '') . '...');
+        $this->output->debug(sprintf(
+            'Stitching "%s"%s...',
+            $this->webdriver->getCurrentURL(),
+            ($step->stitchDelay ? sprintf(' with stitch_delay %.4fs', $step->stitchDelay) : '')
+        ));
         return $this->stitcher->stitchScreenshot($step->stitchDelay ?? 0, (bool) $step->dontKillAnimations);
         $this->output->debug('Done');
     }
