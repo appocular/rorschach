@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Changed
 - Steps is now checkpoints.
+- Don't print stack traces on errors like missing environment variables.
 
 ## 0.5.1 - 2019-10-21
 ### Changed
