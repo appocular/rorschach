@@ -62,6 +62,14 @@ class OutputSpec extends ObjectBehavior
         $this->error('test');
     }
 
+    function it_outputs_fatal_messages(ConsoleOutputInterface $stdOutput, OutputInterface $errorOutput)
+    {
+        $this->beConstructedWith($stdOutput);
+        $stdOutput->getErrorOutput()->willReturn($errorOutput);
+        $errorOutput->writeln('<fatal>test</>', 0)->shouldBeCalled();
+        $this->fatal('test');
+    }
+
     function it_outputs_newlines(OutputInterface $output)
     {
         $output->writeln('', OutputInterface::VERBOSITY_NORMAL)->shouldBeCalled();

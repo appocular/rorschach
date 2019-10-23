@@ -25,6 +25,7 @@ class Output
         $formatter->setStyle('info', new OutputFormatterStyle('magenta'));
         $formatter->setStyle('warning', new OutputFormatterStyle('yellow'));
         $formatter->setStyle('error', new OutputFormatterStyle('red'));
+        $formatter->setStyle('fatal', new OutputFormatterStyle('white', 'red'));
         $formatter->setStyle('timestamp', new OutputFormatterStyle('white'));
 
         $colors = [
@@ -68,6 +69,11 @@ class Output
     public function error($message)
     {
         $this->writeln('error', $message, 0, true);
+    }
+
+    public function fatal($message)
+    {
+        $this->writeln('fatal', $message, 0, true);
     }
 
     public function newLine()

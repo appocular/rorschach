@@ -111,7 +111,7 @@ $app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--b
             return $container->make(Multiplexer::class)->run() ? 0 : 1;
         }
     } catch (RorschachError $e) {
-        $container->make(Output::class)->error($e->getMessage());
+        $container->make(Output::class)->fatal($e->getMessage());
         return 1;
     }
 });
