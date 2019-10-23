@@ -6,7 +6,6 @@ use Rorschach\CheckpointProcessor;
 use Rorschach\Helpers\Output;
 use Rorschach\Helpers\WorkerFactory;
 use RuntimeException;
-use Throwable;
 
 class Multiplexer
 {

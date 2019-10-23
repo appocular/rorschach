@@ -2,6 +2,7 @@
 
 namespace spec\Rorschach\Helpers;
 
+use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\Env;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -21,13 +22,13 @@ class EnvSpec extends ObjectBehavior
 
     function it_should_thow_error_on_unset_variable()
     {
-        $exception = new \RuntimeException('slartibartfast env variable not set.');
+        $exception = new RorschachError('slartibartfast env variable not set.');
         $this->shouldThrow($exception)->duringGet('slartibartfast');
     }
 
     function it_should_use_custom_message_in_exception()
     {
-        $exception = new \RuntimeException('deriparamaxx');
+        $exception = new RorschachError('deriparamaxx');
         $this->shouldThrow($exception)->duringGet('slartibartfast', 'deriparamaxx');
     }
 

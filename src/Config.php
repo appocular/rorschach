@@ -2,6 +2,7 @@
 
 namespace Rorschach;
 
+use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
 use Rorschach\Helpers\Git;
@@ -49,16 +50,16 @@ class Config
     {
         try {
             $this->sha = $env->get('GITHUB_SHA', self::MISSING_SHA_ERROR);
-        } catch (\RuntimeException $e) {
+        } catch (RorschachError $e) {
             $this->sha = $env->get('CIRCLE_SHA1', self::MISSING_SHA_ERROR);
         }
         if (empty($this->sha)) {
-            throw new \RuntimeException(self::MISSING_SHA_ERROR);
+            throw new RorschachError(self::MISSING_SHA_ERROR);
         }
 
         $this->token = $env->get('APPOCULAR_TOKEN', self::MISSING_TOKEN_ERROR);
         if (empty($this->token)) {
-            throw new \RuntimeException(self::MISSING_TOKEN_ERROR);
+            throw new RorschachError(self::MISSING_TOKEN_ERROR);
         }
 
         $this->configFile = $configFile;
@@ -105,7 +106,7 @@ class Config
         }
 
         if (empty($webDriverUrl)) {
-            throw new \RuntimeException(self::MISSING_WEBDRIVER_URL);
+            throw new RorschachError(self::MISSING_WEBDRIVER_URL);
         }
 
         return $webDriverUrl;
@@ -120,7 +121,7 @@ class Config
         }
 
         if (empty($baseUrl)) {
-            throw new \RuntimeException(self::MISSING_BASE_URL);
+            throw new RorschachError(self::MISSING_BASE_URL);
         }
 
         // Strip trailing slash, we ensure all paths starts with one.

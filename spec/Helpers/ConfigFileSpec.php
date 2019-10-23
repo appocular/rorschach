@@ -2,10 +2,11 @@
 
 namespace spec\Rorschach\Helpers;
 
-use Rorschach\Helpers\ConfigFile;
-use Rorschach\Checkpoint;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Rorschach\Checkpoint;
+use Rorschach\Exceptions\RorschachError;
+use Rorschach\Helpers\ConfigFile;
 
 class ConfigFileSpec extends ObjectBehavior
 {
@@ -70,7 +71,7 @@ class ConfigFileSpec extends ObjectBehavior
         // Set fixture to make letGo reset it.
         $this->useFixture('minimal');
         chdir('/');
-        $this->shouldThrow(new \RuntimeException(ConfigFile::MISSING_CONFIG_FILE_ERROR));
+        $this->shouldThrow(new RorschachError(ConfigFile::MISSING_CONFIG_FILE_ERROR));
     }
 
     function it_should_find_config_file_current_dir()
@@ -94,13 +95,13 @@ class ConfigFileSpec extends ObjectBehavior
     {
         $this->useFixture('corrupted');
         // Not testing for specific error message, as that depends on Symfony::YAML.
-        $this->shouldThrow(\RuntimeException::class)->duringInstantiation();
+        $this->shouldThrow(RorschachError::class)->duringInstantiation();
     }
 
     function it_should_require_proper_configuration()
     {
         $this->useFixture('empty');
-        $exception = new \RuntimeException(ConfigFile::NO_CHECKPOINTS_ERROR);
+        $exception = new RorschachError(ConfigFile::NO_CHECKPOINTS_ERROR);
         $this->shouldThrow($exception)->duringInstantiation();
     }
 

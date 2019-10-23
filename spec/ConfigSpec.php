@@ -5,6 +5,7 @@ namespace spec\Rorschach;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Config;
+use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\ConfigFile;
 use Rorschach\Helpers\Env;
 use Rorschach\Helpers\Git;
@@ -34,7 +35,7 @@ class ConfigSpec extends ObjectBehavior
 
     function it_throw_on_missing_or_empty_sha(Env $env)
     {
-        $exception = new \RuntimeException(Config::MISSING_SHA_ERROR);
+        $exception = new RorschachError(Config::MISSING_SHA_ERROR);
         $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willThrow($exception);
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willThrow($exception);
         $this->shouldThrow($exception)->duringInstantiation();
@@ -50,14 +51,14 @@ class ConfigSpec extends ObjectBehavior
 
     function it_should_provide_a_sha_from_circle(Env $env)
     {
-        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willThrow(\RuntimeException::class);
+        $env->get('GITHUB_SHA', Config::MISSING_SHA_ERROR)->willThrow(RorschachError::class);
         $env->get('CIRCLE_SHA1', Config::MISSING_SHA_ERROR)->willReturn('circle sha');
         $this->getSha()->shouldReturn('circle sha');
     }
 
     function it_throw_on_missing_or_empty_token(Env $env)
     {
-        $exception = new \RuntimeException(Config::MISSING_TOKEN_ERROR);
+        $exception = new RorschachError(Config::MISSING_TOKEN_ERROR);
         $env->get('APPOCULAR_TOKEN', Config::MISSING_TOKEN_ERROR)->willThrow($exception);
         $this->shouldThrow($exception)->duringInstantiation();
 
@@ -85,7 +86,7 @@ class ConfigSpec extends ObjectBehavior
         $this->getWebdriverUrl()->shouldReturn('new-webdriver-url');
 
         // Should error if neither config or command line arg is set.
-        $exception = new \RuntimeException(Config::MISSING_WEBDRIVER_URL);
+        $exception = new RorschachError(Config::MISSING_WEBDRIVER_URL);
         $configFile->getWebdriverUrl()->willReturn(null);
         $input->getOption('webdriver')->willReturn(null);
         $this->shouldThrow($exception)->duringGetWebdriverUrl();
@@ -101,7 +102,7 @@ class ConfigSpec extends ObjectBehavior
         $this->getBaseUrl()->shouldReturn('new-base-url');
 
         // Should error if neither config or command line arg is set.
-        $exception = new \RuntimeException(Config::MISSING_BASE_URL);
+        $exception = new RorschachError(Config::MISSING_BASE_URL);
         $configFile->getBaseUrl()->willReturn(null);
         $input->getOption('base-url')->willReturn(null);
         $this->shouldThrow($exception)->duringGetBaseUrl();

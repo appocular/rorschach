@@ -2,12 +2,14 @@
 
 namespace Rorschach\Helpers;
 
+use Rorschach\Exceptions\RorschachError;
+
 class Env
 {
     /**
      * Get the value of an environment variable.
      *
-     * Throws RuntimeException if the variable is not set.
+     * Throws RorschachError if the variable is not set.
      *
      * @param string $name
      *   Name of variable.
@@ -24,7 +26,7 @@ class Env
             if (!$errorMessage) {
                 $errorMessage = $name . " env variable not set.";
             }
-            throw new \RuntimeException($errorMessage);
+            throw new RorschachError($errorMessage);
         }
         return $value;
     }

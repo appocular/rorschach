@@ -3,6 +3,7 @@
 namespace Rorschach\Helpers;
 
 use Rorschach\Checkpoint;
+use Rorschach\Exceptions\RorschachError;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -49,7 +50,7 @@ class ConfigFile
             $dir = dirname($dir);
         }
         if (!file_exists($dir . '/' . self::FILE_NAME)) {
-            throw new \RuntimeException(self::MISSING_CONFIG_FILE_ERROR);
+            throw new RorschachError(self::MISSING_CONFIG_FILE_ERROR);
         }
 
         $errors = [];
@@ -83,11 +84,11 @@ class ConfigFile
                 $this->checkpoints[] = new Checkpoint($name, $checkpoint, $defaults);
             }
         } else {
-            throw new \RuntimeException(self::NO_CHECKPOINTS_ERROR);
+            throw new RorschachError(self::NO_CHECKPOINTS_ERROR);
         }
 
         if (!empty($errors)) {
-            throw new \RuntimeException(implode('\n', $errors));
+            throw new RorschachError(implode('\n', $errors));
         }
     }
 

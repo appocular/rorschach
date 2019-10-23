@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface as Container;
 use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
+use Rorschach\Exceptions\RorschachError;
 use Rorschach\Fetchers\ReadInFetcher;
 use Rorschach\Fetchers\StitcherFetcher;
 use Rorschach\Helpers\Env;
@@ -34,7 +35,7 @@ $container->set(WebDriver::class, function (Config $config) {
         $webdriver = RemoteWebDriver::create($config->getWebdriverUrl(), $capabilities);
         return $webdriver;
     } catch (\Exception $e) {
-        throw new \RuntimeException(sprintf('Could not connect to webdriver on "%s": %s', $config->getWebdriverUrl(), $e->getMessage()));
+        throw new RorschachError(sprintf('Could not connect to webdriver on "%s": %s', $config->getWebdriverUrl(), $e->getMessage()));
     }}
 );
 
@@ -100,13 +101,18 @@ $app->command('run [--webdriver=] [--base-url=] [--write-out=] [--read-in=] [--b
     $container->set(InputInterface::class, $input);
     $container->set(OutputInterface::class, $output);
 
-    if ($input->getOption('worker')) {
-        // Start worker.
-        return $container->make(Worker::class)->run() ? 0 : 1;
-    }
-    else {
-        // Do the snapshot.
-        return $container->make(Multiplexer::class)->run() ? 0 : 1;
+    try {
+        if ($input->getOption('worker')) {
+            // Start worker.
+            return $container->make(Worker::class)->run() ? 0 : 1;
+        }
+        else {
+            // Do the snapshot.
+            return $container->make(Multiplexer::class)->run() ? 0 : 1;
+        }
+    } catch (RorschachError $e) {
+        $container->make(Output::class)->error($e->getMessage());
+        return 1;
     }
 });
 $app->setDefaultCommand('run', true);
