@@ -6,7 +6,7 @@ use Rorschach\Appocular;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class AppocularProcessor implements CheckpointProcessor
 {
@@ -40,7 +40,7 @@ class AppocularProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function process(Step $step, string $pngData): void
+    public function process(Checkpoint $checkpoint, string $pngData): void
     {
         if (!$this->batch) {
             $this->output->debug('Creating batch.');
@@ -49,8 +49,8 @@ class AppocularProcessor implements CheckpointProcessor
                 $this->config->getHistory()
             );
         }
-        $this->output->debug("Submitting checkpoint \"{$step->name}\".");
-        $this->batch->checkpoint($step->name, $pngData);
+        $this->output->debug("Submitting checkpoint \"{$checkpoint->name}\".");
+        $this->batch->checkpoint($checkpoint->name, $pngData);
     }
 
     /**

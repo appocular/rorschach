@@ -4,15 +4,15 @@ namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 use RuntimeException;
 
-class StepSpec extends ObjectBehavior
+class CheckpointSpec extends ObjectBehavior
 {
     function it_should_require_a_path()
     {
         $this->beConstructedWith('test', []);
-        $this->shouldThrow(new RuntimeException(sprintf(Step::MISSING_PATH_ERROR, 'test')))->duringInstantiation();
+        $this->shouldThrow(new RuntimeException(sprintf(Checkpoint::MISSING_PATH_ERROR, 'test')))->duringInstantiation();
     }
 
     function it_allows_string_as_path_shorthand()

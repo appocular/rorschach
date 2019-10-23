@@ -4,7 +4,7 @@ namespace Rorschach\Processors;
 
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class WriteOutProcessor implements CheckpointProcessor
 {
@@ -18,9 +18,9 @@ class WriteOutProcessor implements CheckpointProcessor
     /**
      * {@inheritdoc}
      */
-    public function process(Step $step, string $pngData): void
+    public function process(Checkpoint $checkpoint, string $pngData): void
     {
-        \file_put_contents($this->path . '/' . \urlencode($step->name) . '.png', $pngData);
+        \file_put_contents($this->path . '/' . \urlencode($checkpoint->name) . '.png', $pngData);
     }
 
     /**

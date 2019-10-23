@@ -5,13 +5,13 @@ namespace Rorschach;
 interface CheckpointProcessor
 {
     /**
-     * Process a step image.
+     * Process a checkpoint image.
      *
-     * @param Step
-     *   The step to process.
+     * @param Checkpoint
+     *   The checkpoint to process.
      * @param string $pngData
      */
-    public function process(Step $step, string $pngData): void;
+    public function process(Checkpoint $checkpoint, string $pngData): void;
 
     /**
      * End processing.

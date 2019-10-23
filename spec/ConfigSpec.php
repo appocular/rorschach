@@ -22,7 +22,7 @@ class ConfigSpec extends ObjectBehavior
 
         $configFile->getWebdriverUrl()->willReturn('webdriver-url');
         $configFile->getBaseUrl()->willReturn('base-url');
-        $configFile->getSteps()->willReturn(['one' => '1', 'two' => '2']);
+        $configFile->getCheckpoints()->willReturn(['one' => '1', 'two' => '2']);
 
         $this->beConstructedWith($env, $configFile, $input, $git);
     }
@@ -70,9 +70,9 @@ class ConfigSpec extends ObjectBehavior
         $this->getToken()->shouldReturn('appocular-token');
     }
 
-    function it_should_provide_steps()
+    function it_should_provide_checkpoints()
     {
-        $this->getSteps()->shouldReturn(['one' => '1', 'two' => '2']);
+        $this->getCheckpoints()->shouldReturn(['one' => '1', 'two' => '2']);
     }
 
     function it_should_provide_a_webdriver_url(ConfigFile $configFile, InputInterface $input)

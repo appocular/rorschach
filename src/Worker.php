@@ -23,9 +23,9 @@ class Worker
     protected $output;
 
     /**
-     * @var \Rorschach\Step[]
+     * @var \Rorschach\Checkpoint[]
      */
-    protected $steps;
+    protected $checkpoints;
 
     public function __construct(
         CheckpointFetcher $fetcher,
@@ -36,7 +36,7 @@ class Worker
         $this->fetcher = $fetcher;
         $this->processor = $processor;
         $this->output = $output;
-        $this->steps = \unserialize($data);
+        $this->checkpoints = \unserialize($data);
     }
     /**
      * Run snapshot and submit checkpoints to Appocular.
@@ -44,28 +44,28 @@ class Worker
     public function run()
     {
         $success = false;
-        if (empty($this->steps)) {
-            $this->output->error('Error, no steps on STDIN');
+        if (empty($this->checkpoints)) {
+            $this->output->error('Error, no checkpoints on STDIN');
             return false;
         }
         try {
             $this->output->debug('Starting worker');
             $success = true;
-            foreach ($this->steps as $step) {
+            foreach ($this->checkpoints as $checkpoint) {
                 try {
-                    $this->output->message(sprintf('Checkpointing "%s"...', $step->name));
+                    $this->output->message(sprintf('Checkpointing "%s"...', $checkpoint->name));
                     $this->output->info('Taking screenshot');
-                    $screenshot = $this->fetcher->fetch($step);
+                    $screenshot = $this->fetcher->fetch($checkpoint);
 
                     $this->output->info('Processing screenshot');
-                    $this->processor->process($step, $screenshot);
+                    $this->processor->process($checkpoint, $screenshot);
 
                     $this->output->info('Done');
                 } catch (Throwable $e) {
                     $success = false;
                     $this->output->error(sprintf(
                         'Error checkpointing "%s": "%s", skipping.',
-                        $step->name,
+                        $checkpoint->name,
                         $e->getMessage()
                     ));
                 }

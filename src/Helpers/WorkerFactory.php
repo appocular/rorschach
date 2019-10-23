@@ -16,8 +16,8 @@ class WorkerFactory
         $this->argv = $argv;
     }
 
-    public function create($steps)
+    public function create($checkpoints)
     {
-        return new WorkerProcess($this->argv, $steps);
+        return new WorkerProcess($this->argv, $checkpoints);
     }
 }

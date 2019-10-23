@@ -8,7 +8,7 @@ use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Helpers\Output;
 use Rorschach\Worker;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class WorkerSpec extends ObjectBehavior
 {
@@ -27,26 +27,26 @@ class WorkerSpec extends ObjectBehavior
         CheckpointProcessor $processor,
         Output $output
     ) {
-        $steps = [
-            new Step('front', '/'),
+        $checkpoints = [
+            new Checkpoint('front', '/'),
         ];
-        $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
+        $this->beConstructedWith($fetcher, $processor, $output, \serialize($checkpoints));
         $this->shouldHaveType(Worker::class);
     }
 
-    function it_should_print_error_if_missing_steps(
+    function it_should_print_error_if_missing_checkpoints(
         CheckpointFetcher $fetcher,
         CheckpointProcessor $processor,
         Output $output
     ) {
-        $steps = [];
+        $checkpoints = [];
         $output->error(Argument::any())->shouldBeCalled();
-        $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
+        $this->beConstructedWith($fetcher, $processor, $output, \serialize($checkpoints));
         $this->run()->shouldReturn(false);
     }
 
     /**
-     * Tests that it sends a snapshot to processor for each defined step.
+     * Tests that it sends a snapshot to processor for each defined checkpoint.
      */
     function it_should_run_the_checkpoints(
         CheckpointFetcher $fetcher,
@@ -56,19 +56,19 @@ class WorkerSpec extends ObjectBehavior
         $output->error()->shouldNotBeCalled();
         $output->message(Argument::any())->willReturn();
 
-        $steps = [
-            new Step('front', '/'),
-            new Step('Page one', '/one'),
+        $checkpoints = [
+            new Checkpoint('front', '/'),
+            new Checkpoint('Page one', '/one'),
         ];
-        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
-        $processor->process($steps[0], 'png data')->shouldBeCalled();
-        $fetcher->fetch($steps[1])->willReturn('more png data')->shouldBeCalled();
-        $processor->process($steps[1], 'more png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($checkpoints[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[1])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($checkpoints[1], 'more png data')->shouldBeCalled();
 
         $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
 
-        $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
+        $this->beConstructedWith($fetcher, $processor, $output, \serialize($checkpoints));
 
         $this->run()->shouldReturn(true);
     }
@@ -81,26 +81,26 @@ class WorkerSpec extends ObjectBehavior
         CheckpointProcessor $processor,
         Output $output
     ) {
-        $steps = [
-            new Step('front', '/'),
-            new Step('Page one', '/one'),
-            new Step('Page two', '/two'),
+        $checkpoints = [
+            new Checkpoint('front', '/'),
+            new Checkpoint('Page one', '/one'),
+            new Checkpoint('Page two', '/two'),
         ];
 
         $output->error(Argument::any())->willReturn();
         $output->message(Argument::any())->willReturn();
 
-        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
-        $processor->process($steps[0], 'png data')->shouldBeCalled();
-        $fetcher->fetch($steps[1])->willThrow(new \RuntimeException('bad stuff'))->shouldBeCalled();
-        $processor->process($steps[1], Argument::any())->shouldNotBeCalled();
-        $fetcher->fetch($steps[2])->willReturn('more png data')->shouldBeCalled();
-        $processor->process($steps[2], 'more png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($checkpoints[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[1])->willThrow(new \RuntimeException('bad stuff'))->shouldBeCalled();
+        $processor->process($checkpoints[1], Argument::any())->shouldNotBeCalled();
+        $fetcher->fetch($checkpoints[2])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($checkpoints[2], 'more png data')->shouldBeCalled();
 
         $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
 
-        $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
+        $this->beConstructedWith($fetcher, $processor, $output, \serialize($checkpoints));
 
         $this->run()->shouldReturn(false);
     }
@@ -113,23 +113,23 @@ class WorkerSpec extends ObjectBehavior
         CheckpointProcessor $processor,
         Output $output
     ) {
-        $steps = [
-            new Step('front', '/'),
-            new Step('Page two', '/two'),
+        $checkpoints = [
+            new Checkpoint('front', '/'),
+            new Checkpoint('Page two', '/two'),
         ];
 
         $output->message('Checkpointing "front"...')->shouldBeCalled();
         $output->message('Checkpointing "Page two"...')->shouldBeCalled();
 
-        $fetcher->fetch($steps[0])->willReturn('png data')->shouldBeCalled();
-        $processor->process($steps[0], 'png data')->shouldBeCalled();
-        $fetcher->fetch($steps[1])->willReturn('more png data')->shouldBeCalled();
-        $processor->process($steps[1], 'more png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[0])->willReturn('png data')->shouldBeCalled();
+        $processor->process($checkpoints[0], 'png data')->shouldBeCalled();
+        $fetcher->fetch($checkpoints[1])->willReturn('more png data')->shouldBeCalled();
+        $processor->process($checkpoints[1], 'more png data')->shouldBeCalled();
 
         $fetcher->end()->shouldBeCalled();
         $processor->end()->shouldBeCalled();
 
-        $this->beConstructedWith($fetcher, $processor, $output, \serialize($steps));
+        $this->beConstructedWith($fetcher, $processor, $output, \serialize($checkpoints));
 
         $this->run()->shouldReturn(true);
     }

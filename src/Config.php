@@ -88,9 +88,9 @@ class Config
     /**
      * Get pages to validate.
      */
-    public function getSteps()
+    public function getCheckpoints()
     {
-        return $this->configFile->getSteps();
+        return $this->configFile->getCheckpoints();
     }
 
     /**

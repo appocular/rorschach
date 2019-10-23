@@ -5,15 +5,15 @@ namespace Rorschach;
 interface CheckpointFetcher
 {
     /**
-     * Fetch a step image.
+     * Fetch a checkpoint image.
      *
-     * @param Step $step
-     *   The step to screenshot.
+     * @param Checkpoint $checkpoint
+     *   The checkpoint to screenshot.
      *
      * @return string
-     *   The step screenshot, in PNG format.
+     *   The checkpoint screenshot, in PNG format.
      */
-    public function fetch(Step $step) : string;
+    public function fetch(Checkpoint $checkpoint) : string;
 
     /**
      * End processing.

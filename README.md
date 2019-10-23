@@ -50,7 +50,7 @@ webdriver_url: http://webdriver.appocular.docker:4444/wd/hub
 base_url: http://reload.dk/
 # Number of parallel processes. Defaults to 4.
 workers: 2
-# Default values for steps.
+# Default values for checkpoints.
 defaults:
   hide:
     # CSS selectors to "display: none" before taking screenshot.
@@ -76,7 +76,7 @@ defaults:
   # often creates variances in screenshots.
   dont_kill_animations: true
 # Pages to screenshot. Will be renamed "checkpoints" at some time.
-steps:
+checkpoints:
   # Short syntax, name: path.
   Frontpage: /
   # Remember to quote any values the YAML parser might misunderstand.

@@ -2,7 +2,7 @@
 
 namespace Rorschach\Helpers;
 
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -12,7 +12,7 @@ class ConfigFile
 {
     const FILE_NAME = 'rorschach.yml';
     const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
-    const NO_STEPS_ERROR = 'No steps defined in ' . self::FILE_NAME . '.';
+    const NO_CHECKPOINTS_ERROR = 'No checkpoints defined in ' . self::FILE_NAME . '.';
     const DEFAULT_BROWSER_HEIGHT = 1080;
     const DEFAULT_BROWSER_WIDTH = 1920;
 
@@ -40,7 +40,7 @@ class ConfigFile
      * Hash of name => path
      * @var array
      */
-    protected $steps = [];
+    protected $checkpoints = [];
 
     public function __construct()
     {
@@ -78,12 +78,12 @@ class ConfigFile
             'browser_height' => self::DEFAULT_BROWSER_HEIGHT,
             'browser_width' => self::DEFAULT_BROWSER_WIDTH,
         ];
-        if (!empty($config['steps'])) {
-            foreach ($config['steps'] as $name => $step) {
-                $this->steps[] = new Step($name, $step, $defaults);
+        if (!empty($config['checkpoints'])) {
+            foreach ($config['checkpoints'] as $name => $checkpoint) {
+                $this->checkpoints[] = new Checkpoint($name, $checkpoint, $defaults);
             }
         } else {
-            throw new \RuntimeException(self::NO_STEPS_ERROR);
+            throw new \RuntimeException(self::NO_CHECKPOINTS_ERROR);
         }
 
         if (!empty($errors)) {
@@ -101,9 +101,9 @@ class ConfigFile
         return $this->testName;
     }
 
-    public function getSteps()
+    public function getCheckpoints()
     {
-        return $this->steps;
+        return $this->checkpoints;
     }
 
     public function getWebdriverUrl()

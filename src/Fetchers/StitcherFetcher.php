@@ -7,7 +7,7 @@ use Facebook\WebDriver\WebDriverDimension;
 use Rorschach\CheckpointFetcher;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 use Rorschach\Stitcher;
 
 class StitcherFetcher implements CheckpointFetcher
@@ -26,29 +26,29 @@ class StitcherFetcher implements CheckpointFetcher
     /**
      * {@inheritdoc}
      */
-    public function fetch(Step $step) : string
+    public function fetch(Checkpoint $checkpoint) : string
     {
-        $this->output->debug("Loading \"{$step->path}\" in browser.");
-        $this->webdriver->get($this->config->getBaseUrl() . $step->path);
+        $this->output->debug("Loading \"{$checkpoint->path}\" in browser.");
+        $this->webdriver->get($this->config->getBaseUrl() . $checkpoint->path);
 
         // Only resize if given sizes. While ConfigFile will make sure these
         // are always set, keeping it optional eases testing.
-        if ($step->browserHeight && $step->browserWidth) {
-            $this->output->debug("Resizing window to {$step->browserWidth}x{$step->browserHeight}.");
-            $this->webdriver->manage()->window()->setSize(new WebDriverDimension($step->browserWidth, $step->browserHeight));
+        if ($checkpoint->browserHeight && $checkpoint->browserWidth) {
+            $this->output->debug("Resizing window to {$checkpoint->browserWidth}x{$checkpoint->browserHeight}.");
+            $this->webdriver->manage()->window()->setSize(new WebDriverDimension($checkpoint->browserWidth, $checkpoint->browserHeight));
         }
 
-        if ($step->wait) {
-            $this->output->debug(sprintf('Waiting %.4fs.', $step->wait));
-            usleep($step->wait * 1000000);
+        if ($checkpoint->wait) {
+            $this->output->debug(sprintf('Waiting %.4fs.', $checkpoint->wait));
+            usleep($checkpoint->wait * 1000000);
         }
 
-        if ($step->waitScript) {
+        if ($checkpoint->waitScript) {
             $this->output->debug('Waiting for wait_script');
-            $this->stitcher->waitScript($step->waitScript);
+            $this->stitcher->waitScript($checkpoint->waitScript);
         }
 
-        if ($step->hide && $selectors = array_filter(array_values($step->hide))) {
+        if ($checkpoint->hide && $selectors = array_filter(array_values($checkpoint->hide))) {
             $this->output->debug(sprintf('Hiding "%s".', implode(',', $selectors)));
             $this->stitcher->hideElements($selectors);
         }
@@ -56,9 +56,9 @@ class StitcherFetcher implements CheckpointFetcher
         $this->output->debug(sprintf(
             'Stitching "%s"%s...',
             $this->webdriver->getCurrentURL(),
-            ($step->stitchDelay ? sprintf(' with stitch_delay %.4fs', $step->stitchDelay) : '')
+            ($checkpoint->stitchDelay ? sprintf(' with stitch_delay %.4fs', $checkpoint->stitchDelay) : '')
         ));
-        return $this->stitcher->stitchScreenshot($step->stitchDelay ?? 0, (bool) $step->dontKillAnimations);
+        return $this->stitcher->stitchScreenshot($checkpoint->stitchDelay ?? 0, (bool) $checkpoint->dontKillAnimations);
         $this->output->debug('Done');
     }
 

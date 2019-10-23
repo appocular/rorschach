@@ -13,7 +13,7 @@ use Rorschach\Multiplexer;
 
 class MultiplexerSpec extends ObjectBehavior
 {
-    function it_slices_steps_up(
+    function it_slices_checkpoints_up(
         Config $config,
         Output $output,
         WorkerFactory $workerFactory,
@@ -21,7 +21,7 @@ class MultiplexerSpec extends ObjectBehavior
         CheckpointProcessor $processor
     ) {
         $config->getWorkers()->willReturn(4);
-        $config->getSteps()->willReturn([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
+        $config->getCheckpoints()->willReturn([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
 
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
@@ -46,7 +46,7 @@ class MultiplexerSpec extends ObjectBehavior
         CheckpointProcessor $processor
     ) {
         $config->getWorkers()->willReturn(16);
-        $config->getSteps()->willReturn([1, 2, 3]);
+        $config->getCheckpoints()->willReturn([1, 2, 3]);
 
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
@@ -70,7 +70,7 @@ class MultiplexerSpec extends ObjectBehavior
         CheckpointProcessor $processor
     ) {
         $config->getWorkers()->willReturn(16);
-        $config->getSteps()->willReturn([1]);
+        $config->getCheckpoints()->willReturn([1]);
 
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn('banana');
@@ -95,7 +95,7 @@ class MultiplexerSpec extends ObjectBehavior
         CheckpointProcessor $processor
     ) {
         $config->getWorkers()->willReturn(16);
-        $config->getSteps()->willReturn([1]);
+        $config->getCheckpoints()->willReturn([1]);
 
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);
@@ -121,7 +121,7 @@ class MultiplexerSpec extends ObjectBehavior
         CheckpointProcessor $processor
     ) {
         $config->getWorkers()->willReturn(16);
-        $config->getSteps()->willReturn([1]);
+        $config->getCheckpoints()->willReturn([1]);
 
         $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn(null);

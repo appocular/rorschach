@@ -4,7 +4,7 @@ namespace Rorschach\Fetchers;
 
 use Rorschach\CheckpointFetcher;
 use Rorschach\Config;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class ReadInFetcher implements CheckpointFetcher
 {
@@ -18,9 +18,9 @@ class ReadInFetcher implements CheckpointFetcher
     /**
      * {@inheritdoc}
      */
-    public function fetch(Step $step) : string
+    public function fetch(Checkpoint $checkpoint) : string
     {
-        return \file_get_contents($this->path . '/' . \urlencode($step->name) . '.png');
+        return \file_get_contents($this->path . '/' . \urlencode($checkpoint->name) . '.png');
     }
 
     /**

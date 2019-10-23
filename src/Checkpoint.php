@@ -4,9 +4,9 @@ namespace Rorschach;
 
 use RuntimeException;
 
-class Step
+class Checkpoint
 {
-    public const MISSING_PATH_ERROR = 'No path for step "%s".';
+    public const MISSING_PATH_ERROR = 'No path for checkpoint "%s".';
 
     public $name;
     public $path;
@@ -18,20 +18,20 @@ class Step
     public $waitScript;
     public $dontKillAnimations;
 
-    public function __construct(string $name, $step, $defaults = [])
+    public function __construct(string $name, $checkpoint, $defaults = [])
     {
         $this->name = $name;
-        if (is_string($step)) {
-            $step = ['path' => $step];
+        if (is_string($checkpoint)) {
+            $checkpoint = ['path' => $checkpoint];
         }
 
-        if (!isset($step['path'])) {
+        if (!isset($checkpoint['path'])) {
             throw new RuntimeException(sprintf(self::MISSING_PATH_ERROR, $name));
         }
         // Ensure all paths starts with a slash.
-        $this->path = '/' . ltrim($step['path'], '/');
+        $this->path = '/' . ltrim($checkpoint['path'], '/');
 
-        $step += $defaults;
+        $checkpoint += $defaults;
 
         $keys =  [
             'hide',
@@ -45,8 +45,8 @@ class Step
         foreach ($keys as $key) {
             $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
-            if (isset($step[$key])) {
-                $this->{$prop} = $step[$key];
+            if (isset($checkpoint[$key])) {
+                $this->{$prop} = $checkpoint[$key];
             }
         }
     }

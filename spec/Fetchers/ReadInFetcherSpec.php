@@ -5,7 +5,7 @@ namespace spec\Rorschach\Fetchers;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Config;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class ReadInFetcherSpec extends ObjectBehavior
 {
@@ -21,7 +21,7 @@ class ReadInFetcherSpec extends ObjectBehavior
         $config->getReadIn()->willReturn($dir);
         $this->beConstructedWith($config);
 
-        $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Test', '/path'))->shouldReturn('image data');
         `rm -rf $dir`;
     }
 
@@ -37,7 +37,7 @@ class ReadInFetcherSpec extends ObjectBehavior
         $config->getReadIn()->willReturn($dir);
         $this->beConstructedWith($config);
 
-        $this->fetch(new Step('Name with / funny + chars &', '/path'))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Name with / funny + chars &', '/path'))->shouldReturn('image data');
         `rm -rf $dir`;
     }
 }

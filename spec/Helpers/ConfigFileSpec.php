@@ -3,7 +3,7 @@
 namespace spec\Rorschach\Helpers;
 
 use Rorschach\Helpers\ConfigFile;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -15,8 +15,8 @@ class ConfigFileSpec extends ObjectBehavior
     protected $oldPwd;
     protected $dir;
 
-    // Defaults added to all steps.
-    protected $stepDefaults = [
+    // Defaults added to all checkpoints.
+    protected $checkpointDefaults = [
         'browser_height' => ConfigFile::DEFAULT_BROWSER_HEIGHT,
         'browser_width' => ConfigFile::DEFAULT_BROWSER_WIDTH,
     ];
@@ -76,7 +76,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_find_config_file_current_dir()
     {
         $this->useFixture('minimal');
-        $this->getSteps()->shouldBeLike([new Step('first', '/', $this->stepDefaults)]);
+        $this->getCheckpoints()->shouldBeLike([new Checkpoint('first', '/', $this->checkpointDefaults)]);
     }
 
     function it_should_find_config_from_subdir()
@@ -100,17 +100,17 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_require_proper_configuration()
     {
         $this->useFixture('empty');
-        $exception = new \RuntimeException(ConfigFile::NO_STEPS_ERROR);
+        $exception = new \RuntimeException(ConfigFile::NO_CHECKPOINTS_ERROR);
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
-    function it_should_return_steps()
+    function it_should_return_checkpoints()
     {
         $this->useFixture('full');
-        $this->getSteps()->shouldBeLike([
-            new Step('front', '/', $this->stepDefaults),
-            new Step('Page two', '/two', $this->stepDefaults),
-            new Step('three', '/slashless', $this->stepDefaults),
+        $this->getCheckpoints()->shouldBeLike([
+            new Checkpoint('front', '/', $this->checkpointDefaults),
+            new Checkpoint('Page two', '/two', $this->checkpointDefaults),
+            new Checkpoint('three', '/slashless', $this->checkpointDefaults),
         ]);
     }
 
@@ -126,36 +126,36 @@ class ConfigFileSpec extends ObjectBehavior
         $this->getBaseUrl()->shouldReturn('http://localhost/');
     }
 
-    function it_should_handle_complex_steps()
+    function it_should_handle_complex_checkpoints()
     {
         $yaml = <<<'EOF'
-steps:
+checkpoints:
   front: /
   "with-path":
     path: /the-path
 EOF;
         $this->withFixture($yaml);
-        $this->getSteps()->shouldBeLike([
-            new Step('front', '/', $this->stepDefaults),
-            new Step('with-path', '/the-path', $this->stepDefaults),
+        $this->getCheckpoints()->shouldBeLike([
+            new Checkpoint('front', '/', $this->checkpointDefaults),
+            new Checkpoint('with-path', '/the-path', $this->checkpointDefaults),
         ]);
     }
 
-    function it_should_handle_step_defaults()
+    function it_should_handle_checkpoint_defaults()
     {
         $yaml = <<<'EOF'
 defaults:
   hide:
     cookiepopup: "#cookiepopup"
-steps:
+checkpoints:
   front: /
   "with-path":
     path: /the-path
 EOF;
         $this->withFixture($yaml);
-        $this->getSteps()->shouldBeLike([
-            new Step('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->stepDefaults),
-            new Step('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->stepDefaults),
+        $this->getCheckpoints()->shouldBeLike([
+            new Checkpoint('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->checkpointDefaults),
+            new Checkpoint('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->checkpointDefaults),
         ]);
     }
 
@@ -163,7 +163,7 @@ EOF;
     {
         $yaml = <<<'EOF'
 workers: 8
-steps:
+checkpoints:
   front: /
 EOF;
         $this->withFixture($yaml);

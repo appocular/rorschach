@@ -8,7 +8,7 @@ use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 
 class AppocularProcessorSpec extends ObjectBehavior
 {
@@ -38,7 +38,7 @@ class AppocularProcessorSpec extends ObjectBehavior
         $appocular->startBatch('the sha', null)->willReturn($batch)->shouldBeCalled();
 
         $this->beConstructedWith($config, $appocular, $output);
-        $this->process(new Step('test', 'test'), 'data');
+        $this->process(new Checkpoint('test', 'test'), 'data');
     }
 
     /**
@@ -56,7 +56,7 @@ class AppocularProcessorSpec extends ObjectBehavior
         $appocular->startBatch('the sha', "the\nhistory")->willReturn($batch)->shouldBeCalled();
 
         $this->beConstructedWith($config, $appocular, $output);
-        $this->process(new Step('test', 'test'), 'data');
+        $this->process(new Checkpoint('test', 'test'), 'data');
     }
 
     /**

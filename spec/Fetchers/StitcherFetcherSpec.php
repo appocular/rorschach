@@ -10,7 +10,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Step;
+use Rorschach\Checkpoint;
 use Rorschach\Stitcher;
 
 class StitcherFetcherSpec extends ObjectBehavior
@@ -38,7 +38,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(0, false)->willReturn('image data');
 
-        $this->fetch(new Step('Test', '/path'))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Test', '/path'))->shouldReturn('image data');
     }
 
     /**
@@ -53,7 +53,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(42, false)->willReturn('image data');
 
-        $this->fetch(new Step('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
     }
 
     /**
@@ -67,7 +67,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $stitcher->stitchScreenshot(0, false)->willReturn('image data');
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
 
-        $this->fetch(new Step('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
+        $this->fetch(new Checkpoint('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
             ->shouldReturn('image data');
     }
 
@@ -90,7 +90,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $webdriver->manage()->willReturn($webdriverOptions);
 
         $defaults = ['browser_height' => 600, 'browser_width' => 800];
-        $this->fetch(new Step('Test', '/path', $defaults))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Test', '/path', $defaults))->shouldReturn('image data');
     }
 
     /**
@@ -104,7 +104,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $stitcher->stitchScreenshot(0, false)->willReturn('image data');
         $stitcher->waitScript('script body')->willReturn(false, false, true)->shouldBeCalled();
 
-        $this->fetch(new Step('Test', [
+        $this->fetch(new Checkpoint('Test', [
             'path' => '/',
             'wait_script' => 'script body',
         ]))
@@ -117,7 +117,7 @@ class StitcherFetcherSpec extends ObjectBehavior
     function it_disables_anim_killing(Stitcher $stitcher)
     {
         $stitcher->stitchScreenshot(0, true)->willReturn('image data')->shouldBeCalled();
-        $this->fetch(new Step('Test', [
+        $this->fetch(new Checkpoint('Test', [
             'path' => '/',
             'dont_kill_animations' => true,
         ]))

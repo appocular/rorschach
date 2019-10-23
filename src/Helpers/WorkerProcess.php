@@ -11,11 +11,11 @@ class WorkerProcess
      */
     protected $process;
 
-    public function __construct($argv, $steps)
+    public function __construct($argv, $checkpoints)
     {
         $argv = array_merge($argv, ['--worker', '--ansi']);
         $this->process = new Process($argv);
-        $this->process->setInput(\serialize($steps));
+        $this->process->setInput(\serialize($checkpoints));
         $this->process->start();
     }
 

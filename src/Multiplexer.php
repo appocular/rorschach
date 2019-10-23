@@ -48,19 +48,19 @@ class Multiplexer
     {
         $success = true;
         $numWorkers = $this->config->getWorkers();
-        $workerSteps = array_fill(0, $numWorkers, []);
+        $workerCheckpoints = array_fill(0, $numWorkers, []);
 
-        foreach ($this->config->getSteps() as $num => $step) {
-            $workerSteps[$num % $numWorkers][] = $step;
+        foreach ($this->config->getCheckpoints() as $num => $checkpoint) {
+            $workerCheckpoints[$num % $numWorkers][] = $checkpoint;
         }
 
         // Filter out empty workers.
-        $workerSteps = array_filter($workerSteps);
+        $workerCheckpoints = array_filter($workerCheckpoints);
 
         $workers = [];
-        $this->output->info(sprintf('Starting %d workers', count($workerSteps)));
-        foreach ($workerSteps as $num => $steps) {
-            $workers[] = $this->workerFactory->create($steps);
+        $this->output->info(sprintf('Starting %d workers', count($workerCheckpoints)));
+        foreach ($workerCheckpoints as $num => $checkpoints) {
+            $workers[] = $this->workerFactory->create($checkpoints);
         }
 
         do {
