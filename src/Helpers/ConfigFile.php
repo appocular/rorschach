@@ -50,7 +50,7 @@ class ConfigFile
      * Hash of name => variations.
      * @var \Rorschach\Variation[]
      */
-    protected $variants;
+    protected $variants = [];
 
     public function __construct()
     {
