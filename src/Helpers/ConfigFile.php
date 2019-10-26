@@ -3,6 +3,7 @@
 namespace Rorschach\Helpers;
 
 use Rorschach\Checkpoint;
+use Rorschach\Variation;
 use Rorschach\Exceptions\RorschachError;
 use Symfony\Component\Yaml\Yaml;
 
@@ -11,11 +12,11 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ConfigFile
 {
-    const FILE_NAME = 'rorschach.yml';
-    const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
-    const NO_CHECKPOINTS_ERROR = 'No checkpoints defined in ' . self::FILE_NAME . '.';
-    const DEFAULT_BROWSER_HEIGHT = 1080;
-    const DEFAULT_BROWSER_WIDTH = 1920;
+    public const FILE_NAME = 'rorschach.yml';
+    public const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
+    public const NO_CHECKPOINTS_ERROR = 'No checkpoints defined in ' . self::FILE_NAME . '.';
+    public const DEFAULT_BROWSER_HEIGHT = 1080;
+    public const DEFAULT_BROWSER_WIDTH = 1920;
 
     /**
      * Webdriver url.
@@ -38,10 +39,18 @@ class ConfigFile
     /**
      * Pages to verify.
      *
-     * Hash of name => path
+     * Hash of name => path.
      * @var array
      */
     protected $checkpoints = [];
+
+    /**
+     * Variants of checkpoints.
+     *
+     * Hash of name => variations.
+     * @var \Rorschach\Variation[]
+     */
+    protected $variants;
 
     public function __construct()
     {
@@ -53,11 +62,10 @@ class ConfigFile
             throw new RorschachError(self::MISSING_CONFIG_FILE_ERROR);
         }
 
-        $errors = [];
         try {
             $config = YAML::parseFile($dir . '/' . self::FILE_NAME);
         } catch (\Exception $e) {
-            $errors[] = 'Error parsing ' . self::FILE_NAME . ': ' . $e->getMessage();
+            throw new RorschachError('Error parsing ' . self::FILE_NAME . ': ' . $e->getMessage());
         }
 
         if (!empty($config['webdriver_url'])) {
@@ -87,19 +95,11 @@ class ConfigFile
             throw new RorschachError(self::NO_CHECKPOINTS_ERROR);
         }
 
-        if (!empty($errors)) {
-            throw new RorschachError(implode('\n', $errors));
+        if (!empty($config['variations'])) {
+            foreach ($config['variations'] as $name => $variants) {
+                $this->variants[] = new Variation($name, $variants);
+            }
         }
-    }
-
-    public function getAppName()
-    {
-        return $this->appName;
-    }
-
-    public function getTestName()
-    {
-        return $this->testName;
     }
 
     public function getCheckpoints()
@@ -120,5 +120,10 @@ class ConfigFile
     public function getWorkers()
     {
         return $this->workers;
+    }
+
+    public function getVariants()
+    {
+        return $this->variants;
     }
 }

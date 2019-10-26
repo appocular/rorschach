@@ -172,4 +172,13 @@ class ConfigSpec extends ObjectBehavior
         $configFile->getWorkers()->willReturn(8);
         $this->getWorkers()->shouldReturn(8);
     }
+
+    function it_can_provide_variants(ConfigFile $configFile)
+    {
+        $configFile->getVariants()->willReturn(null);
+        $this->getVariants()->shouldReturn(null);
+
+        $configFile->getVariants()->willReturn(['browser_size' => ['800x600', '1200x800']]);
+        $this->getVariants()->shouldReturn(['browser_size' => ['800x600', '1200x800']]);
+    }
 }

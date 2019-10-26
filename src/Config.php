@@ -153,4 +153,9 @@ class Config
         // Default to four workers.
         return $this->configFile->getWorkers() ?? 4;
     }
+
+    public function getVariants()
+    {
+        return $this->configFile->getVariants();
+    }
 }

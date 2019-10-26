@@ -14,6 +14,8 @@ class Checkpoint
     public const VALIDATE_STITCH_DELAY_ERROR = '"stitch_delay" should be a number between 0 and 7200, inclusive.';
     public const VALIDATE_WAIT_SCRIPT_ERROR = '"wait_script" should be a string.';
     public const VALIDATE_DONT_KILL_ANIMATIONS_ERROR = '"dont_kill_animations" should be true/false.';
+    public const UNKNOWN_VARIANT_TYPE_ERROR = 'Unknown variant type "%s".';
+    public const BAD_BROWSER_SIZE_ERROR = 'Bad browser size "%s", should be <width>x<height>.';
 
     public $name;
     public $path;
@@ -24,21 +26,22 @@ class Checkpoint
     public $stitchDelay;
     public $waitScript;
     public $dontKillAnimations;
+    public $meta;
 
-    public function __construct(string $name, $checkpoint, $defaults = [])
+    public function __construct(string $name, $data, $defaults = [])
     {
         $this->name = $name;
-        if (is_string($checkpoint)) {
-            $checkpoint = ['path' => $checkpoint];
+        if (is_string($data)) {
+            $data = ['path' => $data];
         }
 
-        if (!isset($checkpoint['path'])) {
+        if (!isset($data['path'])) {
             throw new RorschachError(sprintf(self::MISSING_PATH_ERROR, $name));
         }
         // Ensure all paths starts with a slash.
-        $this->path = '/' . ltrim($checkpoint['path'], '/');
+        $this->path = '/' . ltrim($data['path'], '/');
 
-        $checkpoint += $defaults;
+        $data += $defaults;
 
         $keys =  [
             'hide',
@@ -48,16 +51,17 @@ class Checkpoint
             'stitch_delay',
             'wait_script',
             'dont_kill_animations',
+            'meta',
         ];
         foreach ($keys as $key) {
             $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
-            if (isset($checkpoint[$key])) {
+            if (isset($data[$key])) {
                 if (\method_exists($this, 'validate' . $prop)) {
-                    $this->{'validate' . $prop}($checkpoint[$key]);
+                    $this->{'validate' . $prop}($data[$key]);
                 }
 
-                $this->{$prop} = $checkpoint[$key];
+                $this->{$prop} = $data[$key];
             }
         }
     }

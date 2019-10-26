@@ -5,6 +5,7 @@ namespace spec\Rorschach\Helpers;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Checkpoint;
+use Rorschach\Variation;
 use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\ConfigFile;
 
@@ -155,8 +156,14 @@ checkpoints:
 EOF;
         $this->withFixture($yaml);
         $this->getCheckpoints()->shouldBeLike([
-            new Checkpoint('front', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->checkpointDefaults),
-            new Checkpoint('with-path', ['path' => '/the-path', 'hide' => ['cookiepopup' => '#cookiepopup']] + $this->checkpointDefaults),
+            new Checkpoint('front', [
+                'path' => '/',
+                'hide' => ['cookiepopup' => '#cookiepopup']
+            ] + $this->checkpointDefaults),
+            new Checkpoint('with-path', [
+                'path' => '/the-path',
+                'hide' => ['cookiepopup' => '#cookiepopup']
+            ] + $this->checkpointDefaults),
         ]);
     }
 
@@ -169,5 +176,21 @@ checkpoints:
 EOF;
         $this->withFixture($yaml);
         $this->getWorkers()->shouldReturn(8);
+    }
+
+    function it_can_return_variants()
+    {
+        $yaml = <<<'EOF'
+variations:
+  browser_size:
+    - 800x600
+    - 1200x800
+checkpoints:
+  front: /
+  "with-path":
+    path: /the-path
+EOF;
+        $this->withFixture($yaml);
+        $this->getVariants()->shouldBeLike([new Variation('browser_size', ['800x600', '1200x800'])]);
     }
 }

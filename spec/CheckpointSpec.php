@@ -39,7 +39,12 @@ class CheckpointSpec extends ObjectBehavior
 
     function it_should_let_values_override_defaults()
     {
-        $this->beConstructedWith('test', ['path' => 'path', 'hide' => ['name' => 'hidden']], ['hide' => ['another name' => 'default']]);
+        $this->beConstructedWith('test', [
+            'path' => 'path',
+            'hide' => ['name' => 'hidden']
+        ], [
+            'hide' => ['another name' => 'default']
+        ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
         $this->hide->shouldBe(['name' => 'hidden']);

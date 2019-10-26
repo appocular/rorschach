@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Added
 - Early validation of checkpoint parameters.
+- Variations for checkpoints. Makes it possible to run all checkpoints
+  through different screen resolutions.
+- `browser_size` variation.
 
 ### Changed
 - Steps is now checkpoints.

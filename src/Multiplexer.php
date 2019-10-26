@@ -49,7 +49,12 @@ class Multiplexer
         $numWorkers = $this->config->getWorkers();
         $workerCheckpoints = array_fill(0, $numWorkers, []);
 
-        foreach ($this->config->getCheckpoints() as $num => $checkpoint) {
+        $checkpoints = $this->config->getCheckpoints();
+        foreach ($this->config->getVariants() as $variant) {
+            $checkpoints = $variant->getVariations($checkpoints);
+        }
+
+        foreach ($checkpoints as $num => $checkpoint) {
             $workerCheckpoints[$num % $numWorkers][] = $checkpoint;
         }
 

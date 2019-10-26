@@ -36,8 +36,8 @@ class BatchSpec extends ObjectBehavior
     function it_saves_images(Client $client)
     {
         $client->createBatch('the sha', null)->willReturn('batch id');
-        $client->checkpoint('batch id', 'name', 'png data')->willReturn(true);
+        $client->checkpoint('batch id', 'name', 'png data', 'meta data')->willReturn(true);
         $this->beConstructedWith($client, 'the sha');
-        $this->checkpoint('name', 'png data')->shouldReturn(true);
+        $this->checkpoint('name', 'png data', 'meta data')->shouldReturn(true);
     }
 }

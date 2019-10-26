@@ -84,5 +84,21 @@ class ClientSpec extends ObjectBehavior
         $this->createBatch($sha, $history)->shouldReturn($batchId);
     }
 
+    function it_passes_metadata(GuzzleClient $client, Response $response)
+    {
+        $batchId = 'http://host/batch/batch_id';
+        $response->getStatusCode()->willReturn(201);
+        $json = [
+            'name' => 'name',
+            'image' => base64_encode('png data'),
+            'meta' => ['some' => 'metadata'],
+        ];
+        $client->post($batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);
+        $this->checkpoint($batchId, 'name', 'png data', ['some' => 'metadata'])->shouldReturn(true);
+
+        // Should throw on errors.
+        $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
+    }
+
     // todo: checkpoint and close should return void and throw on errors
 }

@@ -50,7 +50,7 @@ class AppocularProcessor implements CheckpointProcessor
             );
         }
         $this->output->debug("Submitting checkpoint \"{$checkpoint->name}\".");
-        $this->batch->checkpoint($checkpoint->name, $pngData);
+        $this->batch->checkpoint($checkpoint->name, $pngData, $checkpoint->meta);
     }
 
     /**

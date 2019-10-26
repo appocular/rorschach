@@ -57,9 +57,11 @@ class Batch
      *   Checkpoint name.
      * @param string $pngData
      *   PNG image to submit.
+     * @param string $meta
+     *   Meta data.
      */
-    public function checkpoint(string $name, string $pngData)
+    public function checkpoint(string $name, string $pngData, $meta = null)
     {
-        return $this->client->checkpoint($this->batchId, $name, $pngData);
+        return $this->client->checkpoint($this->batchId, $name, $pngData, $meta);
     }
 }

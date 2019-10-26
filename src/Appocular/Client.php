@@ -101,17 +101,22 @@ class Client
      *   Name of checkpoint.
      * @param string $pngData
      *   PNG data.
+     * @param string $meta
+     *   Meta data.
      *
      * @return bool
      *   Whether the checkpoint was submitted.
      */
-    public function checkpoint($batchId, $name, $pngData)
+    public function checkpoint($batchId, $name, $pngData, $meta = null)
     {
         try {
             $json = [
                 'name' => $name,
                 'image' => base64_encode($pngData),
             ];
+            if ($meta) {
+                $json['meta'] = $meta;
+            }
             $response = $this->client->post($batchId . '/checkpoint', ['json' => $json] + $this->getOptions());
             if ($response->getStatusCode() == 201) {
                 return true;

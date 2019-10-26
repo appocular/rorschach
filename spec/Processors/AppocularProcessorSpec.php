@@ -60,6 +60,26 @@ class AppocularProcessorSpec extends ObjectBehavior
     }
 
     /**
+     * Test that it passes data when checkpointing.
+     */
+    function it_should_pass_data_when_checkpointing(
+        Config $config,
+        Appocular $appocular,
+        Batch $batch,
+        Output $output
+    ) {
+        $batch->checkpoint('test', 'data', ['some' => 'data'])->shouldBeCalled();
+        $config->getSha()->willReturn('the sha');
+        $config->getHistory()->willReturn(null);
+
+        $appocular->startBatch('the sha', null)->willReturn($batch)->shouldBeCalled();
+
+        $this->beConstructedWith($config, $appocular, $output);
+        $this->process(new Checkpoint('test', 'test', ['meta' => ['some' => 'data']]), 'data');
+
+    }
+
+    /**
      * Test that it prints the URL to Appocular at the end.
      */
     function it_should_print_link(

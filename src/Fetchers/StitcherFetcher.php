@@ -28,15 +28,15 @@ class StitcherFetcher implements CheckpointFetcher
      */
     public function fetch(Checkpoint $checkpoint) : string
     {
-        $this->output->debug("Loading \"{$checkpoint->path}\" in browser.");
-        $this->webdriver->get($this->config->getBaseUrl() . $checkpoint->path);
-
         // Only resize if given sizes. While ConfigFile will make sure these
         // are always set, keeping it optional eases testing.
         if ($checkpoint->browserHeight && $checkpoint->browserWidth) {
-            $this->output->debug("Resizing window to {$checkpoint->browserWidth}x{$checkpoint->browserHeight}.");
-            $this->webdriver->manage()->window()->setSize(new WebDriverDimension($checkpoint->browserWidth, $checkpoint->browserHeight));
+            $this->output->debug("Resizing window to {$checkpoint->browserWidth}❌{$checkpoint->browserHeight}.");
+            $this->webdriver->manage()->window()->setSize(new WebDriverDimension((int) $checkpoint->browserWidth, (int) $checkpoint->browserHeight));
         }
+
+        $this->output->debug("Loading \"{$checkpoint->path}\" in browser.");
+        $this->webdriver->get($this->config->getBaseUrl() . $checkpoint->path);
 
         if ($checkpoint->wait) {
             $this->output->debug(sprintf('Waiting %.4fs.', $checkpoint->wait));

@@ -50,6 +50,13 @@ webdriver_url: http://webdriver.appocular.docker:4444/wd/hub
 base_url: http://reload.dk/
 # Number of parallel processes. Defaults to 4.
 workers: 2
+# Variations for all checkpoints. This will run each checkpoint once
+# for each variation.
+variations:
+  # Vary on browser size.
+  browser_size:
+    - '1200x800'
+    - '375x667'
 # Default values for checkpoints.
 defaults:
   hide:
