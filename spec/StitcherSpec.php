@@ -135,4 +135,29 @@ class StitcherSpec extends ObjectBehavior
         $webdriver->executeScript(Stitcher::ANIM_KILL_SCRIPT)->shouldNotBeCalled();
         $png = $this->getWrappedObject()->stitchScreenshot(0, true);
     }
+
+    /**
+     * Test that it can remove elements.
+     */
+    function it_should_remove_elements(RemoteWebDriver $webdriver)
+    {
+        $webdriver->findElements(WebDriverBy::cssSelector('#the_selector'))
+            ->willReturn(['le element', '.video'])->shouldBeCalled();
+        $webdriver->executeScript("arguments[0].parentNode.removeChild(arguments[0])", ['le element'])
+            ->shouldBeCalled();
+        $webdriver->executeScript("arguments[0].parentNode.removeChild(arguments[0])", ['.video'])
+            ->shouldBeCalled();
+
+        // No return value to check, so call directly on the object.
+        $this->getWrappedObject()->removeElements(['#the_selector']);
+    }
+
+    function it_should_catch_errors_in_remove_selector(RemoteWebDriver $webdriver)
+    {
+        $webdriver->findElements(WebDriverBy::cssSelector('bad selector'))
+            ->willThrow(new RuntimeException('oh no'))->shouldBeCalled();
+
+        $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
+        $this->shouldThrow($exception)->duringHideElements(['bad selector']);
+    }
 }

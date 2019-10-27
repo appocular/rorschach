@@ -41,7 +41,7 @@ class Stitcher
         $full_capture = imagecreatetruecolor($total_width, $total_height);
         $repeat_x = ceil($total_width / $viewport_width);
         $repeat_y = ceil($total_height / $viewport_height);
-        for ($x = 0; $x < $repeat_x; $x ++) {
+        for ($x = 0; $x < $repeat_x; $x++) {
             $x_pos = $x * $viewport_width;
             $before_top = -1;
             for ($y = 0; $y < $repeat_y; $y++) {
@@ -101,6 +101,23 @@ class Stitcher
         }
         foreach ($elements as $element) {
             $this->webdriver->executeScript("arguments[0].style.visibility='hidden'", [$element]);
+        }
+    }
+
+    public function removeElements($cssSelectors)
+    {
+        $selector = implode(', ', $cssSelectors);
+        try {
+            $elements = $this->webdriver->findElements(WebDriverBy::cssSelector($selector));
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
+                'Error removing elements with selector "%s": %s',
+                $selector,
+                $e->getMessage()
+            ));
+        }
+        foreach ($elements as $element) {
+            $this->webdriver->executeScript("arguments[0].parentNode.removeChild(arguments[0])", [$element]);
         }
     }
 

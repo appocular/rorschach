@@ -53,6 +53,11 @@ class StitcherFetcher implements CheckpointFetcher
             $this->stitcher->hideElements($selectors);
         }
 
+        if ($checkpoint->remove && $selectors = array_filter(array_values($checkpoint->remove))) {
+            $this->output->debug(sprintf('Removing "%s".', implode(',', $selectors)));
+            $this->stitcher->removeElements($selectors);
+        }
+
         $this->output->debug(sprintf(
             'Stitching "%s"%s...',
             $this->webdriver->getCurrentURL(),

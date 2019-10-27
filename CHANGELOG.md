@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Variations for checkpoints. Makes it possible to run all checkpoints
   through different screen resolutions.
 - `browser_size` variation.
+- `remove` for when `hide` is not enough.
 
 ### Changed
 - Steps is now checkpoints.

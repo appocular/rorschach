@@ -59,6 +59,10 @@ variations:
     - '375x667'
 # Default values for checkpoints.
 defaults:
+  remove:
+    # CSS selectors to remove before taking screenshot.
+    cookiepopup: '#CybotCookiebotDialog'
+  # Or if removing is too heavy handed:
   hide:
     # CSS selectors to "display: none" before taking screenshot.
     cookiepopup: '#CybotCookiebotDialog'

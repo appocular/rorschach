@@ -63,6 +63,19 @@ class CheckpointSpec extends ObjectBehavior
             ->duringValidateHide(['banana' => []]);
     }
 
+    function it_should_validate_remove()
+    {
+        $this->beConstructedWith('test', ['path' => 'path']);
+        $this->validateRemove(['key' => 'value'])
+            ->shouldReturn(true);
+        $this->validateRemove(['key' => 'value', 'key2' => 'value2'])
+            ->shouldReturn(true);
+        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_REMOVE_ERROR))
+            ->duringValidateRemove('banana');
+        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_REMOVE_ERROR))
+            ->duringValidateRemove(['banana' => []]);
+    }
+
     function it_should_validate_browser_width_and_height()
     {
         $this->beConstructedWith('test', ['path' => 'path']);

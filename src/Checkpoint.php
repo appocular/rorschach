@@ -8,6 +8,7 @@ class Checkpoint
 {
     public const MISSING_PATH_ERROR = 'No path for checkpoint "%s".';
     public const VALIDATE_HIDE_ERROR = '"hide" should be a mapping of <name>: <CSS selector>';
+    public const VALIDATE_REMOVE_ERROR = '"remove" should be a mapping of <name>: <CSS selector>';
     public const VALIDATE_BROWSER_SIZE_ERROR = '"browser_height" and "browser_width" should be ' .
         'a number between 1 and 9999, inclusive.';
     public const VALIDATE_WAIT_ERROR = '"wait" should be a number between 0 and 7200, inclusive.';
@@ -20,6 +21,7 @@ class Checkpoint
     public $name;
     public $path;
     public $hide;
+    public $remove;
     public $browserWidth;
     public $browserHeight;
     public $wait;
@@ -45,6 +47,7 @@ class Checkpoint
 
         $keys =  [
             'hide',
+            'remove',
             'browser_height',
             'browser_width',
             'wait',
@@ -79,6 +82,21 @@ class Checkpoint
         }
 
         throw new RorschachError(self::VALIDATE_HIDE_ERROR);
+    }
+
+    public function validateRemove($val)
+    {
+        if (is_array($val)) {
+            foreach ($val as $key => $val) {
+                if (!\is_string($key) || !\is_string($val)) {
+                    throw new RorschachError(self::VALIDATE_REMOVE_ERROR);
+                }
+            }
+
+            return true;
+        }
+
+        throw new RorschachError(self::VALIDATE_REMOVE_ERROR);
     }
 
     public function validateBrowserHeight($val)

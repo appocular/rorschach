@@ -72,6 +72,21 @@ class StitcherFetcherSpec extends ObjectBehavior
     }
 
     /**
+     * Test that it removes elements.
+     */
+    function it_removes_elements(
+        Config $config,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->removeElements(['#cookiepopup'])->shouldBeCalled();
+
+        $this->fetch(new Checkpoint('Test', ['path' => '/', 'remove' => ['cookiepopup' => '#cookiepopup']]))
+            ->shouldReturn('image data');
+    }
+
+    /**
      * Test that it resizes the browser to the given dimensions.
      */
     function it_resizes_browser(
