@@ -36,7 +36,7 @@ class StitcherFetcherSpec extends ObjectBehavior
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
-        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
 
         $this->fetch(new Checkpoint('Test', '/path'))->shouldReturn('image data');
     }
@@ -51,7 +51,7 @@ class StitcherFetcherSpec extends ObjectBehavior
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
-        $stitcher->stitchScreenshot(42, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(42)->willReturn('image data');
 
         $this->fetch(new Checkpoint('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
     }
@@ -64,7 +64,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
 
         $this->fetch(new Checkpoint('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
@@ -79,7 +79,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $stitcher->removeElements(['#cookiepopup'])->shouldBeCalled();
 
         $this->fetch(new Checkpoint('Test', ['path' => '/', 'remove' => ['cookiepopup' => '#cookiepopup']]))
@@ -98,7 +98,7 @@ class StitcherFetcherSpec extends ObjectBehavior
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
-        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
 
         $webdriverWindow->setSize(new WebDriverDimension('800', '600'))->shouldBeCalled();
         $webdriverOptions->window()->willReturn($webdriverWindow);
@@ -116,7 +116,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         Webdriver $webdriver,
         Stitcher $stitcher
     ) {
-        $stitcher->stitchScreenshot(0, false)->willReturn('image data');
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
         $stitcher->waitScript('script body')->willReturn(false, false, true)->shouldBeCalled();
 
         $this->fetch(new Checkpoint('Test', [
@@ -127,15 +127,17 @@ class StitcherFetcherSpec extends ObjectBehavior
     }
 
     /**
-     * Test that it allows for overriding the animation killing.
+     * Test that it adds CSS.
      */
-    function it_disables_anim_killing(Stitcher $stitcher)
-    {
-        $stitcher->stitchScreenshot(0, true)->willReturn('image data')->shouldBeCalled();
-        $this->fetch(new Checkpoint('Test', [
-            'path' => '/',
-            'dont_kill_animations' => true,
-        ]))
+    function it_adds_css(
+        Config $config,
+        Webdriver $webdriver,
+        Stitcher $stitcher
+    ) {
+        $stitcher->stitchScreenshot(0)->willReturn('image data');
+        $stitcher->addCss('some css')->shouldBeCalled();
+
+        $this->fetch(new Checkpoint('Test', ['path' => '/', 'css' => ['hide menu' => 'some css']]))
             ->shouldReturn('image data');
     }
 }

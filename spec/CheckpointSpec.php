@@ -41,22 +41,44 @@ class CheckpointSpec extends ObjectBehavior
     {
         $this->beConstructedWith('test', [
             'path' => 'path',
-            'hide' => ['name' => 'hidden']
+            'wait' => 10
         ], [
-            'hide' => ['another name' => 'default']
+            'wait' => 20
         ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
-        $this->hide->shouldBe(['name' => 'hidden']);
+        $this->wait->shouldBe(10);
+    }
+
+    function it_should_let_hash_values_override_defaults_selectively()
+    {
+        $this->beConstructedWith('test', [
+            'path' => 'path',
+            'hide' => [
+                'name' => 'hidden',
+                'nulled' => null,
+            ]
+        ], [
+            'hide' => [
+                'name' => 'nat hidden',
+                'another name' => 'default',
+                'nulled' => 'value'
+            ]
+        ]);
+        $this->name->shouldBe('test');
+        $this->path->shouldBe('/path');
+        $this->hide->shouldBe(['name' => 'hidden', 'another name' => 'default']);
     }
 
     function it_should_validate_hide()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
+
         $this->validateHide(['key' => 'value'])
-            ->shouldReturn(true);
+            ->shouldReturn(['key' => 'value']);
         $this->validateHide(['key' => 'value', 'key2' => 'value2'])
-            ->shouldReturn(true);
+            ->shouldReturn(['key' => 'value', 'key2' => 'value2']);
+
         $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_HIDE_ERROR))
             ->duringValidateHide('banana');
         $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_HIDE_ERROR))
@@ -66,10 +88,12 @@ class CheckpointSpec extends ObjectBehavior
     function it_should_validate_remove()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
+
         $this->validateRemove(['key' => 'value'])
-            ->shouldReturn(true);
+            ->shouldReturn(['key' => 'value']);
         $this->validateRemove(['key' => 'value', 'key2' => 'value2'])
-            ->shouldReturn(true);
+            ->shouldReturn(['key' => 'value', 'key2' => 'value2']);
+
         $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_REMOVE_ERROR))
             ->duringValidateRemove('banana');
         $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_REMOVE_ERROR))
@@ -79,102 +103,82 @@ class CheckpointSpec extends ObjectBehavior
     function it_should_validate_browser_width_and_height()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
-        $this->validateBrowserHeight('1')
-            ->shouldReturn(true);
-        $this->validateBrowserHeight('500')
-            ->shouldReturn(true);
-        $this->validateBrowserHeight('9999')
-            ->shouldReturn(true);
 
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserHeight('2 bannaas');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserHeight("0");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserHeight("-6");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserHeight("10000");
+        $goodValues = ['1', '500', '9999'];
+        foreach ($goodValues as $val) {
+            $this->validateBrowserHeight($val)
+                ->shouldReturn($val);
+            $this->validateBrowserWidth($val)
+                ->shouldReturn($val);
+        }
 
-        $this->validateBrowserWidth('1')
-            ->shouldReturn(true);
-        $this->validateBrowserWidth('500')
-            ->shouldReturn(true);
-        $this->validateBrowserWidth('9999')
-            ->shouldReturn(true);
-
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserWidth('2 bannaas');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserWidth("0");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserWidth("-6");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-            ->duringValidateBrowserWidth("10000");
+        $badValues = ['2 bannaas', '0', '-6', '10000'];
+        foreach ($badValues as $val) {
+            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
+                ->duringValidateBrowserHeight($val);
+            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
+                ->duringValidateBrowserWidth($val);
+        }
     }
 
     function it_should_validate_wait()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
-        $this->validateWait('0')
-            ->shouldReturn(true);
-        $this->validateWait('500')
-            ->shouldReturn(true);
-        $this->validateWait('7200')
-            ->shouldReturn(true);
 
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_ERROR))
-            ->duringValidateWait('2 bannaas');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_ERROR))
-            ->duringValidateWait("-6");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_ERROR))
-            ->duringValidateWait("10000");
+        $goodValues = ['0', '500', '7200'];
+        foreach ($goodValues as $val) {
+            $this->validateWait($val)
+                ->shouldReturn($val);
+        }
+
+        $badValues = ['2 bannaas', '-6', '10000'];
+        foreach ($badValues as $val) {
+            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_ERROR))
+                ->duringValidateWait($val);
+        }
     }
 
     function it_should_validate_stich_delay()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
-        $this->validateStitchDelay('0')
-            ->shouldReturn(true);
-        $this->validateStitchDelay('500')
-            ->shouldReturn(true);
-        $this->validateStitchDelay('7200')
-            ->shouldReturn(true);
 
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_STITCH_DELAY_ERROR))
-            ->duringValidateStitchDelay('2 bannaas');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_STITCH_DELAY_ERROR))
-            ->duringValidateStitchDelay("-6");
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_STITCH_DELAY_ERROR))
-            ->duringValidateStitchDelay("10000");
+        $goodValues = ['0', '500', '7200'];
+        foreach ($goodValues as $val) {
+            $this->validateStitchDelay($val)
+                ->shouldReturn($val);
+        }
+
+        $badValues = ['2 bannaas', '-6', '10000'];
+        foreach ($badValues as $val) {
+            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_STITCH_DELAY_ERROR))
+                ->duringValidateStitchDelay($val);
+        }
     }
 
     function it_should_validate_wait_script()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
         $this->validateWaitScript('')
-            ->shouldReturn(true);
+            ->shouldReturn('');
         $this->validateWaitScript('banana')
-            ->shouldReturn(true);
+            ->shouldReturn('banana');
 
         $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_SCRIPT_ERROR))
             ->duringValidateWaitScript(['2 bannaas']);
     }
 
-    function it_should_validate_dont_kill_animations()
+    function it_should_validate_css()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
-        $this->validateDontKillAnimations(true)
-            ->shouldReturn(true);
-        $this->validateDontKillAnimations(false)
-            ->shouldReturn(true);
 
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_DONT_KILL_ANIMATIONS_ERROR))
-            ->duringValidateDontKillAnimations('true');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_DONT_KILL_ANIMATIONS_ERROR))
-            ->duringValidateDontKillAnimations('1');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_DONT_KILL_ANIMATIONS_ERROR))
-            ->duringValidateDontKillAnimations(1);
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_DONT_KILL_ANIMATIONS_ERROR))
-            ->duringValidateDontKillAnimations([]);
+        $this->validateCss(['key' => 'value'])
+            ->shouldReturn(['key' => 'value']);
+        $this->validateCss(['key' => 'value', 'key2' => 'value2'])
+            ->shouldReturn(['key' => 'value', 'key2' => 'value2']);
+
+        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_CSS_ERROR))
+            ->duringValidateCss('banana');
+        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_CSS_ERROR))
+            ->duringValidateCss(['banana' => []]);
     }
 }

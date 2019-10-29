@@ -14,9 +14,9 @@ class Checkpoint
     public const VALIDATE_WAIT_ERROR = '"wait" should be a number between 0 and 7200, inclusive.';
     public const VALIDATE_STITCH_DELAY_ERROR = '"stitch_delay" should be a number between 0 and 7200, inclusive.';
     public const VALIDATE_WAIT_SCRIPT_ERROR = '"wait_script" should be a string.';
-    public const VALIDATE_DONT_KILL_ANIMATIONS_ERROR = '"dont_kill_animations" should be true/false.';
     public const UNKNOWN_VARIANT_TYPE_ERROR = 'Unknown variant type "%s".';
     public const BAD_BROWSER_SIZE_ERROR = 'Bad browser size "%s", should be <width>x<height>.';
+    public const VALIDATE_CSS_ERROR = '"css" should be a mapping of <name>: <CSS>';
 
     public $name;
     public $path;
@@ -27,8 +27,8 @@ class Checkpoint
     public $wait;
     public $stitchDelay;
     public $waitScript;
-    public $dontKillAnimations;
     public $meta;
+    public $css;
 
     public function __construct(string $name, $data, $defaults = [])
     {
@@ -43,7 +43,7 @@ class Checkpoint
         // Ensure all paths starts with a slash.
         $this->path = '/' . ltrim($data['path'], '/');
 
-        $data += $defaults;
+        //$data = array_merge_recursive($data, $defaults);
 
         $keys =  [
             'hide',
@@ -53,58 +53,45 @@ class Checkpoint
             'wait',
             'stitch_delay',
             'wait_script',
-            'dont_kill_animations',
             'meta',
+            'css',
         ];
         foreach ($keys as $key) {
             $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
 
             if (isset($data[$key])) {
-                if (\method_exists($this, 'validate' . $prop)) {
-                    $this->{'validate' . $prop}($data[$key]);
+                $val = $data[$key];
+                // If its an array, merge with defaults, if given.
+                if (is_array($val) && isset($defaults[$key])) {
+                    $val += $defaults[$key];
                 }
+            } else {
+                $val = $defaults[$key] ?? null;
+            }
 
-                $this->{$prop} = $data[$key];
+            if (isset($val)) {
+                if (\method_exists($this, 'validate' . $prop)) {
+                    $this->{$prop}  = $this->{'validate' . $prop}($val);
+                } else {
+                    $this->{$prop} = $val;
+                }
             }
         }
     }
 
     public function validateHide($val)
     {
-        if (is_array($val)) {
-            foreach ($val as $key => $val) {
-                if (!\is_string($key) || !\is_string($val)) {
-                    throw new RorschachError(self::VALIDATE_HIDE_ERROR);
-                }
-            }
-
-            return true;
-        }
-
-        throw new RorschachError(self::VALIDATE_HIDE_ERROR);
+        return $this->validateHash($val, self::VALIDATE_HIDE_ERROR);
     }
 
     public function validateRemove($val)
     {
-        if (is_array($val)) {
-            foreach ($val as $key => $val) {
-                if (!\is_string($key) || !\is_string($val)) {
-                    throw new RorschachError(self::VALIDATE_REMOVE_ERROR);
-                }
-            }
-
-            return true;
-        }
-
-        throw new RorschachError(self::VALIDATE_REMOVE_ERROR);
+        return $this->validateHash($val, self::VALIDATE_REMOVE_ERROR);
     }
 
     public function validateBrowserHeight($val)
     {
-        if ($this->validateInt($val, 1, 9999)) {
-            return true;
-        }
-        throw new RorschachError(self::VALIDATE_BROWSER_SIZE_ERROR);
+        return $this->validateInt($val, 1, 9999, self::VALIDATE_BROWSER_SIZE_ERROR);
     }
 
     public function validateBrowserWidth($val)
@@ -114,43 +101,55 @@ class Checkpoint
 
     public function validateWait($val)
     {
-        if ($this->validateInt($val, 0, 7200)) {
-            return true;
-        }
-        throw new RorschachError(self::VALIDATE_WAIT_ERROR);
+        return $this->validateInt($val, 0, 7200, self::VALIDATE_WAIT_ERROR);
     }
 
     public function validateStitchDelay($val)
     {
-        if ($this->validateInt($val, 0, 7200)) {
-            return true;
-        }
-        throw new RorschachError(self::VALIDATE_STITCH_DELAY_ERROR);
+        return $this->validateInt($val, 0, 7200, self::VALIDATE_STITCH_DELAY_ERROR);
     }
 
     public function validateWaitScript($val)
     {
         if (is_string($val)) {
-            return true;
+            return $val;
         }
         throw new RorschachError(self::VALIDATE_WAIT_SCRIPT_ERROR);
     }
 
-    public function validateDontKillAnimations($val)
+    public function validateCss($val)
     {
-        if (is_bool($val)) {
-            return true;
-        }
-        throw new RorschachError(self::VALIDATE_DONT_KILL_ANIMATIONS_ERROR);
+        return $this->validateHash($val, self::VALIDATE_CSS_ERROR);
     }
 
-    protected function validateInt($val, $min, $max)
+    protected function validateInt($val, $min, $max, $error)
     {
         // is_numeric allows for floats and scientific notation, so we'll just
         // use a regexp.
         if (preg_match('{^\d+$}', $val) && intval($val) >= $min && \intval($val) <= $max) {
-            return true;
+            return $val;
         }
-        return false;
+        throw new RorschachError($error);
+    }
+
+    protected function validateHash($val, $error)
+    {
+        if (is_array($val)) {
+            foreach ($val as $key => $value) {
+                if (!\is_string($key) || (!\is_string($value) && !\is_null($value))) {
+                    throw new RorschachError($error);
+                }
+
+                // Remove null values. This allows for unsetting using ~ in
+                // the YAML file.
+                if (\is_null($value)) {
+                    unset($val[$key]);
+                }
+            }
+
+            return $val;
+        }
+
+        throw new RorschachError($error);
     }
 }

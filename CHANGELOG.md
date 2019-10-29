@@ -11,10 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   through different screen resolutions.
 - `browser_size` variation.
 - `remove` for when `hide` is not enough.
+- `css` for injecting CSS.
 
 ### Changed
 - Steps is now checkpoints.
 - Don't print stack traces on errors like missing environment variables.
+
+### Removed
+- `dont_kill_animations` in favour of `css`.
 
 ## 0.5.1 - 2019-10-21
 ### Changed

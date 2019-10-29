@@ -26,13 +26,16 @@ class StitcherFetcher implements CheckpointFetcher
     /**
      * {@inheritdoc}
      */
-    public function fetch(Checkpoint $checkpoint) : string
+    public function fetch(Checkpoint $checkpoint): string
     {
         // Only resize if given sizes. While ConfigFile will make sure these
         // are always set, keeping it optional eases testing.
         if ($checkpoint->browserHeight && $checkpoint->browserWidth) {
             $this->output->debug("Resizing window to {$checkpoint->browserWidth}❌{$checkpoint->browserHeight}.");
-            $this->webdriver->manage()->window()->setSize(new WebDriverDimension((int) $checkpoint->browserWidth, (int) $checkpoint->browserHeight));
+            $this->webdriver->manage()->window()->setSize(new WebDriverDimension(
+                (int) $checkpoint->browserWidth,
+                (int) $checkpoint->browserHeight
+            ));
         }
 
         $this->output->debug("Loading \"{$checkpoint->path}\" in browser.");
@@ -58,19 +61,26 @@ class StitcherFetcher implements CheckpointFetcher
             $this->stitcher->removeElements($selectors);
         }
 
+        if ($checkpoint->css && $selectors = array_filter(array_values($checkpoint->css))) {
+            foreach ($checkpoint->css as $name => $css) {
+                $this->output->debug(sprintf('Adding "%s" CSS.', $name));
+                $this->stitcher->addCss($css);
+            }
+        }
+
         $this->output->debug(sprintf(
             'Stitching "%s"%s...',
             $this->webdriver->getCurrentURL(),
             ($checkpoint->stitchDelay ? sprintf(' with stitch_delay %.4fs', $checkpoint->stitchDelay) : '')
         ));
-        return $this->stitcher->stitchScreenshot($checkpoint->stitchDelay ?? 0, (bool) $checkpoint->dontKillAnimations);
+        return $this->stitcher->stitchScreenshot($checkpoint->stitchDelay ?? 0);
         $this->output->debug('Done');
     }
 
     /**
      * End processing.
      */
-    public function end() : void
+    public function end(): void
     {
         $this->webdriver->quit();
     }

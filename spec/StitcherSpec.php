@@ -22,8 +22,6 @@ class StitcherSpec extends ObjectBehavior
         $webdriver->executeScript('return document.documentElement.clientWidth')->willReturn(640);
         $webdriver->executeScript('return document.documentElement.clientHeight')->willReturn(480);
 
-        $webdriver->executeScript(Stitcher::ANIM_KILL_SCRIPT)->willReturn();
-
         // These are the expected scroll commands. Note that this is not
         // exactly the positions reported in the next section as the browser
         // will only scroll until it reaches the edge of the page.
@@ -130,12 +128,6 @@ class StitcherSpec extends ObjectBehavior
         $this->shouldThrow($exception)->duringWaitScript('the script');
     }
 
-    function it_should_allow_for_not_killing_anims(RemoteWebDriver $webdriver)
-    {
-        $webdriver->executeScript(Stitcher::ANIM_KILL_SCRIPT)->shouldNotBeCalled();
-        $png = $this->getWrappedObject()->stitchScreenshot(0, true);
-    }
-
     /**
      * Test that it can remove elements.
      */
@@ -159,5 +151,23 @@ class StitcherSpec extends ObjectBehavior
 
         $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
         $this->shouldThrow($exception)->duringHideElements(['bad selector']);
+    }
+
+    function it_should_add_css(RemoteWebDriver $webdriver)
+    {
+        $css = <<<EOF
+* {
+  content: "\\n";
+  stuff: 'in quotes';
+}
+EOF;
+        $expectedScript = <<<EOF
+var node = document.createElement("style");
+node.innerHTML = "* {\\n  content: \\"\\\\n\\";\\n  stuff: 'in quotes';\\n}";
+document.body.appendChild(node);
+EOF;
+
+        $webdriver->executeScript($expectedScript)->shouldBeCalled();
+        $this->getWrappedObject()->addCss($css);
     }
 }
