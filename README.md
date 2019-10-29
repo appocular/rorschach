@@ -29,8 +29,8 @@ php rorschach.phar
 
 ## Options
 
-- `--webdriver`: URL of WebDriver. Overrides `rorschach.yml`.
-- `--base-url`: Base URL of site. Overrides `rorschach.yml`.
+- `--webdriver`: URL of WebDriver. Overrides value in `rorschach.yml`.
+- `--base-url`: Base URL of site. Overrides value in `rorschach.yml`.
 - `--write-out`: Don't send images to Appocular, but write to the
   given directory. Primarily for testing.
 - `--read-in`: Don't use WebDriver, but use images in the given
@@ -39,54 +39,166 @@ php rorschach.phar
 - `--base`: Override base URL of Appocular. Primarily for testing.
 - `-q`: Quiet. Less output.
 
-## Config file
+## Configuration file
 
-`rorschach.yml` example:
+In the configuration some options are defined as `name: value` pairs,
+these are labeled as `<named hash>` in the following documentation.
+The naming of things makes it possible to override defaults and remove
+items. For instance, if one has a `remove` in the `defaults` section
+like so:
 
 ``` yaml
-# URL of WebDriver.
+  remove:
+    cookiepopup: '#CybotCookiebotDialog'
+    ads: '.ugly-banner'
+```
+
+It is possible to remove that for a specific checkpoint like so:
+
+``` yaml
+  remove:
+    cookiepopup: ~
+```
+
+in order to make a single checkpoint that shows the cookie popup.
+Nulling an item doesn't affect other items, the `ads` key in the
+example will still be used.
+
+### Toplevel configuration items
+
+`webdriver_url: <URL>`
+
+The address of the Selenium WebDriver instance to use. Can be
+overridden from the commandline.
+
+`base_url: <URL>`
+
+Base URL of the site to checkpoint. All checkpoint paths are relative
+to this.
+
+`workers: <integer>`
+
+Number of parallel workers to use. More workers means higher resource
+usage, on the other hand, it speeds up the whole process as rorschach
+can process other checkpoints while waiting for timeouts or loading.
+
+`variations: <hash>`
+
+Variations applied to all checkpoints. Currently only `browser_size`
+can be specified, which will run checkpoints at the given sizes. This
+effectively multiplies the amount of checkpoints with the number of
+screen sizes.
+
+`defaults: <hash>`
+
+Defaults for all checkpoints. All checkpoint arguments except `path`
+is allowed.
+
+`checkpoints: <hash>`
+
+The checkpoints to screenshot. Can be specified in both a short and
+detailed style. Short style is simply `<name>: <path>` mappings, where
+all arguments are taken from defaults. Detailed style is `<name>:
+<hash>`, where the hash contains the arguments and needs to at least
+have a `path` key. See [Checkpoint arguments](#checkpoint-arguments)
+for details.
+
+### Checkpoint arguments
+
+`path: <string>`
+
+The path to checkpoint, will be appended to `base_url`.
+
+`hide: <named hash>`
+
+Named hash of selectors of elements to `display: none`.
+
+`remove: <named hash>`
+
+Named hash of selectors of elements to completely remove before taking
+the screenshot.
+
+`browser_width: <integer>` / `browser_height: <integer>`
+
+Width and height of browser. Defaults to 1920/1080
+
+`wait: <number>`
+
+Seconds to wait after loading before taking the screenshot. In most
+cases Selenium should have waited for the document loaded event, but
+in some cases it might be helpful to wait a set time.
+
+`wait_script: <string>`
+
+A JavaScript used for waiting. It is injected into the page, and
+rorschach will wait until it returns true.
+
+`stitch_delay: <number>`
+
+Seconds to wait after moving the viewport before taking another
+screenshot while stitching. This can be handy if scrolling triggers
+animations that needs to settle down.
+
+`css: <string>`
+
+CSS to inject into the page. This can be used to deal with CSS that
+interacts badly with the stitching together of screenshots or getting
+a stable screenshot in general. For example:
+
+``` yaml
+    killAnimation: |
+      * {
+        animation: none !important;
+      }
+```
+
+Will kill animations, which could otherwise cause screenshots to be
+different in each run, or:
+
+``` yaml
+    stopHeader: |
+      .header {
+        position: static;
+      }
+```
+
+To make a `position: sticky` header stay in place when stitching.
+
+
+
+### Example `rorschach.yml`
+
+``` yaml
 webdriver_url: http://webdriver.appocular.docker:4444/wd/hub
-# Base URL of site to snapshot.
 base_url: http://reload.dk/
-# Number of parallel processes. Defaults to 4.
 workers: 2
-# Variations for all checkpoints. This will run each checkpoint once
-# for each variation.
 variations:
-  # Vary on browser size.
   browser_size:
     - '1200x800'
     - '375x667'
-# Default values for checkpoints.
 defaults:
-  remove:
-    # CSS selectors to remove before taking screenshot.
-    cookiepopup: '#CybotCookiebotDialog'
-  # Or if removing is too heavy handed:
   hide:
-    # CSS selectors to "display: none" before taking screenshot.
     cookiepopup: '#CybotCookiebotDialog'
-  # Selfevident..
+  # Or, :
+  remove:
+    cookiepopup: '#CybotCookiebotDialog'
   browser_height: 800
   browser_width: 1280
-  # Wait one second after loading the page before taking screenshot,
-  # to allow things to load.
   wait: 1
-  # And/or use a script to wait for some event before taking
-  # screenshot. Rorschach will wait until the snippet returns true.
   wait_script: |
     return (Array.from(document.images).find(function (image) {
       return !image.complete
     }) === undefined)
-  # Wait one second after moving the viewport before taking the
-  # screenshot, when stitching full page screenshots together. This
-  # allows animations to settle.
   stitch_delay: 1
-  # Don't kill CSS transition, transforms and animations before taking
-  # screenshot. Generally not recommended as these CSS properties
-  # often creates variances in screenshots.
-  dont_kill_animations: true
-# Pages to screenshot. Will be renamed "checkpoints" at some time.
+  css:
+    killPulse: |
+      * {
+        animation: none !important;
+      }
+    stopHeader: |
+      .header {
+        position: static;
+      }
 checkpoints:
   # Short syntax, name: path.
   Frontpage: /
@@ -94,9 +206,7 @@ checkpoints:
   'Om os': /om-os
   # Detailed syntax.
   'Blog page':
-    # Path is obvously required.
     path: /blog/artikler/drop-projekterne
-    # These will override defaults.
     browser_height: 1334
     browser_width: 765
   'Skills': /kompetencer/react
