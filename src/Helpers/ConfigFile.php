@@ -15,6 +15,7 @@ class ConfigFile
     public const FILE_NAME = 'rorschach.yml';
     public const MISSING_CONFIG_FILE_ERROR = 'Could not find ' . self::FILE_NAME .  ' file.';
     public const NO_CHECKPOINTS_ERROR = 'No checkpoints defined in ' . self::FILE_NAME . '.';
+    public const BAD_VARIANTS_ERROR = 'Variations data should be a list ' . self::FILE_NAME . '.';
     public const DEFAULT_BROWSER_HEIGHT = 1080;
     public const DEFAULT_BROWSER_WIDTH = 1920;
 
@@ -96,6 +97,9 @@ class ConfigFile
 
         if (!empty($config['variations'])) {
             foreach ($config['variations'] as $name => $variants) {
+                if (!\is_array($variants)) {
+                    throw new RorschachError(self::BAD_VARIANTS_ERROR);
+                }
                 $this->variants[] = new Variation($name, $variants);
             }
         }
