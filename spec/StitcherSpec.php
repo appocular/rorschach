@@ -86,31 +86,6 @@ class StitcherSpec extends ObjectBehavior
         $png = $this->shouldThrow(\RuntimeException::class)->duringStitchScreenshot();
     }
 
-    /**
-     * Test that it can hide elements.
-     */
-    function it_should_hide_elements(RemoteWebDriver $webdriver)
-    {
-        $webdriver->findElements(WebDriverBy::cssSelector('#the_selector'))
-            ->willReturn(['le element', '.video'])->shouldBeCalled();
-        $webdriver->executeScript("arguments[0].style.visibility='hidden'", ['le element'])
-            ->shouldBeCalled();
-        $webdriver->executeScript("arguments[0].style.visibility='hidden'", ['.video'])
-            ->shouldBeCalled();
-
-        // No return value to check, so call directly on the object.
-        $this->getWrappedObject()->hideElements(['#the_selector']);
-    }
-
-    function it_should_catch_errors_in_hide_selector(RemoteWebDriver $webdriver)
-    {
-        $webdriver->findElements(WebDriverBy::cssSelector('bad selector'))
-            ->willThrow(new RuntimeException('oh no'))->shouldBeCalled();
-
-        $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
-        $this->shouldThrow($exception)->duringHideElements(['bad selector']);
-    }
-
     function it_should_wait_for_wait_script(RemoteWebDriver $webdriver)
     {
         $webdriver->executeScript('the script')->willReturn(false, false, true)->shouldBeCalled();
@@ -149,8 +124,8 @@ class StitcherSpec extends ObjectBehavior
         $webdriver->findElements(WebDriverBy::cssSelector('bad selector'))
             ->willThrow(new RuntimeException('oh no'))->shouldBeCalled();
 
-        $exception = new RuntimeException('Error hiding elements with selector "bad selector": oh no');
-        $this->shouldThrow($exception)->duringHideElements(['bad selector']);
+        $exception = new RuntimeException('Error removing elements with selector "bad selector": oh no');
+        $this->shouldThrow($exception)->duringRemoveElements(['bad selector']);
     }
 
     function it_should_add_css(RemoteWebDriver $webdriver)

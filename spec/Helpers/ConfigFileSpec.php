@@ -19,8 +19,7 @@ class ConfigFileSpec extends ObjectBehavior
 
     // Defaults added to all checkpoints.
     protected $checkpointDefaults = [
-        'browser_height' => ConfigFile::DEFAULT_BROWSER_HEIGHT,
-        'browser_width' => ConfigFile::DEFAULT_BROWSER_WIDTH,
+        'browser_size' => ConfigFile::DEFAULT_BROWSER_WIDTH . 'x' . ConfigFile::DEFAULT_BROWSER_HEIGHT,
     ];
 
     function __construct()
@@ -147,7 +146,7 @@ EOF;
     {
         $yaml = <<<'EOF'
 defaults:
-  hide:
+  remove:
     cookiepopup: "#cookiepopup"
 checkpoints:
   front: /
@@ -158,11 +157,11 @@ EOF;
         $this->getCheckpoints()->shouldBeLike([
             new Checkpoint('front', [
                 'path' => '/',
-                'hide' => ['cookiepopup' => '#cookiepopup']
+                'remove' => ['cookiepopup' => '#cookiepopup']
             ] + $this->checkpointDefaults),
             new Checkpoint('with-path', [
                 'path' => '/the-path',
-                'hide' => ['cookiepopup' => '#cookiepopup']
+                'remove' => ['cookiepopup' => '#cookiepopup']
             ] + $this->checkpointDefaults),
         ]);
     }

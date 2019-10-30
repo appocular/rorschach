@@ -16,9 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Steps is now checkpoints.
 - Don't print stack traces on errors like missing environment variables.
+- `browser_height`/`browser_width` changed to `browser_size`.
 
 ### Removed
 - `dont_kill_animations` in favour of `css`.
+- `hide` in favour of `css`.
 
 ## 0.5.1 - 2019-10-21
 ### Changed

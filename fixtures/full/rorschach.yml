@@ -1,5 +1,4 @@
-browser_height: 300
-browser_width: 400
+browser_size: 400x300
 webdriver_url: http://wd:4444/wd/hub
 base_url: http://localhost/
 checkpoints:

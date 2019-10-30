@@ -57,21 +57,6 @@ class StitcherFetcherSpec extends ObjectBehavior
     }
 
     /**
-     * Test that it hides elements.
-     */
-    function it_hides_elements(
-        Config $config,
-        Webdriver $webdriver,
-        Stitcher $stitcher
-    ) {
-        $stitcher->stitchScreenshot(0)->willReturn('image data');
-        $stitcher->hideElements(['#cookiepopup'])->shouldBeCalled();
-
-        $this->fetch(new Checkpoint('Test', ['path' => '/', 'hide' => ['cookiepopup' => '#cookiepopup']]))
-            ->shouldReturn('image data');
-    }
-
-    /**
      * Test that it removes elements.
      */
     function it_removes_elements(
@@ -104,7 +89,7 @@ class StitcherFetcherSpec extends ObjectBehavior
         $webdriverOptions->window()->willReturn($webdriverWindow);
         $webdriver->manage()->willReturn($webdriverOptions);
 
-        $defaults = ['browser_height' => 600, 'browser_width' => 800];
+        $defaults = ['browser_size' => "800x600"];
         $this->fetch(new Checkpoint('Test', '/path', $defaults))->shouldReturn('image data');
     }
 

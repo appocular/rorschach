@@ -30,12 +30,9 @@ class StitcherFetcher implements CheckpointFetcher
     {
         // Only resize if given sizes. While ConfigFile will make sure these
         // are always set, keeping it optional eases testing.
-        if ($checkpoint->browserHeight && $checkpoint->browserWidth) {
-            $this->output->debug("Resizing window to {$checkpoint->browserWidth}❌{$checkpoint->browserHeight}.");
-            $this->webdriver->manage()->window()->setSize(new WebDriverDimension(
-                (int) $checkpoint->browserWidth,
-                (int) $checkpoint->browserHeight
-            ));
+        if ($size = $checkpoint->browserSize) {
+            $this->output->debug("Resizing window to {$size->width}❌{$size->height}.");
+            $this->webdriver->manage()->window()->setSize(new WebDriverDimension($size->width, $size->height));
         }
 
         $this->output->debug("Loading \"{$checkpoint->path}\" in browser.");
@@ -49,11 +46,6 @@ class StitcherFetcher implements CheckpointFetcher
         if ($checkpoint->waitScript) {
             $this->output->debug('Waiting for wait_script');
             $this->stitcher->waitScript($checkpoint->waitScript);
-        }
-
-        if ($checkpoint->hide && $selectors = array_filter(array_values($checkpoint->hide))) {
-            $this->output->debug(sprintf('Hiding "%s".', implode(',', $selectors)));
-            $this->stitcher->hideElements($selectors);
         }
 
         if ($checkpoint->remove && $selectors = array_filter(array_values($checkpoint->remove))) {

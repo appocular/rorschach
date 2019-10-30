@@ -63,7 +63,7 @@ class ConfigFile
         }
 
         try {
-            $config = YAML::parseFile($dir . '/' . self::FILE_NAME);
+            $config = Yaml::parseFile($dir . '/' . self::FILE_NAME);
         } catch (\Exception $e) {
             throw new RorschachError('Error parsing ' . self::FILE_NAME . ': ' . $e->getMessage());
         }
@@ -84,8 +84,7 @@ class ConfigFile
 
         // Add in a default browser size.
         $defaults += [
-            'browser_height' => self::DEFAULT_BROWSER_HEIGHT,
-            'browser_width' => self::DEFAULT_BROWSER_WIDTH,
+            'browser_size' => self::DEFAULT_BROWSER_WIDTH . 'x' . self::DEFAULT_BROWSER_HEIGHT,
         ];
         if (!empty($config['checkpoints'])) {
             foreach ($config['checkpoints'] as $name => $checkpoint) {

@@ -5,6 +5,7 @@ namespace spec\Rorschach;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Checkpoint;
+use Rorschach\Helpers\Size;
 use Rorschach\Exceptions\RorschachError;
 
 class CheckpointSpec extends ObjectBehavior
@@ -31,58 +32,43 @@ class CheckpointSpec extends ObjectBehavior
 
     function it_should_take_defaults()
     {
-        $this->beConstructedWith('test', 'path', ['hide' => ['name' => 'tohide']]);
+        $this->beConstructedWith('test', 'path', ['wait' => 10]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
-        $this->hide->shouldBe(['name' => 'tohide']);
+        $this->wait->shouldBe(10.0);
     }
 
     function it_should_let_values_override_defaults()
     {
         $this->beConstructedWith('test', [
             'path' => 'path',
-            'wait' => 10
+            'wait' => '10'
         ], [
-            'wait' => 20
+            'wait' => '20'
         ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
-        $this->wait->shouldBe(10);
+        $this->wait->shouldBe(10.0);
     }
 
     function it_should_let_hash_values_override_defaults_selectively()
     {
         $this->beConstructedWith('test', [
             'path' => 'path',
-            'hide' => [
-                'name' => 'hidden',
+            'remove' => [
+                'name' => 'overridden',
                 'nulled' => null,
             ]
         ], [
-            'hide' => [
-                'name' => 'nat hidden',
+            'remove' => [
+                'name' => 'default',
                 'another name' => 'default',
-                'nulled' => 'value'
+                'nulled' => 'default'
             ]
         ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
-        $this->hide->shouldBe(['name' => 'hidden', 'another name' => 'default']);
-    }
-
-    function it_should_validate_hide()
-    {
-        $this->beConstructedWith('test', ['path' => 'path']);
-
-        $this->validateHide(['key' => 'value'])
-            ->shouldReturn(['key' => 'value']);
-        $this->validateHide(['key' => 'value', 'key2' => 'value2'])
-            ->shouldReturn(['key' => 'value', 'key2' => 'value2']);
-
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_HIDE_ERROR))
-            ->duringValidateHide('banana');
-        $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_HIDE_ERROR))
-            ->duringValidateHide(['banana' => []]);
+        $this->remove->shouldBe(['name' => 'overridden', 'another name' => 'default']);
     }
 
     function it_should_validate_remove()
@@ -100,24 +86,26 @@ class CheckpointSpec extends ObjectBehavior
             ->duringValidateRemove(['banana' => []]);
     }
 
-    function it_should_validate_browser_width_and_height()
+    function it_should_validate_browser_size()
     {
         $this->beConstructedWith('test', ['path' => 'path']);
 
         $goodValues = ['1', '500', '9999'];
         foreach ($goodValues as $val) {
-            $this->validateBrowserHeight($val)
-                ->shouldReturn($val);
-            $this->validateBrowserWidth($val)
-                ->shouldReturn($val);
+            foreach ($goodValues as $val2) {
+                $this->validateBrowserSize($val . 'x' . $val2)
+                    ->shouldBeLike(new Size($val, $val2));
+            }
         }
 
         $badValues = ['2 bannaas', '0', '-6', '10000'];
-        foreach ($badValues as $val) {
-            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-                ->duringValidateBrowserHeight($val);
-            $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
-                ->duringValidateBrowserWidth($val);
+        foreach ($goodValues as $goodVal) {
+            foreach ($badValues as $badVal) {
+                $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
+                    ->duringValidateBrowserSize($goodVal . 'x' . $badVal);
+                $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
+                    ->duringValidateBrowserSize($badVal . 'x' . $goodVal);
+            }
         }
     }
 
@@ -128,7 +116,7 @@ class CheckpointSpec extends ObjectBehavior
         $goodValues = ['0', '500', '7200'];
         foreach ($goodValues as $val) {
             $this->validateWait($val)
-                ->shouldReturn($val);
+                ->shouldReturn(\floatval($val));
         }
 
         $badValues = ['2 bannaas', '-6', '10000'];
@@ -145,7 +133,7 @@ class CheckpointSpec extends ObjectBehavior
         $goodValues = ['0', '500', '7200'];
         foreach ($goodValues as $val) {
             $this->validateStitchDelay($val)
-                ->shouldReturn($val);
+                ->shouldReturn(\floatval($val));
         }
 
         $badValues = ['2 bannaas', '-6', '10000'];

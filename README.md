@@ -109,18 +109,14 @@ for details.
 
 The path to checkpoint, will be appended to `base_url`.
 
-`hide: <named hash>`
-
-Named hash of selectors of elements to `display: none`.
-
 `remove: <named hash>`
 
 Named hash of selectors of elements to completely remove before taking
 the screenshot.
 
-`browser_width: <integer>` / `browser_height: <integer>`
+`browser_size: <integer>x<integer>`
 
-Width and height of browser. Defaults to 1920/1080
+Width and height of browser. Defaults to 1920x1080.
 
 `wait: <number>`
 
@@ -177,13 +173,9 @@ variations:
     - '1200x800'
     - '375x667'
 defaults:
-  hide:
-    cookiepopup: '#CybotCookiebotDialog'
-  # Or, :
   remove:
     cookiepopup: '#CybotCookiebotDialog'
-  browser_height: 800
-  browser_width: 1280
+  browser_size: 1280x800
   wait: 1
   wait_script: |
     return (Array.from(document.images).find(function (image) {
@@ -207,8 +199,9 @@ checkpoints:
   # Detailed syntax.
   'Blog page':
     path: /blog/artikler/drop-projekterne
-    browser_height: 1334
-    browser_width: 765
+    css:
+      hideAnotherThing: |
+        #magic { display: none; }
   'Skills': /kompetencer/react
 ```
 

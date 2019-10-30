@@ -35,7 +35,7 @@ class Variation
             if (!preg_match('{^(?<width>\d+)x(?<height>\d+)$}', $value, $matches)) {
                 throw new RorschachError(sprintf(self::BAD_BROWSER_SIZE_ERROR, $value));
             }
-            $this->variations[$value] = array_intersect_key($matches, ['width' => null, 'height' => null]);
+            $this->variations[$value] = $value;
         }
 
         $this->name = $name;
@@ -48,8 +48,7 @@ class Variation
         foreach ($this->variations as $name => $size) {
             foreach ($checkpoints as $checkpoint) {
                 $variation = clone $checkpoint;
-                $variation->browserWidth = $size['width'];
-                $variation->browserHeight = $size['height'];
+                $variation->browserSize = $variation->validateBrowserSize($size);
                 $variation->meta = $variation->meta ?? [];
                 $variation->meta['browser_size'] = $name;
 

@@ -49,48 +49,39 @@ class VariationSpec extends ObjectBehavior
 
         $expected = [
             new Checkpoint('test', '/', [
-                'browser_width' => '375',
-                'browser_height' => '667',
+                'browser_size' => '375x667',
                 'meta' => ['browser_size' => '375x667']
             ]),
             new Checkpoint('test 2', '/two', [
-                'browser_width' => '375',
-                'browser_height' => '667',
+                'browser_size' => '375x667',
                 'meta' => ['browser_size' => '375x667']
             ]),
             new Checkpoint('test 3', '/three', [
-                'browser_width' => '375',
-                'browser_height' => '667',
+                'browser_size' => '375x667',
                 'meta' => ['browser_size' => '375x667']
             ]),
             new Checkpoint('test', '/', [
-                'browser_width' => '800',
-                'browser_height' => '600',
+                'browser_size' => '800x600',
                 'meta' => ['browser_size' => '800x600']
             ]),
             new Checkpoint('test 2', '/two', [
-                'browser_width' => '800',
-                'browser_height' => '600',
+                'browser_size' => '800x600',
                 'meta' => ['browser_size' => '800x600']
             ]),
             new Checkpoint('test 3', '/three', [
-                'browser_width' => '800',
-                'browser_height' => '600',
+                'browser_size' => '800x600',
                 'meta' => ['browser_size' => '800x600']
             ]),
             new Checkpoint('test', '/', [
-                'browser_width' => '1200',
-                'browser_height' => '800',
+                'browser_size' => '1200x800',
                 'meta' => ['browser_size' => '1200x800']
             ]),
             new Checkpoint('test 2', '/two', [
-                'browser_width' => '1200',
-                'browser_height' => '800',
+                'browser_size' => '1200x800',
                 'meta' => ['browser_size' => '1200x800']
             ]),
             new Checkpoint('test 3', '/three', [
-                'browser_width' => '1200',
-                'browser_height' => '800',
+                'browser_size' => '1200x800',
                 'meta' => ['browser_size' => '1200x800']
             ]),
         ];
