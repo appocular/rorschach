@@ -25,7 +25,7 @@ class VariationSpec extends ObjectBehavior
 
     function it_should_throw_on_bad_variations()
     {
-        $this->beConstructedWith('browser_size', ['800x600' => '1200x800']);
+        $this->beConstructedWith('browser_size', [new \stdClass()]);
         $this->shouldThrow(new RorschachError(sprintf(Variation::BAD_VARIATIONS_ERROR, 'browser_size')))
             ->duringInstantiation();
     }
@@ -83,6 +83,49 @@ class VariationSpec extends ObjectBehavior
             new Checkpoint('test 3', '/three', [
                 'browser_size' => '1200x800',
                 'meta' => ['browser_size' => '1200x800']
+            ]),
+        ];
+        $this->getVariations($checkpoints)
+            ->shouldBeLike($expected);
+    }
+
+    function it_should_create_named_browser_size_variations()
+    {
+        $this->beConstructedWith('browser_size', [
+            'Small' => '375x667',
+            7 => '800x600',
+            'Large' => '1200x800',
+        ]);
+
+        $checkpoints = [
+            new Checkpoint('test', '/'),
+            new Checkpoint('test 2', '/two'),
+        ];
+
+        $expected = [
+            new Checkpoint('test', '/', [
+                'browser_size' => '375x667',
+                'meta' => ['browser_size' => 'Small']
+            ]),
+            new Checkpoint('test 2', '/two', [
+                'browser_size' => '375x667',
+                'meta' => ['browser_size' => 'Small']
+            ]),
+            new Checkpoint('test', '/', [
+                'browser_size' => '800x600',
+                'meta' => ['browser_size' => '800x600']
+            ]),
+            new Checkpoint('test 2', '/two', [
+                'browser_size' => '800x600',
+                'meta' => ['browser_size' => '800x600']
+            ]),
+            new Checkpoint('test', '/', [
+                'browser_size' => '1200x800',
+                'meta' => ['browser_size' => 'Large']
+            ]),
+            new Checkpoint('test 2', '/two', [
+                'browser_size' => '1200x800',
+                'meta' => ['browser_size' => 'Large']
             ]),
         ];
         $this->getVariations($checkpoints)

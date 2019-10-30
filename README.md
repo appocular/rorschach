@@ -85,9 +85,8 @@ can process other checkpoints while waiting for timeouts or loading.
 `variations: <hash>`
 
 Variations applied to all checkpoints. Currently only `browser_size`
-can be specified, which will run checkpoints at the given sizes. This
-effectively multiplies the amount of checkpoints with the number of
-screen sizes.
+can be specified. Care should be taken as the number of screenshots
+taken will be the cartesian product of the checkpoints and variations.
 
 `defaults: <hash>`
 
@@ -103,6 +102,16 @@ all arguments are taken from defaults. Detailed style is `<name>:
 have a `path` key. See [Checkpoint arguments](#checkpoint-arguments)
 for details.
 
+### Variations
+
+`browser_size: <hash>`
+
+Creates a set of checkpoints for each browser size. It can either be
+an array of `<width>x<height>`s, or a hash of `name:
+<width>x<height>`. The name is what is supplied as the `browser_size`
+meta data for appocular, and defaults to `<width>x<height>` when no
+name is given.
+
 ### Checkpoint arguments
 
 `path: <string>`
@@ -116,7 +125,8 @@ the screenshot.
 
 `browser_size: <integer>x<integer>`
 
-Width and height of browser. Defaults to 1920x1080.
+Width and height of browser. Defaults to 1920x1080. It is ignored in
+defaults and checkpoints if the `browser_size` variation is in use.
 
 `wait: <number>`
 

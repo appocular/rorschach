@@ -22,20 +22,23 @@ class Variation
      */
     protected $variations = [];
 
-    public function __construct($name, $variations)
+    public function __construct($name, array $variations)
     {
-        if (!in_array($name, ['browser_size'])) {
-            throw new RorschachError(sprintf(self::UNKNOWN_VARIATION_ERROR, $name));
+        if (!\in_array($name, ['browser_size'])) {
+            throw new RorschachError(\sprintf(self::UNKNOWN_VARIATION_ERROR, $name));
         }
 
         foreach ($variations as $key => $value) {
-            if (!is_integer($key) || !is_string($value)) {
-                throw new RorschachError(sprintf(self::BAD_VARIATIONS_ERROR, $name));
+            if (!\is_string($value)) {
+                throw new RorschachError(\sprintf(self::BAD_VARIATIONS_ERROR, $name));
             }
-            if (!preg_match('{^(?<width>\d+)x(?<height>\d+)$}', $value, $matches)) {
-                throw new RorschachError(sprintf(self::BAD_BROWSER_SIZE_ERROR, $value));
+            if (!\preg_match('{^(?<width>\d+)x(?<height>\d+)$}', $value, $matches)) {
+                throw new RorschachError(\sprintf(self::BAD_BROWSER_SIZE_ERROR, $value));
             }
-            $this->variations[$value] = $value;
+            if (\is_integer($key)) {
+                $key = $value;
+            }
+            $this->variations[$key] = $value;
         }
 
         $this->name = $name;
