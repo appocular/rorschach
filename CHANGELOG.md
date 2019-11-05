@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.7.0 - 2019-11-05
+### Changed
+- Use chrome --headless, seems to give a bit more consistent results
+  than non-headless.
+
 ## 0.6.0 - 2019-10-30
 ### Added
 - Early validation of checkpoint parameters.
