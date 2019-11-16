@@ -20,7 +20,7 @@ class ReadInFetcher implements CheckpointFetcher
      */
     public function fetch(Checkpoint $checkpoint) : string
     {
-        return \file_get_contents($this->path . '/' . \urlencode($checkpoint->name) . '.png');
+        return \file_get_contents($this->path . '/' . \urlencode($checkpoint->name . json_encode($checkpoint->meta)) . '.png');
     }
 
     /**

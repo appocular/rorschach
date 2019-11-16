@@ -20,7 +20,7 @@ class WriteOutProcessor implements CheckpointProcessor
      */
     public function process(Checkpoint $checkpoint, string $pngData): void
     {
-        \file_put_contents($this->path . '/' . \urlencode($checkpoint->name) . '.png', $pngData);
+        \file_put_contents($this->path . '/' . \urlencode($checkpoint->name . json_encode($checkpoint->meta)) . '.png', $pngData);
     }
 
     /**

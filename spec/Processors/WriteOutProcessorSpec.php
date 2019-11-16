@@ -21,8 +21,8 @@ class WriteOutProcessorSpec extends ObjectBehavior
         $this->beConstructedWith($config);
 
         $this->getWrappedObject()->process(new Checkpoint('Test', '/path'), 'data');
-        expect(\file_exists($dir . '/Test.png'))->toBe(true);
-        expect(\file_get_contents($dir . '/Test.png'))->toBe('data');
+        expect(\file_exists($dir . '/Testnull.png'))->toBe(true);
+        expect(\file_get_contents($dir . '/Testnull.png'))->toBe('data');
         `rm -rf $dir`;
     }
 
@@ -38,8 +38,8 @@ class WriteOutProcessorSpec extends ObjectBehavior
         $this->beConstructedWith($config);
 
         $this->getWrappedObject()->process(new Checkpoint('Name with / funny + chars &', '/path'), 'data');
-        expect(\file_exists($dir . '/Name+with+%2F+funny+%2B+chars+%26.png'))->toBe(true);
-        expect(\file_get_contents($dir . '/Name+with+%2F+funny+%2B+chars+%26.png'))->toBe('data');
+        expect(\file_exists($dir . '/Name+with+%2F+funny+%2B+chars+%26null.png'))->toBe(true);
+        expect(\file_get_contents($dir . '/Name+with+%2F+funny+%2B+chars+%26null.png'))->toBe('data');
         `rm -rf $dir`;
     }
 }

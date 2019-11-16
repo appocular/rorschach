@@ -17,7 +17,7 @@ class ReadInFetcherSpec extends ObjectBehavior
     ) {
         $dir = sys_get_temp_dir() . '/rorschach-test-' . getmypid();
         mkdir($dir);
-        \file_put_contents($dir . '/Test.png', 'image data');
+        \file_put_contents($dir . '/Testnull.png', 'image data');
         $config->getReadIn()->willReturn($dir);
         $this->beConstructedWith($config);
 
@@ -33,7 +33,7 @@ class ReadInFetcherSpec extends ObjectBehavior
     ) {
         $dir = sys_get_temp_dir() . '/rorschach-test-' . getmypid();
         mkdir($dir);
-        \file_put_contents($dir . '/Name+with+%2F+funny+%2B+chars+%26.png', 'image data');
+        \file_put_contents($dir . '/Name+with+%2F+funny+%2B+chars+%26null.png', 'image data');
         $config->getReadIn()->willReturn($dir);
         $this->beConstructedWith($config);
 
