@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Fetchers;
 
 use Facebook\WebDriver\WebDriver;
@@ -7,17 +9,19 @@ use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWindow;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Rorschach\Checkpoint;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Checkpoint;
 use Rorschach\Stitcher;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class StitcherFetcherSpec extends ObjectBehavior
 {
     function let(
         Config $config,
-        Webdriver $webdriver,
+        WebDriver $webdriver,
         Stitcher $stitcher,
         Output $output
     ) {
@@ -30,8 +34,7 @@ class StitcherFetcherSpec extends ObjectBehavior
      * Test that it writes out images.
      */
     function it_fetches_screenshot(
-        Config $config,
-        Webdriver $webdriver,
+        WebDriver $webdriver,
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
@@ -45,23 +48,20 @@ class StitcherFetcherSpec extends ObjectBehavior
      * Test that it passes stitchDelay
      */
     function it_passes_stitch_delay(
-        Config $config,
-        Webdriver $webdriver,
+        WebDriver $webdriver,
         Stitcher $stitcher
     ) {
         $webdriver->get('base/path')->shouldBeCalled();
         $webdriver->getCurrentURL()->willReturn('http://example.org/');
         $stitcher->stitchScreenshot(42)->willReturn('image data');
 
-        $this->fetch(new Checkpoint('Test', '/path', ['stitch_delay' => 42]))->shouldReturn('image data');
+        $this->fetch(new Checkpoint('Test', '/path', ['stitch_delay' => '42']))->shouldReturn('image data');
     }
 
     /**
      * Test that it removes elements.
      */
     function it_removes_elements(
-        Config $config,
-        Webdriver $webdriver,
         Stitcher $stitcher
     ) {
         $stitcher->stitchScreenshot(0)->willReturn('image data');
@@ -75,8 +75,7 @@ class StitcherFetcherSpec extends ObjectBehavior
      * Test that it resizes the browser to the given dimensions.
      */
     function it_resizes_browser(
-        Config $config,
-        Webdriver $webdriver,
+        WebDriver $webdriver,
         Stitcher $stitcher,
         WebDriverOptions $webdriverOptions,
         WebDriverWindow $webdriverWindow
@@ -97,12 +96,10 @@ class StitcherFetcherSpec extends ObjectBehavior
      * Test that it uses wait_script.
      */
     function it_uses_wait_script(
-        Config $config,
-        Webdriver $webdriver,
         Stitcher $stitcher
     ) {
         $stitcher->stitchScreenshot(0)->willReturn('image data');
-        $stitcher->waitScript('script body')->willReturn(false, false, true)->shouldBeCalled();
+        $stitcher->waitScript('script body')->shouldBeCalled();
 
         $this->fetch(new Checkpoint('Test', [
             'path' => '/',
@@ -115,8 +112,6 @@ class StitcherFetcherSpec extends ObjectBehavior
      * Test that it adds CSS.
      */
     function it_adds_css(
-        Config $config,
-        Webdriver $webdriver,
         Stitcher $stitcher
     ) {
         $stitcher->stitchScreenshot(0)->willReturn('image data');

@@ -1,19 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rorschach\Checkpoint;
-use Rorschach\Helpers\Size;
 use Rorschach\Exceptions\RorschachError;
+use Rorschach\Helpers\Size;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class CheckpointSpec extends ObjectBehavior
 {
     function it_should_require_a_path()
     {
         $this->beConstructedWith('test', []);
-        $this->shouldThrow(new RorschachError(sprintf(Checkpoint::MISSING_PATH_ERROR, 'test')))->duringInstantiation();
+        $this->shouldThrow(new RorschachError(\sprintf(Checkpoint::MISSING_PATH_ERROR, 'test')))
+            ->duringInstantiation();
     }
 
     function it_allows_string_as_path_shorthand()
@@ -32,7 +37,7 @@ class CheckpointSpec extends ObjectBehavior
 
     function it_should_take_defaults()
     {
-        $this->beConstructedWith('test', 'path', ['wait' => 10]);
+        $this->beConstructedWith('test', 'path', ['wait' => '10']);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
         $this->wait->shouldBe(10.0);
@@ -42,9 +47,9 @@ class CheckpointSpec extends ObjectBehavior
     {
         $this->beConstructedWith('test', [
             'path' => 'path',
-            'wait' => '10'
+            'wait' => '10',
         ], [
-            'wait' => '20'
+            'wait' => '20',
         ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
@@ -58,13 +63,13 @@ class CheckpointSpec extends ObjectBehavior
             'remove' => [
                 'name' => 'overridden',
                 'nulled' => null,
-            ]
+            ],
         ], [
             'remove' => [
                 'name' => 'default',
                 'another name' => 'default',
-                'nulled' => 'default'
-            ]
+                'nulled' => 'default',
+            ],
         ]);
         $this->name->shouldBe('test');
         $this->path->shouldBe('/path');
@@ -91,14 +96,16 @@ class CheckpointSpec extends ObjectBehavior
         $this->beConstructedWith('test', ['path' => 'path']);
 
         $goodValues = ['1', '500', '9999'];
+
         foreach ($goodValues as $val) {
             foreach ($goodValues as $val2) {
                 $this->validateBrowserSize($val . 'x' . $val2)
-                    ->shouldBeLike(new Size($val, $val2));
+                    ->shouldBeLike(new Size(\intval($val), \intval($val2)));
             }
         }
 
         $badValues = ['2 bannaas', '0', '-6', '10000'];
+
         foreach ($goodValues as $goodVal) {
             foreach ($badValues as $badVal) {
                 $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_BROWSER_SIZE_ERROR))
@@ -114,12 +121,14 @@ class CheckpointSpec extends ObjectBehavior
         $this->beConstructedWith('test', ['path' => 'path']);
 
         $goodValues = ['0', '500', '7200'];
+
         foreach ($goodValues as $val) {
             $this->validateWait($val)
                 ->shouldReturn(\floatval($val));
         }
 
         $badValues = ['2 bannaas', '-6', '10000'];
+
         foreach ($badValues as $val) {
             $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_WAIT_ERROR))
                 ->duringValidateWait($val);
@@ -131,12 +140,14 @@ class CheckpointSpec extends ObjectBehavior
         $this->beConstructedWith('test', ['path' => 'path']);
 
         $goodValues = ['0', '500', '7200'];
+
         foreach ($goodValues as $val) {
             $this->validateStitchDelay($val)
                 ->shouldReturn(\floatval($val));
         }
 
         $badValues = ['2 bannaas', '-6', '10000'];
+
         foreach ($badValues as $val) {
             $this->shouldThrow(new RorschachError(Checkpoint::VALIDATE_STITCH_DELAY_ERROR))
                 ->duringValidateStitchDelay($val);

@@ -1,63 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Helpers;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rorschach\Checkpoint;
-use Rorschach\Variation;
 use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\ConfigFile;
+use Rorschach\Variation;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class ConfigFileSpec extends ObjectBehavior
 {
     // Need to declare these properties, else PhpSpec will try to propergate
     // them to the object being tested.
+    /**
+     * Path to fixture directory.
+     *
+     * @var string
+     */
     protected $fixtures;
+
+    /**
+     * Saved current directory.
+     *
+     * @var string
+     */
     protected $oldPwd;
+
+    /**
+     * Current test dir.
+     *
+     * @var string
+     */
     protected $dir;
 
-    // Defaults added to all checkpoints.
+    /**
+     * Defaults added to all checkpoints.
+     *
+     * @var array<string, string>
+     */
     protected $checkpointDefaults = [
         'browser_size' => ConfigFile::DEFAULT_BROWSER_WIDTH . 'x' . ConfigFile::DEFAULT_BROWSER_HEIGHT,
     ];
 
     function __construct()
     {
-        $this->fixtures = dirname(dirname(__DIR__)) . '/fixtures';
+        $this->fixtures = \dirname(\dirname(__DIR__)) . '/fixtures';
     }
 
-    function useFixture($name)
+    function useFixture(string $name)
     {
         if (!isset($this->oldPwd)) {
-            $this->oldPwd = getcwd();
+            $this->oldPwd = \getcwd();
         }
-        chdir($this->fixtures . '/' . $name);
+
+        \chdir($this->fixtures . '/' . $name);
     }
 
-    function withFixture($yaml)
+    function withFixture(string $yaml)
     {
-        $this->dir = sys_get_temp_dir() . '/rorschach-test-' . getmypid();
-        mkdir($this->dir);
+        $this->dir = \sys_get_temp_dir() . '/rorschach-test-' . \getmypid();
+        \mkdir($this->dir);
         \file_put_contents($this->dir . '/rorschach.yml', $yaml);
 
         if (!isset($this->oldPwd)) {
-            $this->oldPwd = getcwd();
+            $this->oldPwd = \getcwd();
         }
-        chdir($this->dir);
+
+        \chdir($this->dir);
     }
 
     function letGo()
     {
         // Undo useFixture.
         if (isset($this->oldPwd)) {
-            chdir($this->oldPwd);
+            \chdir($this->oldPwd);
         }
 
         // Clean up after withFixture.
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if (isset($this->dir) && \file_exists($this->dir)) {
-            unlink($this->dir . '/rorschach.yml');
-            rmdir($this->dir);
+            \unlink($this->dir . '/rorschach.yml');
+            \rmdir($this->dir);
         }
     }
 
@@ -70,7 +98,7 @@ class ConfigFileSpec extends ObjectBehavior
     {
         // Set fixture to make letGo reset it.
         $this->useFixture('minimal');
-        chdir('/');
+        \chdir('/');
         $this->shouldThrow(new RorschachError(ConfigFile::MISSING_CONFIG_FILE_ERROR));
     }
 
@@ -83,12 +111,14 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_find_config_from_subdir()
     {
         $this->useFixture('minimal');
+
         // Create test sub-directory, so we don't have to commit an file to
         // make it exist.
-        if (!file_exists('sub/dir')) {
-            mkdir('sub/dir', 0777, true);
+        if (!\file_exists('sub/dir')) {
+            \mkdir('sub/dir', 0777, true);
         }
-        chdir('sub/dir');
+
+        \chdir('sub/dir');
     }
 
     function it_should_error_on_malformed_file()
@@ -101,7 +131,7 @@ class ConfigFileSpec extends ObjectBehavior
     function it_should_require_proper_configuration()
     {
         $this->useFixture('empty');
-        $exception = new RorschachError(ConfigFile::NO_CHECKPOINTS_ERROR);
+        $exception = new RorschachError(ConfigFile::EMPTY_CONFIG_FILE_ERROR);
         $this->shouldThrow($exception)->duringInstantiation();
     }
 
@@ -157,11 +187,11 @@ EOF;
         $this->getCheckpoints()->shouldBeLike([
             new Checkpoint('front', [
                 'path' => '/',
-                'remove' => ['cookiepopup' => '#cookiepopup']
+                'remove' => ['cookiepopup' => '#cookiepopup'],
             ] + $this->checkpointDefaults),
             new Checkpoint('with-path', [
                 'path' => '/the-path',
-                'remove' => ['cookiepopup' => '#cookiepopup']
+                'remove' => ['cookiepopup' => '#cookiepopup'],
             ] + $this->checkpointDefaults),
         ]);
     }

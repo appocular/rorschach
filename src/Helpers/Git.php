@@ -1,11 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach\Helpers;
 
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class Git
 {
+    /**
+     * Git executable to use.
+     *
+     * @var string
+     */
     protected $git = 'git';
 
     /**
@@ -13,7 +21,7 @@ class Git
      *
      * Primarily for testing.
      */
-    public function setExecutable($executable)
+    public function setExecutable(string $executable): void
     {
         $this->git = $executable;
     }
@@ -21,16 +29,17 @@ class Git
     /**
      * Get history from git.
      *
-     * @return string|null
+     * @return ?string
      *   The history, or null if not found or error.
      */
-    public function getHistory()
+    public function getHistory(): ?string
     {
         try {
             $process = new Process([$this->git, 'rev-list', 'HEAD']);
             $process->mustRun();
+
             return $process->getOutput();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

@@ -1,21 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Processors;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
+use Rorschach\Checkpoint;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Checkpoint;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class AppocularProcessorSpec extends ObjectBehavior
 {
     function it_should_not_start_batch_on_construction(
         Config $config,
         Appocular $appocular,
-        Batch $batch,
         Output $output
     ) {
         $config->getSha()->willReturn('the sha');
@@ -35,6 +39,7 @@ class AppocularProcessorSpec extends ObjectBehavior
         $config->getSha()->willReturn('the sha');
         $config->getHistory()->willReturn(null);
 
+        $batch->checkpoint(Argument::any(), Argument::any(), Argument::any())->willReturn(true);
         $appocular->startBatch('the sha', null)->willReturn($batch)->shouldBeCalled();
 
         $this->beConstructedWith($config, $appocular, $output);
@@ -53,6 +58,7 @@ class AppocularProcessorSpec extends ObjectBehavior
         $config->getSha()->willReturn('the sha');
         $config->getHistory()->willReturn("the\nhistory");
 
+        $batch->checkpoint(Argument::any(), Argument::any(), Argument::any())->willReturn(true);
         $appocular->startBatch('the sha', "the\nhistory")->willReturn($batch)->shouldBeCalled();
 
         $this->beConstructedWith($config, $appocular, $output);
@@ -76,7 +82,6 @@ class AppocularProcessorSpec extends ObjectBehavior
 
         $this->beConstructedWith($config, $appocular, $output);
         $this->process(new Checkpoint('test', 'test', ['meta' => ['some' => 'data']]), 'data');
-
     }
 
     /**
@@ -94,7 +99,6 @@ class AppocularProcessorSpec extends ObjectBehavior
 
         $appocular->startBatch('the sha', "")->willReturn($batch);
 
-        $output->debug(Argument::any())->willReturn();
         $output->newLine()->shouldBeCalled();
         $output->message('Verify snapshot at https://test.appocular.io/the sha')->shouldBeCalled();
 

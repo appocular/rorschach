@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Helpers;
 
+use PhpSpec\ObjectBehavior;
 use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\Env;
-use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class EnvSpec extends ObjectBehavior
 {
     function it_is_initializable()
@@ -16,7 +20,7 @@ class EnvSpec extends ObjectBehavior
 
     function it_should_return_value_of_variable()
     {
-        putenv('rorschach_test_env_variable=banana');
+        \putenv('rorschach_test_env_variable=banana');
         $this->get('rorschach_test_env_variable')->shouldReturn('banana');
     }
 
@@ -34,7 +38,7 @@ class EnvSpec extends ObjectBehavior
 
     function it_should_return_optional_variables()
     {
-        putenv('rorschach_test_optional_env_variable=banana');
+        \putenv('rorschach_test_optional_env_variable=banana');
         $this->getOptional('rorschach_test_optional_env_variable', null)->shouldReturn('banana');
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach;
 
 use Rorschach\Helpers\Output;
@@ -8,22 +10,30 @@ use Throwable;
 class Worker
 {
     /**
+     * Fetcher to use.
+     *
      * @var \Rorschach\CheckpointFetcher
      */
     protected $fetcher;
 
     /**
+     * Processor to use.
+     *
      * @var \Rorschach\CheckpointProcessor
      */
     protected $processor;
 
     /**
+     * Output to use.
+     *
      * @var \Rorschach\Helpers\Output
      */
     protected $output;
 
     /**
-     * @var \Rorschach\Checkpoint[]
+     * Checkpoints to process.
+     *
+     * @var array<\Rorschach\Checkpoint>
      */
     protected $checkpoints;
 
@@ -41,19 +51,23 @@ class Worker
     /**
      * Run snapshot and submit checkpoints to Appocular.
      */
-    public function run()
+    public function run(): bool
     {
         $success = false;
-        if (empty($this->checkpoints)) {
+
+        if (!$this->checkpoints) {
             $this->output->error('Error, no checkpoints on STDIN');
+
             return false;
         }
+
         try {
             $this->output->debug('Starting worker');
             $success = true;
+
             foreach ($this->checkpoints as $checkpoint) {
                 try {
-                    $this->output->message(sprintf('Checkpointing "%s"...', $checkpoint->name));
+                    $this->output->message(\sprintf('Checkpointing "%s"...', $checkpoint->name));
                     $this->output->info('Taking screenshot');
                     $screenshot = $this->fetcher->fetch($checkpoint);
 
@@ -63,10 +77,10 @@ class Worker
                     $this->output->info('Done');
                 } catch (Throwable $e) {
                     $success = false;
-                    $this->output->error(sprintf(
+                    $this->output->error(\sprintf(
                         'Error checkpointing "%s": "%s", skipping.',
                         $checkpoint->name,
-                        $e->getMessage()
+                        $e->getMessage(),
                     ));
                 }
             }
@@ -79,6 +93,7 @@ class Worker
 
             $this->output->debug('Done');
         }
+
         return $success;
     }
 }

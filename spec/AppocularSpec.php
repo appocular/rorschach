@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Rorschach\Appocular;
 use Rorschach\Appocular\Batch;
 use Rorschach\Appocular\Client;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class AppocularSpec extends ObjectBehavior
 {
     function it_returns_batch(Client $client)

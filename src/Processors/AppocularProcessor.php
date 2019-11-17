@@ -1,31 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach\Processors;
 
 use Rorschach\Appocular;
+use Rorschach\Checkpoint;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
-use Rorschach\Checkpoint;
 
 class AppocularProcessor implements CheckpointProcessor
 {
     /**
+     * The batch we're running.
+     *
      * @var \Rorschach\Appocular\Batch
      */
     protected $batch;
 
     /**
+     * Appocular.
+     *
      * @var \Rorschach\Appocular
      */
     protected $appocular;
 
     /**
+     * Our configuration.
+     *
      * @var \Rorschach\Config
      */
     protected $config;
 
     /**
+     * Our output.
+     *
      * @var \Rorschach\Helpers\Output
      */
     protected $output;
@@ -46,9 +56,10 @@ class AppocularProcessor implements CheckpointProcessor
             $this->output->debug('Creating batch.');
             $this->batch = $this->appocular->startBatch(
                 $this->config->getSha(),
-                $this->config->getHistory()
+                $this->config->getHistory(),
             );
         }
+
         $this->output->debug("Submitting checkpoint \"{$checkpoint->name}\".");
         $this->batch->checkpoint($checkpoint->name, $pngData, $checkpoint->meta);
     }
@@ -58,9 +69,11 @@ class AppocularProcessor implements CheckpointProcessor
      */
     public function end(): void
     {
-        if ($this->batch) {
-            $this->batch->close();
+        if (!$this->batch) {
+            return;
         }
+
+        $this->batch->close();
     }
 
     /**

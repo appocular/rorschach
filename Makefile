@@ -2,7 +2,7 @@
 # why not use it?
 SHELL=/usr/bin/fish
 
-.PHONY: build release test watch-test
+.PHONY: build release test test-spec phpcs watch-test
 
 box.phar:
 	wget https://github.com/humbug/box/releases/download/3.8.0/box.phar
@@ -28,8 +28,13 @@ release: test build
 	@git commit -m"Release $(version)"
 	@git tag $(version)
 
-test:
+test: test-spec phpcs
+
+test-spec:
 	@phpdbg -qrr ./vendor/bin/phpspec run -n -c .phpspec.coverage.yml
+
+phpcs:
+	./vendor/bin/phpcs
 
 watch-test:
 	while true; \

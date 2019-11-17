@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach\Helpers;
 
 use Carbon\Carbon;
-use DateTimeZone;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,6 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Output
 {
     /**
+     * Output to write to.
+     *
      * @var \Symfony\Component\Console\Output\OutputInterface
      */
     protected $output;
@@ -39,62 +42,65 @@ class Output
         ];
 
         $i = 1;
-        foreach ($colors as $color) {
-            $formatter->setStyle('color' . $i, new OutputFormatterStyle($colors[$i - 1]));
-            $formatter->setStyle('color' . ($i + count($colors)), new OutputFormatterStyle($colors[$i - 1], null, ['reverse']));
-            $i++;
+
+        for ($i = 0; $i < \count($colors); $i++) {
+            $formatter->setStyle('color' . ($i + 1), new OutputFormatterStyle($colors[$i]));
+            $formatter->setStyle(
+                'color' . (($i + 1) + \count($colors)),
+                new OutputFormatterStyle($colors[$i], null, ['reverse']),
+            );
         }
     }
 
-    public function debug($message)
+    public function debug(string $message): void
     {
         $this->writeln('debug', $message, OutputInterface::VERBOSITY_DEBUG);
     }
 
-    public function message($message)
+    public function message(string $message): void
     {
         $this->writeln('message', $message, OutputInterface::VERBOSITY_NORMAL);
     }
 
-    public function info($message)
+    public function info(string $message): void
     {
         $this->writeln('info', $message, OutputInterface::VERBOSITY_VERBOSE);
     }
 
-    public function warning($message)
+    public function warning(string $message): void
     {
         $this->writeln('warning', $message, OutputInterface::VERBOSITY_QUIET, true);
     }
 
-    public function error($message)
+    public function error(string $message): void
     {
         $this->writeln('error', $message, 0, true);
     }
 
-    public function fatal($message)
+    public function fatal(string $message): void
     {
         $this->writeln('fatal', $message, 0, true);
     }
 
-    public function newLine()
+    public function newLine(): void
     {
         $this->output->writeln('', OutputInterface::VERBOSITY_NORMAL);
     }
 
-    public function numberedLine($num, $message)
+    public function numberedLine(int $num, string $message): void
     {
         $colorIndex = (($num - 1) % 14 ) + 1;
-        $message = sprintf('<color%d>%d</> > %s', $colorIndex, $colorIndex, $message);
+        $message = \sprintf('<color%d>%d</> > %s', $colorIndex, $colorIndex, $message);
         $this->output->writeln($message, OutputInterface::VERBOSITY_NORMAL);
     }
 
-    protected function writeln($style, $message, $verbosity, $errorOutput = false)
+    protected function writeln(string $style, string $message, int $verbosity, bool $errorOutput = false): void
     {
-        $message = sprintf("<%s>%s</>", $style, $message);
+        $message = \sprintf("<%s>%s</>", $style, $message);
 
         // Add timestamps in debug mode.
         if ($this->output->isDebug()) {
-            $message = sprintf("<timestamp>[</>%s<timestamp>]</> %s", Carbon::now()->format('Y-m-d H:i:s'), $message);
+            $message = \sprintf("<timestamp>[</>%s<timestamp>]</> %s", Carbon::now()->format('Y-m-d H:i:s'), $message);
         }
 
         // Print errors to stderr.

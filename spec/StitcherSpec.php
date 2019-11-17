@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use PhpSpec\ObjectBehavior;
-use Rorschach\Stitcher;
 use RuntimeException;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class StitcherSpec extends ObjectBehavior
 {
     // Set up the happy-path for stitching a screenshot. Test methods can
@@ -15,8 +19,16 @@ class StitcherSpec extends ObjectBehavior
     function let(RemoteWebDriver $webdriver)
     {
         // Return the page size.
-        $webdriver->executeScript('return Math.max.apply(null, [document.body.clientWidth, document.body.scrollWidth, document.documentElement.scrollWidth, document.documentElement.clientWidth])')->willReturn(800);
-        $webdriver->executeScript('return Math.max.apply(null, [document.body.clientHeight, document.body.scrollHeight, document.documentElement.scrollHeight, document.documentElement.clientHeight])')->willReturn(1200);
+        $webdriver->executeScript(
+            'return Math.max.apply(null, [document.body.clientWidth, document.body.scrollWidth, ' .
+            'document.documentElement.scrollWidth, document.documentElement.clientWidth])',
+        )
+            ->willReturn(800);
+        $webdriver->executeScript(
+            'return Math.max.apply(null, [document.body.clientHeight, document.body.scrollHeight, ' .
+            'document.documentElement.scrollHeight, document.documentElement.clientHeight])',
+        )
+            ->willReturn(1200);
 
         // Return the viewport size.
         $webdriver->executeScript('return document.documentElement.clientWidth')->willReturn(640);
@@ -45,7 +57,7 @@ class StitcherSpec extends ObjectBehavior
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk5.png'),
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk2.png'),
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk4.png'),
-            \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk6.png')
+            \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk6.png'),
         );
 
         $this->beConstructedWith($webdriver);
@@ -55,7 +67,7 @@ class StitcherSpec extends ObjectBehavior
      * Test that stitching works by mocking the expected chunks and checking
      * that the returned image matches the original image.
      */
-    function it_should_stitch_together_a_full_screenshot(RemoteWebDriver $webdriver)
+    function it_should_stitch_together_a_full_screenshot()
     {
 
         $png = $this->getWrappedObject()->stitchScreenshot();
@@ -65,8 +77,11 @@ class StitcherSpec extends ObjectBehavior
 
         // Check that the generated screenshot is what's expected. Redirect
         // stderr to stdout so we can get the stderr output.
-        expect(`compare 2>&1 -dissimilarity-threshold 1 -fuzz 1 -metric AE $referenceImage /tmp/rorschach-test.png /dev/null`)->toBe('0');
-        unlink('/tmp/rorschach-test.png');
+        $command = "compare 2>&1 -dissimilarity-threshold 1 -fuzz 1 -metric " .
+            "AE $referenceImage /tmp/rorschach-test.png /dev/null";
+        \expect(\shell_exec($command))
+            ->toBe('0');
+        \unlink('/tmp/rorschach-test.png');
     }
 
     /**
@@ -80,10 +95,10 @@ class StitcherSpec extends ObjectBehavior
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk5.png'),
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk2.png'),
             \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk4.png'),
-            \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk6.png')
+            \file_get_contents(__DIR__ . '/../fixtures/stitching/chunk6.png'),
         );
 
-        $png = $this->shouldThrow(\RuntimeException::class)->duringStitchScreenshot();
+        $this->shouldThrow(RuntimeException::class)->duringStitchScreenshot();
     }
 
     function it_should_wait_for_wait_script(RemoteWebDriver $webdriver)

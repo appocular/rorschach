@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Helpers;
 
-use Rorschach\Helpers\Git;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Rorschach\Helpers\Git;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class GitSpec extends ObjectBehavior
 {
     function it_is_initializable()

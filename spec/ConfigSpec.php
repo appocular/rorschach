@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rorschach\Config;
 use Rorschach\Exceptions\RorschachError;
 use Rorschach\Helpers\ConfigFile;
@@ -11,6 +12,9 @@ use Rorschach\Helpers\Env;
 use Rorschach\Helpers\Git;
 use Symfony\Component\Console\Input\InputInterface;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class ConfigSpec extends ObjectBehavior
 {
 
@@ -117,7 +121,7 @@ class ConfigSpec extends ObjectBehavior
         $this->getBaseUrl()->shouldReturn('/new-base-url');
     }
 
-    function it_should_return_null_for_no__history(Env $env)
+    function it_should_return_null_for_no__history()
     {
         $this->getHistory()->shouldReturn(null);
     }
@@ -154,7 +158,7 @@ class ConfigSpec extends ObjectBehavior
         $this->getReadIn()->shouldReturn('the_dir');
     }
 
-    function it_should_provide_a_base(ConfigFile $configFile, InputInterface $input)
+    function it_should_provide_a_base(InputInterface $input)
     {
         $input->getOption('base')->willReturn(false);
         $this->getBase()->shouldReturn('alpha.appocular.io');
@@ -175,8 +179,8 @@ class ConfigSpec extends ObjectBehavior
 
     function it_can_provide_variants(ConfigFile $configFile)
     {
-        $configFile->getVariants()->willReturn(null);
-        $this->getVariants()->shouldReturn(null);
+        $configFile->getVariants()->willReturn([]);
+        $this->getVariants()->shouldReturn([]);
 
         $configFile->getVariants()->willReturn(['browser_size' => ['800x600', '1200x800']]);
         $this->getVariants()->shouldReturn(['browser_size' => ['800x600', '1200x800']]);

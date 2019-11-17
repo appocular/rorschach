@@ -1,30 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach;
 
-use Rorschach\CheckpointProcessor;
 use Rorschach\Helpers\Output;
 use Rorschach\Helpers\WorkerFactory;
-use RuntimeException;
 
 class Multiplexer
 {
     /**
+     * Our configuration.
+     *
      * @var \Rorschach\Config
      */
     protected $config;
 
     /**
+     * Our output.
+     *
      * @var \Rorschach\Helpers\Output
      */
     protected $output;
 
     /**
+     * Factory for workers.
+     *
      * @var \Rorschach\Helpers\WorkerFactory
      */
     protected $workerFactory;
 
     /**
+     * The processor for checkpoints.
+     *
      * @var \Rorschach\CheckpointProcessor
      */
     protected $processor;
@@ -43,13 +51,14 @@ class Multiplexer
     /**
      * Run snapshot and submit checkpoints to Appocular.
      */
-    public function run()
+    public function run(): bool
     {
         $success = true;
         $numWorkers = $this->config->getWorkers();
-        $workerCheckpoints = array_fill(0, $numWorkers, []);
+        $workerCheckpoints = \array_fill(0, $numWorkers, []);
 
         $checkpoints = $this->config->getCheckpoints();
+
         foreach ($this->config->getVariants() as $variant) {
             $checkpoints = $variant->getVariations($checkpoints);
         }
@@ -59,45 +68,54 @@ class Multiplexer
         }
 
         // Filter out empty workers.
-        $workerCheckpoints = array_filter($workerCheckpoints);
+        $workerCheckpoints = \array_filter($workerCheckpoints);
 
         $workers = [];
-        $this->output->info(sprintf('Starting %d workers', count($workerCheckpoints)));
+        $this->output->info(\sprintf('Starting %d workers', \count($workerCheckpoints)));
+
         foreach ($workerCheckpoints as $num => $checkpoints) {
             $workers[] = $this->workerFactory->create($checkpoints);
         }
 
         do {
             $running = false;
+
             foreach ($workers as $num => $worker) {
                 $running = $running || $worker->isRunning();
                 $output = $worker->getIncrementalOutput();
+
                 if ($output) {
-                    foreach (explode("\n", trim($output)) as $line) {
+                    foreach (\explode("\n", \trim($output)) as $line) {
                         $this->output->numberedLine(($num + 1), $line);
                     }
                 }
 
                 $output = $worker->getIncrementalErrorOutput();
-                if ($output) {
-                    $this->output->error(sprintf('Worker %d error, output:', $num + 1));
-                    foreach (explode("\n", trim($output)) as $line) {
-                        $this->output->numberedLine(($num + 1), $line);
-                    }
+
+                if (!$output) {
+                    continue;
+                }
+
+                $this->output->error(\sprintf('Worker %d error, output:', $num + 1));
+
+                foreach (\explode("\n", \trim($output)) as $line) {
+                    $this->output->numberedLine(($num + 1), $line);
                 }
             }
 
             // Only sleep if we still have running workers.
-            if ($running) {
-                usleep(500000);
+            if (!$running) {
+                continue;
             }
+
+            \usleep(500000);
         } while ($running);
 
         $this->output->info('Done');
         $this->processor->summarize();
 
-        foreach ($workers as $num => $worker) {
-            $success = $success && ($worker->getExitCode() == 0);
+        foreach ($workers as $worker) {
+            $success = $success && ($worker->getExitCode() === 0);
         }
 
         return $success;

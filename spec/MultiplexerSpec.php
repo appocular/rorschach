@@ -1,18 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Rorschach\Checkpoint;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
 use Rorschach\Helpers\Output;
 use Rorschach\Helpers\WorkerFactory;
 use Rorschach\Helpers\WorkerProcess;
-use Rorschach\Multiplexer;
 use Rorschach\Variation;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class MultiplexerSpec extends ObjectBehavior
 {
     function let(
@@ -22,6 +25,11 @@ class MultiplexerSpec extends ObjectBehavior
         WorkerProcess $workerProcess,
         CheckpointProcessor $processor
     ) {
+        $workerProcess->isRunning()->willReturn(false);
+        $workerProcess->getIncrementalOutput()->willReturn('');
+        $workerProcess->getIncrementalErrorOutput()->willReturn('');
+        $workerProcess->getExitCode()->willReturn(null);
+
         $this->beConstructedWith($config, $output, $workerFactory, $processor);
     }
 
@@ -34,9 +42,6 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([]);
         $config->getCheckpoints()->willReturn([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
 
-        $workerProcess->isRunning()->willReturn(false);
-        $workerProcess->getIncrementalOutput()->willReturn(null);
-        $workerProcess->getIncrementalErrorOutput()->willReturn(null);
         $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1, 5, 9])->willReturn($workerProcess)->shouldBeCalled();
@@ -58,9 +63,6 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([$variation]);
         $config->getCheckpoints()->willReturn([1, 2, 3]);
 
-        $workerProcess->isRunning()->willReturn(false);
-        $workerProcess->getIncrementalOutput()->willReturn(null);
-        $workerProcess->getIncrementalErrorOutput()->willReturn(null);
         $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([4, 5, 6])->willReturn($workerProcess)->shouldBeCalled();
@@ -77,9 +79,6 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([]);
         $config->getCheckpoints()->willReturn([1, 2, 3]);
 
-        $workerProcess->isRunning()->willReturn(false);
-        $workerProcess->getIncrementalOutput()->willReturn(null);
-        $workerProcess->getIncrementalErrorOutput()->willReturn(null);
         $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess)->shouldBeCalled();
@@ -99,14 +98,12 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([]);
         $config->getCheckpoints()->willReturn([1]);
 
-        $workerProcess->isRunning()->willReturn(false);
         $workerProcess->getIncrementalOutput()->willReturn('banana');
-        $workerProcess->getIncrementalErrorOutput()->willReturn(null);
         $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess);
 
-        $output->info(Argument::any())->willReturn();
+        $output->info(Argument::any())->shouldBeCalled();
         $output->numberedLine(1, 'banana')->shouldBeCalled();
 
         $this->run()->shouldReturn(true);
@@ -122,14 +119,12 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([]);
         $config->getCheckpoints()->willReturn([1]);
 
-        $workerProcess->isRunning()->willReturn(false);
-        $workerProcess->getIncrementalOutput()->willReturn(null);
         $workerProcess->getIncrementalErrorOutput()->willReturn('the error');
         $workerProcess->getExitCode()->willReturn(0);
 
         $workerFactory->create([1])->willReturn($workerProcess);
 
-        $output->info(Argument::any())->willReturn();
+        $output->info(Argument::any())->shouldBeCalled();
         $output->error('Worker 1 error, output:')->shouldBeCalled();
         $output->numberedLine(1, 'the error')->shouldBeCalled();
 
@@ -146,14 +141,12 @@ class MultiplexerSpec extends ObjectBehavior
         $config->getVariants()->willReturn([]);
         $config->getCheckpoints()->willReturn([1]);
 
-        $workerProcess->isRunning()->willReturn(false);
-        $workerProcess->getIncrementalOutput()->willReturn(null);
         $workerProcess->getIncrementalErrorOutput()->willReturn('the error');
         $workerProcess->getExitCode()->willReturn(1);
 
         $workerFactory->create([1])->willReturn($workerProcess);
 
-        $output->info(Argument::any())->willReturn();
+        $output->info(Argument::any())->shouldBeCalled();
         $output->error('Worker 1 error, output:')->shouldBeCalled();
         $output->numberedLine(1, 'the error')->shouldBeCalled();
 

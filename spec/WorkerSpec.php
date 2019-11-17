@@ -1,26 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Rorschach\Checkpoint;
 use Rorschach\CheckpointFetcher;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Helpers\Output;
 use Rorschach\Worker;
-use Rorschach\Checkpoint;
+use RuntimeException;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class WorkerSpec extends ObjectBehavior
 {
-
-    function let(
-        CheckpointFetcher $fetcher,
-        CheckpointProcessor $processor,
-        Output $output
-    ) {
-        $output->debug(Argument::any())->willReturn();
-        $output->info(Argument::any())->willReturn();
-    }
 
     function it_is_initializable(
         CheckpointFetcher $fetcher,
@@ -54,7 +51,9 @@ class WorkerSpec extends ObjectBehavior
         Output $output
     ) {
         $output->error()->shouldNotBeCalled();
-        $output->message(Argument::any())->willReturn();
+        $output->message(Argument::any())->shouldBeCalled();
+        $output->info(Argument::any())->shouldBeCalled();
+        $output->debug(Argument::any())->shouldBeCalled();
 
         $checkpoints = [
             new Checkpoint('front', '/'),
@@ -87,12 +86,14 @@ class WorkerSpec extends ObjectBehavior
             new Checkpoint('Page two', '/two'),
         ];
 
-        $output->error(Argument::any())->willReturn();
-        $output->message(Argument::any())->willReturn();
+        $output->error(Argument::any())->shouldBeCalled();
+        $output->message(Argument::any())->shouldBeCalled();
+        $output->info(Argument::any())->shouldBeCalled();
+        $output->debug(Argument::any())->shouldBeCalled();
 
         $fetcher->fetch($checkpoints[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($checkpoints[0], 'png data')->shouldBeCalled();
-        $fetcher->fetch($checkpoints[1])->willThrow(new \RuntimeException('bad stuff'))->shouldBeCalled();
+        $fetcher->fetch($checkpoints[1])->willThrow(new RuntimeException('bad stuff'))->shouldBeCalled();
         $processor->process($checkpoints[1], Argument::any())->shouldNotBeCalled();
         $fetcher->fetch($checkpoints[2])->willReturn('more png data')->shouldBeCalled();
         $processor->process($checkpoints[2], 'more png data')->shouldBeCalled();
@@ -120,6 +121,8 @@ class WorkerSpec extends ObjectBehavior
 
         $output->message('Checkpointing "front"...')->shouldBeCalled();
         $output->message('Checkpointing "Page two"...')->shouldBeCalled();
+        $output->info(Argument::any())->shouldBeCalled();
+        $output->debug(Argument::any())->shouldBeCalled();
 
         $fetcher->fetch($checkpoints[0])->willReturn('png data')->shouldBeCalled();
         $processor->process($checkpoints[0], 'png data')->shouldBeCalled();

@@ -1,19 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Appocular;
 
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Rorschach\Appocular\Client;
 use Rorschach\Config;
 use RuntimeException;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class ClientSpec extends ObjectBehavior
 {
-    function let(GuzzleClient $client, Config $config) {
+    function let(GuzzleClient $client, Config $config)
+    {
         $config->getToken()->willReturn('the-token');
         $this->beConstructedWith($client, $config);
     }
@@ -21,7 +25,8 @@ class ClientSpec extends ObjectBehavior
     /**
      * Options expected on all requests.
      */
-    function requestOptions() {
+    function requestOptions()
+    {
         return [
             'headers' => ['Authorization' => 'Bearer the-token'],
             'allow_redirects' => false,
@@ -39,7 +44,7 @@ class ClientSpec extends ObjectBehavior
         $this->createBatch($sha)->shouldReturn($batchId);
     }
 
-    function it_should_throw_on_creation_failure(GuzzleClient $client, Response $response)
+    function it_should_throw_on_creation_failure(GuzzleClient $client)
     {
         $sha = 'the sha';
         $client->post('batch', ['json' => ['id' => $sha]] + $this->requestOptions())->willThrow(new Exception());
@@ -63,7 +68,7 @@ class ClientSpec extends ObjectBehavior
         $response->getStatusCode()->willReturn(201);
         $json = [
             'name' => 'name',
-            'image' => base64_encode('png data'),
+            'image' => \base64_encode('png data'),
         ];
         $client->post($batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);
         $this->checkpoint($batchId, 'name', 'png data')->shouldReturn(true);
@@ -80,7 +85,10 @@ class ClientSpec extends ObjectBehavior
         $response->getStatusCode()->willReturn(201);
         $response->hasHeader('Location')->willReturn(true);
         $response->getHeader('Location')->willReturn([$batchId]);
-        $client->post('batch', ['json' => ['id' => $sha, 'history' => $history]] + $this->requestOptions())->willReturn($response);
+        $client->post(
+            'batch',
+            ['json' => ['id' => $sha, 'history' => $history]] + $this->requestOptions(),
+        )->willReturn($response);
         $this->createBatch($sha, $history)->shouldReturn($batchId);
     }
 
@@ -90,7 +98,7 @@ class ClientSpec extends ObjectBehavior
         $response->getStatusCode()->willReturn(201);
         $json = [
             'name' => 'name',
-            'image' => base64_encode('png data'),
+            'image' => \base64_encode('png data'),
             'meta' => ['some' => 'metadata'],
         ];
         $client->post($batchId . '/checkpoint', ['json' => $json] + $this->requestOptions())->willReturn($response);

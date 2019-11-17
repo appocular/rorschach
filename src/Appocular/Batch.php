@@ -1,22 +1,28 @@
 <?php
 
-namespace Rorschach\Appocular;
+declare(strict_types=1);
 
-use Rorschach\Appocular\Client;
+namespace Rorschach\Appocular;
 
 class Batch
 {
     /**
+     * WebDriver to use.
+     *
      * @var \Facebook\WebDriver\WebDriver
      */
     protected $webDriver;
 
     /**
+     * Appocular client.
+     *
      * @var \Rorschach\Appocular\Client
      */
     protected $client;
 
     /**
+     * The ID of the batch we're running.
+     *
      * @var string
      */
     protected $batchId;
@@ -24,20 +30,20 @@ class Batch
     /**
      * Start a new batch.
      *
-     * @param Client $client
+     * @param \Rorschach\Appocular\Client $client
      *   Appocular Client.
      * @param string $id
      *   The snapshot id.
      * @param string $history
      *   The snapshot history.
      */
-    public function __construct(Client $client, $id, $history = null)
+    public function __construct(Client $client, string $id, ?string $history = null)
     {
         $this->client = $client;
         $this->batchId = $this->client->createBatch($id, $history);
     }
 
-    public function close()
+    public function close(): bool
     {
         return $this->client->deleteBatch($this->batchId);
     }
@@ -45,7 +51,7 @@ class Batch
     /**
      * Get id of batch.
      */
-    public function getBatchId()
+    public function getBatchId(): string
     {
         return $this->batchId;
     }
@@ -57,10 +63,10 @@ class Batch
      *   Checkpoint name.
      * @param string $pngData
      *   PNG image to submit.
-     * @param string $meta
+     * @param array<string, string> $meta
      *   Meta data.
      */
-    public function checkpoint(string $name, string $pngData, $meta = null)
+    public function checkpoint(string $name, string $pngData, ?array $meta = null): bool
     {
         return $this->client->checkpoint($this->batchId, $name, $pngData, $meta);
     }

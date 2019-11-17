@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach;
 
 use Rorschach\Exceptions\RorschachError;
@@ -17,64 +19,86 @@ class Checkpoint
     public const VALIDATE_CSS_ERROR = '"css" should be a mapping of <name>: <CSS>';
 
     /**
+     * Name of checkpoint.
+     *
      * @var string
      */
     public $name;
 
     /**
+     * Path to checkpoint.
+     *
      * @var string
      */
     public $path;
 
     /**
-     * @var array
+     * Element selectors to remove from page before screenshot.
+     *
+     * @var array<string, string>
      */
     public $remove;
 
     /**
+     * Size to screenshot at.
+     *
      * @var \Rorschach\Helpers\Size
      */
     public $browserSize;
-    public $browserWidth;
-    public $browserHeight;
 
     /**
+     * Seconds to wait after loading the page.
+     *
      * @var float
      */
     public $wait;
 
     /**
+     * Seconds to wait between screenshots when stitching.
+     *
      * @var float
      */
     public $stitchDelay;
 
     /**
+     * JavaScript to use for waiting.
+     *
      * @var string
      */
     public $waitScript;
 
     /**
-     * @var array
+     * Metadata for checkpoint.
+     *
+     * @var array<string, string>
      */
     public $meta;
 
     /**
-     * @var array
+     * CSS to apply to page before screenshot.
+     *
+     * @var array<string, string>
      */
     public $css;
 
-    public function __construct(string $name, $data, $defaults = [])
+    /**
+     * @param string|array<string|array, string> $data
+     * @param string|array<string|array, string> $defaults
+     */
+    public function __construct(string $name, $data, array $defaults = [])
     {
         $this->name = $name;
-        if (is_string($data)) {
+
+        if (\is_string($data)) {
             $data = ['path' => $data];
         }
 
         if (!isset($data['path'])) {
-            throw new RorschachError(sprintf(self::MISSING_PATH_ERROR, $name));
+            throw new RorschachError(\sprintf(self::MISSING_PATH_ERROR, $name));
         }
+
         // Ensure all paths starts with a slash.
-        $this->path = '/' . ltrim($data['path'], '/');
+        $this->path = '/' . \ltrim($data['path'], '/');
 
         $keys =  [
             'remove',
@@ -87,106 +111,159 @@ class Checkpoint
             'meta',
             'css',
         ];
+
         foreach ($keys as $key) {
-            $prop = lcfirst(str_replace('_', '', ucwords($key, '_')));
+            $prop = \lcfirst(\str_replace('_', '', \ucwords($key, '_')));
 
             if (isset($data[$key])) {
                 $value = $data[$key];
                 // If its an array, merge with defaults, if given.
-                if (is_array($value) && isset($defaults[$key])) {
+
+                if (\is_array($value) && isset($defaults[$key])) {
                     $value += $defaults[$key];
                 }
             } else {
                 $value = $defaults[$key] ?? null;
             }
 
-            if (isset($value)) {
-                if (\method_exists($this, 'validate' . $prop)) {
-                    $this->{$prop}  = $this->{'validate' . $prop}($value);
-                } else {
-                    $this->{$prop} = $value;
-                }
+            if (!isset($value)) {
+                continue;
             }
+
+            $this->{$prop} = \method_exists($this, 'validate' . $prop) ?
+                                 $this->{'validate' . $prop}($value) : $value;
         }
     }
 
-    public function validateRemove($value)
+    /**
+     * @return array<string, string>
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateRemove($value): array
     {
         return $this->validateHash($value, self::VALIDATE_REMOVE_ERROR);
     }
 
-    public function validateBrowserSize($value)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateBrowserSize($value): Size
     {
-        if (!preg_match('{^(?<width>\d+)x(?<height>\d+)$}', $value, $matches)) {
-            throw new RorschachError(sprintf(self::VALIDATE_BROWSER_SIZE_ERROR, $value));
+        if (!\is_string($value) || !\preg_match('{^(?<width>\d+)x(?<height>\d+)$}', $value, $matches)) {
+            throw new RorschachError(\sprintf(self::VALIDATE_BROWSER_SIZE_ERROR, $value));
         }
 
         return new Size(
             $this->validateInt($matches['width'], 1, 9999, self::VALIDATE_BROWSER_SIZE_ERROR),
-            $this->validateInt($matches['height'], 1, 9999, self::VALIDATE_BROWSER_SIZE_ERROR)
+            $this->validateInt($matches['height'], 1, 9999, self::VALIDATE_BROWSER_SIZE_ERROR),
         );
     }
 
-    public function validateWait($value)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateWait($value): float
     {
         return $this->validateFloat($value, 0, 7200, self::VALIDATE_WAIT_ERROR);
     }
 
-    public function validateStitchDelay($value)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateStitchDelay($value): float
     {
         return $this->validateFloat($value, 0, 7200, self::VALIDATE_STITCH_DELAY_ERROR);
     }
 
-    public function validateWaitScript($value)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateWaitScript($value): string
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return $value;
         }
+
         throw new RorschachError(self::VALIDATE_WAIT_SCRIPT_ERROR);
     }
 
-    public function validateCss($value)
+    /**
+     * @return array<string, string>
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    public function validateCss($value): array
     {
         return $this->validateHash($value, self::VALIDATE_CSS_ERROR);
     }
 
-    protected function validateInt($value, $min, $max, $error)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    protected function validateInt($value, int $min, int $max, string $error): int
     {
         // is_numeric allows for floats and scientific notation, so we'll just
         // use a regexp.
-        if (preg_match('{^\d+$}', $value) && intval($value) >= $min && \intval($value) <= $max) {
+        if (
+            \is_string($value) &&
+            \preg_match('{^\d+$}', $value) &&
+            \intval($value) >= $min &&
+            \intval($value) <= $max
+        ) {
             return \intval($value);
         }
+
         throw new RorschachError($error);
     }
 
-    protected function validateFloat($value, $min, $max, $error)
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    protected function validateFloat($value, int $min, int $max, string $error): float
     {
         // is_numeric scientific notation, so we'll just use a regexp.
-        if (preg_match('{^\d+(\.\d+)?$}', $value) && \floatval($value) >= $min && \floatval($value) <= $max) {
+        if (
+            \is_string($value) &&
+            \preg_match('{^\d+(\.\d+)?$}', $value) &&
+            \floatval($value) >= $min &&
+            \floatval($value) <= $max
+        ) {
             return \floatval($value);
         }
+
         throw new RorschachError($error);
     }
 
-    protected function validateHash($hash, $error)
+    /**
+     * @return array<string, string>
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    protected function validateHash($hash, string $error): array
     {
-        if (is_array($hash)) {
-            foreach ($hash as $key => $value) {
-                if (!\is_string($key) || (!\is_string($value) && !\is_null($value))) {
-                    throw new RorschachError($error);
-                }
-
-                // Remove null values. This allows for unsetting using ~ in
-                // the YAML file.
-                if (\is_null($value)) {
-                    unset($hash[$key]);
-                }
-            }
-
-            return $hash;
+        if (!\is_array($hash)) {
+            throw new RorschachError($error);
         }
 
-        throw new RorschachError($error);
+        foreach ($hash as $key => $value) {
+            if (!\is_string($key)) {
+                throw new RorschachError($error);
+            }
+
+            // Remove null values. This allows for unsetting using ~ in
+            // the YAML file.
+            if (\is_null($value)) {
+                unset($hash[$key]);
+
+                continue;
+            }
+
+            if (!\is_string($value)) {
+                throw new RorschachError($error);
+            }
+        }
+
+        return $hash;
     }
 }

@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach\Processors;
 
+use Rorschach\Checkpoint;
 use Rorschach\CheckpointProcessor;
 use Rorschach\Config;
-use Rorschach\Checkpoint;
 
 class WriteOutProcessor implements CheckpointProcessor
 {
+    /**
+     * Path to write images to.
+     *
+     * @var string
+     */
     protected $path;
 
     public function __construct(Config $config)
@@ -20,7 +27,8 @@ class WriteOutProcessor implements CheckpointProcessor
      */
     public function process(Checkpoint $checkpoint, string $pngData): void
     {
-        \file_put_contents($this->path . '/' . \urlencode($checkpoint->name . json_encode($checkpoint->meta)) . '.png', $pngData);
+        \file_put_contents($this->path . '/' .
+                           \urlencode($checkpoint->name . \json_encode($checkpoint->meta)) . '.png', $pngData);
     }
 
     /**

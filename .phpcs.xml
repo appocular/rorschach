@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset>
+    <file>./rorschach</file>
+    <file>./src</file>
+    <file>./spec</file>
+    <config name="installed_paths" value="../../appocular/coding-standard"/>
+    <rule ref="AppocularCodingStandard"/>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+      <properties>
+        <!-- Tell Slevomat the root directories of our namespaces, so
+             it can check if the filepath is correct. -->
+	<property name="rootNamespaces" type="array">
+	  <element key="src" value="Rorschach"/>
+	  <element key="spec" value="spec\Rorschach"/>
+	</property>
+      </properties>
+    </rule>
+</ruleset>

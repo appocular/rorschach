@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Helpers;
 
 use Carbon\Carbon;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rorschach\Helpers\Output;
 use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class OutputSpec extends ObjectBehavior
 {
 
@@ -80,8 +83,10 @@ class OutputSpec extends ObjectBehavior
     {
         Carbon::setTestNow(Carbon::parse('2019-10-06 21:26:12'));
         $output->isDebug()->willReturn(true);
-        $output->writeln('<timestamp>[</>2019-10-06 21:26:12<timestamp>]</> <message>test</>', OutputInterface::VERBOSITY_NORMAL)
-            ->shouldBeCalled();
+        $output->writeln(
+            '<timestamp>[</>2019-10-06 21:26:12<timestamp>]</> <message>test</>',
+            OutputInterface::VERBOSITY_NORMAL,
+        )->shouldBeCalled();
         $this->message('test');
     }
 

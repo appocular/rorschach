@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach;
 
 use Rorschach\Appocular\Batch;
@@ -8,6 +10,8 @@ use Rorschach\Appocular\Client;
 class Appocular
 {
     /**
+     * Client to use.
+     *
      * @var \Rorschach\Appocular\Client
      */
     protected $client;
@@ -15,7 +19,7 @@ class Appocular
     /**
      * Create Appocular instance.
      *
-     * @param Client $client
+     * @param \Rorschach\Appocular\Client $client
      *   Appocular\Client to use for communication.
      */
     public function __construct(Client $client)
@@ -30,11 +34,8 @@ class Appocular
      *   Snapshot ID.
      * @param string $history
      *   History of the commit, newline separated.
-     *
-     * @return Batch
-     *   Batch object.
      */
-    public function startBatch($id, $history = null)
+    public function startBatch(string $id, ?string $history = null): Batch
     {
         return new Batch($this->client, $id, $history);
     }

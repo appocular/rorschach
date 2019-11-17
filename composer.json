@@ -10,11 +10,11 @@
     ],
     "config": {
         "platform": {
-            "php": "7.1"
+            "php": "7.3"
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.3",
         "mnapoli/silly": "1.5.*",
         "mnapoli/silly-php-di": "^1.2",
         "symfony/yaml": "^3.4",
@@ -26,11 +26,18 @@
     "require-dev": {
         "phpspec/phpspec": "^3.4",
         "bossa/phpspec2-expect": "^2",
-        "leanphp/phpspec-code-coverage": "^3.1"
+        "leanphp/phpspec-code-coverage": "^3.1",
+        "appocular/coding-standard": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "Rorschach\\": "src"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/appocular/coding-standard"
+        }
+    ]
 }

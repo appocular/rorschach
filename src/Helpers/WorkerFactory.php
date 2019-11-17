@@ -1,22 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rorschach\Helpers;
-
-
 
 class WorkerFactory
 {
     /**
-     * @var string[]
+     * Array of command and options.
+     *
+     * @var array<string>
      */
     protected $argv;
 
-    public function __construct($argv)
+    /**
+     * @param array<string> $argv
+     */
+    public function __construct(array $argv)
     {
         $this->argv = $argv;
     }
 
-    public function create($checkpoints)
+    /**
+     * @param array<\Rorschach\Checkpoint> $checkpoints
+     */
+    public function create(array $checkpoints): WorkerProcess
     {
         return new WorkerProcess($this->argv, $checkpoints);
     }

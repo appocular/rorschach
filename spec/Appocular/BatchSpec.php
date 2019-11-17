@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Rorschach\Appocular;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rorschach\Appocular\Batch;
 use Rorschach\Appocular\Client;
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// phpcs:disable Squiz.Scope.MethodScope.Missing
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 class BatchSpec extends ObjectBehavior
 {
     function it_is_initializable(Client $client)
@@ -36,8 +40,8 @@ class BatchSpec extends ObjectBehavior
     function it_saves_images(Client $client)
     {
         $client->createBatch('the sha', null)->willReturn('batch id');
-        $client->checkpoint('batch id', 'name', 'png data', 'meta data')->willReturn(true);
+        $client->checkpoint('batch id', 'name', 'png data', ['meta data' => 'set'])->willReturn(true);
         $this->beConstructedWith($client, 'the sha');
-        $this->checkpoint('name', 'png data', 'meta data')->shouldReturn(true);
+        $this->checkpoint('name', 'png data', ['meta data' => 'set'])->shouldReturn(true);
     }
 }
