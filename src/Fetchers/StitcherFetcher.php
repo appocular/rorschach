@@ -55,7 +55,7 @@ class StitcherFetcher implements CheckpointFetcher
 
         if ($checkpoint->wait) {
             $this->output->debug(\sprintf('Waiting %.4fs.', $checkpoint->wait));
-            \usleep($checkpoint->wait * 1000000);
+            \usleep((int) ($checkpoint->wait * 1000000));
         }
 
         if ($checkpoint->waitScript) {

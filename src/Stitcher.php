@@ -60,7 +60,7 @@ class Stitcher
                 }
 
                 if ($stitchDelay) {
-                    \usleep($stitchDelay * 1000000);
+                    \usleep((int) ($stitchDelay * 1000000));
                 }
 
                 $imageData = $this->webdriver->takeScreenshot();
