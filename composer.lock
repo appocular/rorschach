@@ -1222,11 +1222,17 @@
     "packages-dev": [
         {
             "name": "appocular/coding-standard",
-            "version": "dev-master",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appocular/coding-standard.git",
+                "reference": "84cc48dc7552b8452e44189860e9db7ea5c4fd85"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/xen/dev/appocular/coding-standard",
-                "reference": "c6c25a8dc1f9b46609842abe7a78e1830d3d1645"
+                "type": "zip",
+                "url": "https://api.github.com/repos/appocular/coding-standard/zipball/84cc48dc7552b8452e44189860e9db7ea5c4fd85",
+                "reference": "84cc48dc7552b8452e44189860e9db7ea5c4fd85",
+                "shasum": ""
             },
             "require": {
                 "slevomat/coding-standard": "^5.0",
@@ -1252,7 +1258,12 @@
                 "ruleset",
                 "sniffer",
                 "standard"
-            ]
+            ],
+            "support": {
+                "source": "https://github.com/appocular/coding-standard/tree/1.0.3",
+                "issues": "https://github.com/appocular/coding-standard/issues"
+            },
+            "time": "2019-11-17T18:59:56+00:00"
         },
         {
             "name": "bossa/phpspec2-expect",
@@ -3144,9 +3155,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "appocular/coding-standard": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
