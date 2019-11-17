@@ -120,7 +120,9 @@ class CheckpointSpec extends ObjectBehavior
     {
         $this->beConstructedWith('test', ['path' => 'path']);
 
-        $goodValues = ['0', '500', '7200'];
+        // The YAML parser converts what looks like numbers to proper
+        // ints/floats, but support strings nevertheless.
+        $goodValues = ['0', 1, 1.3, '500', '7200'];
 
         foreach ($goodValues as $val) {
             $this->validateWait($val)
@@ -139,7 +141,7 @@ class CheckpointSpec extends ObjectBehavior
     {
         $this->beConstructedWith('test', ['path' => 'path']);
 
-        $goodValues = ['0', '500', '7200'];
+        $goodValues = ['0', 2, 7.444, '500', '7200'];
 
         foreach ($goodValues as $val) {
             $this->validateStitchDelay($val)

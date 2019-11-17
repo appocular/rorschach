@@ -203,15 +203,16 @@ class Checkpoint
      */
     protected function validateInt($value, int $min, int $max, string $error): int
     {
-        // is_numeric allows for floats and scientific notation, so we'll just
-        // use a regexp.
-        if (
-            \is_string($value) &&
-            \preg_match('{^\d+$}', $value) &&
-            \intval($value) >= $min &&
-            \intval($value) <= $max
-        ) {
-            return \intval($value);
+        if (\is_string($value) && \preg_match('{^\d+$}', $value)) {
+            $value = \intval($value);
+        }
+
+        if (!\is_int($value)) {
+            throw new RorschachError($error);
+        }
+
+        if ($value >= $min && $value <= $max) {
+            return $value;
         }
 
         throw new RorschachError($error);
@@ -222,14 +223,16 @@ class Checkpoint
      */
     protected function validateFloat($value, int $min, int $max, string $error): float
     {
-        // is_numeric scientific notation, so we'll just use a regexp.
-        if (
-            \is_string($value) &&
-            \preg_match('{^\d+(\.\d+)?$}', $value) &&
-            \floatval($value) >= $min &&
-            \floatval($value) <= $max
-        ) {
-            return \floatval($value);
+        if (\is_string($value) && \preg_match('{^\d+(\.\d+)?$}', $value)) {
+            $value = \floatval($value);
+        }
+
+        if (!\is_float($value) && !\is_int($value)) {
+            throw new RorschachError($error);
+        }
+
+        if ($value >= $min && $value <= $max) {
+            return $value;
         }
 
         throw new RorschachError($error);
