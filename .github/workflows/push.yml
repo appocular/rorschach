@@ -1,0 +1,43 @@
+on: push
+name: Run checks and tests
+jobs:
+  check_codestyle:
+    name: Codestyle
+    if: '!github.event.deleted'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: 7.3
+        coverage: none
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: Check codestyle
+      run: |
+        vendor/bin/phpcs
+
+  spec_tests:
+    name: Spec tests
+    if: '!github.event.deleted'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: 7.3
+        coverage: none
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: Spec tests
+      run: |
+        phpdbg -qrr ./vendor/bin/phpspec run -c .phpspec.coverage.yml
+    - name: Upload coverage report to Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        bash <(curl -s https://codecov.io/bash) -c -F spec -n Spec

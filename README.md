@@ -1,5 +1,9 @@
 # Rorschach
 
+[![](https://github.com/appocular/rorschach/workflows/Run%20checks%20and%20tests/badge.svg)](https://github.com/appocular/rorschach/actions)
+[![](https://img.shields.io/codecov/c/github/appocular/rorschach.svg)](https://codecov.io/gh/appocular/rorschach)
+
+
 The important env vars is:
 `CIRCLE_SHA1`
 `APPOCULAR_TOKEN`
