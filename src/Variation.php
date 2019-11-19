@@ -27,7 +27,7 @@ class Variation
     protected $variations = [];
 
     /**
-     * @param array<array<string>, string> $variations
+     * @param array<string, array<string>> $variations
      */
     public function __construct(string $name, array $variations)
     {

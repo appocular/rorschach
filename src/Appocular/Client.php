@@ -41,7 +41,7 @@ class Client
     /**
      * Get the request options with authorization header.
      *
-     * @return array<array|bool, string>
+     * @return array<string, array|bool>
      */
     protected function getOptions(): array
     {

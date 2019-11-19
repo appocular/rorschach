@@ -82,8 +82,8 @@ class Checkpoint
     public $css;
 
     /**
-     * @param string|array<string|array, string> $data
-     * @param string|array<string|array, string> $defaults
+     * @param string|array<string, string|array> $data
+     * @param string|array<string, string|array> $defaults
      */
     public function __construct(string $name, $data, array $defaults = [])
     {
