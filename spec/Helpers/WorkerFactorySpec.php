@@ -26,7 +26,7 @@ class WorkerFactorySpec extends ObjectBehavior
         return [
             'returnWorkerWithOutput' => static function ($worker, $string) {
                 // Give the process a chance to run.
-                \usleep(2000);
+                \usleep(5000);
 
                 return \trim($worker->getIncrementalOutput()) === \trim($string);
             },
