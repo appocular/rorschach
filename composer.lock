@@ -40,16 +40,16 @@
         },
         {
             "name": "facebook/webdriver",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-webdriver/php-webdriver.git",
-                "reference": "3e33ee3b8a688d719c55acdd7c6788e3006e1d3e"
+                "reference": "262ea0d209c292e0330be1041424887bbbffef04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-webdriver/php-webdriver/zipball/3e33ee3b8a688d719c55acdd7c6788e3006e1d3e",
-                "reference": "3e33ee3b8a688d719c55acdd7c6788e3006e1d3e",
+                "url": "https://api.github.com/repos/php-webdriver/php-webdriver/zipball/262ea0d209c292e0330be1041424887bbbffef04",
+                "reference": "262ea0d209c292e0330be1041424887bbbffef04",
                 "shasum": ""
             },
             "require": {
@@ -81,12 +81,12 @@
                 }
             },
             "autoload": {
-                "files": [
-                    "lib/Exception/TimeoutException.php"
-                ],
                 "psr-4": {
                     "Facebook\\WebDriver\\": "lib/"
-                }
+                },
+                "files": [
+                    "lib/Exception/TimeoutException.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -102,7 +102,7 @@
                 "webdriver"
             ],
             "abandoned": "php-webdriver/webdriver",
-            "time": "2020-02-10T15:04:25+00:00"
+            "time": "2020-02-17T08:14:38+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -955,16 +955,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.13.1",
+            "version": "v1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f"
+                "reference": "34094cfa9abe1f0f14f48f490772db7a775559f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/7b4aab9743c30be783b73de055d24a39cf4b954f",
-                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/34094cfa9abe1f0f14f48f490772db7a775559f2",
+                "reference": "34094cfa9abe1f0f14f48f490772db7a775559f2",
                 "shasum": ""
             },
             "require": {
@@ -976,7 +976,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.13-dev"
+                    "dev-master": "1.14-dev"
                 }
             },
             "autoload": {
@@ -1010,7 +1010,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-11-27T14:18:11+00:00"
+            "time": "2020-01-13T11:15:53+00:00"
         },
         {
             "name": "symfony/process",
