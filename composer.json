@@ -19,7 +19,7 @@
         "mnapoli/silly-php-di": "^1.2",
         "symfony/yaml": "^3.4",
         "facebook/webdriver": "^1.6",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^7.0",
         "symfony/process": "^3.4",
         "nesbot/carbon": "^2.26"
     },
