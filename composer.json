@@ -24,10 +24,10 @@
         "nesbot/carbon": "^2.26"
     },
     "require-dev": {
-        "phpspec/phpspec": "^3.4",
-        "bossa/phpspec2-expect": "^2",
+        "phpspec/phpspec": "^6",
+        "bossa/phpspec2-expect": "^3",
         "appocular/coding-standard": "^1.0",
-        "friends-of-phpspec/phpspec-code-coverage": "^3"
+        "friends-of-phpspec/phpspec-code-coverage": "^4"
     },
     "autoload": {
         "psr-4": {

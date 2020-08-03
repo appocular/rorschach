@@ -59,6 +59,7 @@ class ClientSpec extends ObjectBehavior
         $this->deleteBatch($batchId)->shouldReturn(true);
 
         // Deleting non-existing batch should throw an error.
+        $client->delete('banana', $this->requestOptions())->willThrow(new RuntimeException('bad'));
         $this->shouldThrow(RuntimeException::class)->duringDeleteBatch('banana');
     }
 
@@ -74,7 +75,12 @@ class ClientSpec extends ObjectBehavior
         $this->checkpoint($batchId, 'name', 'png data')->shouldReturn(true);
 
         // Should throw on errors.
-        $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
+        $batchId = 'http://host/batch/banana';
+        $client->post(
+            $batchId . '/checkpoint',
+            ['json' => $json] + $this->requestOptions(),
+        )->willThrow(new RuntimeException('bad'));
+        $this->shouldThrow(RuntimeException::class)->duringCheckpoint($batchId, 'name', 'png data');
     }
 
     function it_passes_history(GuzzleClient $client, Response $response)
@@ -105,7 +111,17 @@ class ClientSpec extends ObjectBehavior
         $this->checkpoint($batchId, 'name', 'png data', ['some' => 'metadata'])->shouldReturn(true);
 
         // Should throw on errors.
-        $this->shouldThrow(RuntimeException::class)->duringCheckpoint('banana', 'name', 'png data');
+        $batchId = 'http://host/batch/banana';
+        $client->post(
+            $batchId . '/checkpoint',
+            ['json' => $json] + $this->requestOptions(),
+        )->willThrow(new RuntimeException('bad'));
+        $this->shouldThrow(RuntimeException::class)->duringCheckpoint(
+            $batchId,
+            'name',
+            'png data',
+            ['some' => 'metadata'],
+        );
     }
 
     // todo: checkpoint and close should return void and throw on errors
