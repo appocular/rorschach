@@ -20,7 +20,7 @@
         "symfony/yaml": "^3.4",
         "facebook/webdriver": "^1.6",
         "guzzlehttp/guzzle": "^7.0",
-        "symfony/process": "^3.4",
+        "symfony/process": "^4.4",
         "nesbot/carbon": "^2.26"
     },
     "require-dev": {
