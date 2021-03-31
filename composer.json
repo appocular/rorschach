@@ -27,7 +27,7 @@
         "phpspec/phpspec": "^6",
         "bossa/phpspec2-expect": "^3",
         "appocular/coding-standard": "^1.0",
-        "friends-of-phpspec/phpspec-code-coverage": "^4"
+        "friends-of-phpspec/phpspec-code-coverage": "^6"
     },
     "autoload": {
         "psr-4": {
